@@ -1,0 +1,2036 @@
+NEXUS ATS
+Next-Generation Applicant Tracking System
+Complete Technical Build Blueprint
+Version 1.0   |   Confidential   |   2025
+Target Market
+Mid-market to Global Enterprise
+Document Scope
+Architecture, APIs, Data Models, ML Systems
+Build Timeline
+36-Month Phased Delivery
+Table of Contents
+SECTION 01
+Market & Competitive Analysis
+1.1  Market Overview
+The global Applicant Tracking System (ATS) market was valued at $3.2 billion in 2024 and is projected to reach $5.9 billion by 2030 at a CAGR of 9.1%. Growth is driven by AI adoption, candidate experience expectations, DEI mandates, and the expansion of hybrid/remote work models that require distributed hiring workflows. Despite market maturity, significant dissatisfaction exists: 72% of HR technology buyers report their current ATS does not meet their AI-capability expectations, and 68% of candidates abandon applications that require more than 15 minutes to complete.
+Platform
+Founded
+Market Cap / ARR
+Primary Segment
+Headcount Tier
+Pricing (approx.)
+Workday Recruiting
+2005 (ATS module 2012)
+$45B market cap
+Global Enterprise
+5,000+ employees
+$40–$180 PEPM
+Greenhouse
+2012
+~$500M ARR (est.)
+Mid-market to Enterprise
+200–5,000
+$6K–$80K/yr
+Lever
+2012
+~$100M ARR (est.)
+Growth Companies
+50–2,000
+$3K–$30K/yr
+iCIMS
+2000
+~$300M ARR (est.)
+Large Enterprise
+1,000–50,000+
+$100K–$500K/yr
+SAP SuccessFactors
+1996 (SAP acq. 2012)
+Part of SAP (~$35B ARR)
+Global Enterprise, Regulated
+5,000+
+$8–$25 PEPM + services
+Oracle Taleo
+1999 (Oracle acq. 2012)
+Part of Oracle (~$50B ARR)
+Large Enterprise, Legacy
+2,000+
+$80–$200/user/yr
+SmartRecruiters
+2010
+~$120M ARR (est.)
+Mid-Enterprise
+500–10,000
+$10K–$150K/yr
+Ashby
+2018
+~$50M ARR (est.)
+High-growth Tech
+50–2,000
+$6K–$60K/yr
+1.2  Detailed Platform Analysis
+Workday Recruiting
+STRENGTH
+Deep HRIS integration via unified data model — no data sync required between recruiting and HR. SOX, multi-country payroll linkage. Dominant in regulated industries (banking, healthcare, government).
+WEAKNESS
+Severely rigid UX — average implementation takes 9–18 months and costs $500K–$2M+. AI capabilities ('Illuminate') are nascent and bolt-on. Candidate experience scored 2.0/5 in independent research. Innovation cycle is 2–3 years behind pure-play ATS vendors.
+Greenhouse
+STRENGTH
+Best-in-class structured hiring methodology. 400+ native integrations via REST API. Superior DEI tooling and scorecard design. Strong recruiter UX. Fastest-growing enterprise ATS 2020–2024.
+WEAKNESS
+No native HRIS — requires integration for every HR data point. Analytics are descriptive only (no predictive capability). Internal mobility is absent. Weak for volume/hourly hiring workflows.
+Lever
+STRENGTH
+Best-in-class CRM + ATS hybrid. Talent relationship management (TRM) enables proactive pipeline building. Superior nurture workflows and candidate engagement scoring. Modern React-based UX.
+WEAKNESS
+Acquired by Employ Inc. in 2022 — product investment has slowed. Enterprise scalability constraints above 5,000 hires/year. OFCCP and global compliance gaps. No AI beyond basic matching.
+iCIMS Talent Cloud
+STRENGTH
+Strongest volume hiring capabilities (hourly, frontline, call center). Robust compliance module for US federal contractors (OFCCP AAP). Text Engagement module for SMS recruiting at scale.
+WEAKNESS
+Product is fragmented across 6+ separate modules that don't share a unified data model. UX was not redesigned since 2015. AI features are surface-level NLP. Integrations require heavy professional services.
+1.3  Competitive Gap Matrix
+Capability
+Workday
+Greenhouse
+Lever
+iCIMS
+SAP SF
+NEXUS ATS (target)
+AI-native data model
+No
+No
+No
+No
+No
+Yes — skill graph
+Explainable AI scoring
+Partial
+Partial
+No
+No
+No
+Yes — full
+Real-time bias detection
+No
+Partial
+No
+No
+No
+Yes — proactive
+Predictive analytics
+Descriptive
+Descriptive
+Descriptive
+None
+Descriptive
+Full predictive ML
+Internal mobility (native)
+Partial
+No
+No
+No
+Partial
+Yes — unified
+Autonomous hiring agent
+No
+No
+No
+No
+No
+Yes — volume roles
+Blockchain credentials
+No
+No
+No
+No
+No
+Yes — pilot
+Candidate AI chatbot
+No
+No
+Basic
+Basic
+No
+Yes — multilingual
+Recruiter AI copilot
+Basic
+No
+No
+No
+Basic
+Yes — full NL
+Self-scheduling (native)
+No
+Yes
+Yes
+No
+No
+Yes — advanced
+GDPR + EEOC + OFCCP + AI Act
+Yes
+Partial
+Partial
+Yes
+Yes
+Yes — all
+Implementation time
+9–18 months
+3–6 months
+2–4 months
+6–12 months
+12–24 months
+4–8 weeks (SaaS)
+SECTION 02
+Data Architecture & Schema Design
+2.1  Core Entity Model
+NEXUS ATS is built on a hybrid persistence strategy: a relational PostgreSQL layer for transactional ACID-compliant data, a graph database (Amazon Neptune / Neo4j) for the skill and talent intelligence layer, a vector database (Weaviate) for semantic search and AI embeddings, and Elasticsearch for full-text search and analytics. Every core entity is described below with full field specifications.
+Entity: Organization (Tenant)
+Field
+Type
+Constraints
+Description
+id
+UUID
+PK, NOT NULL
+Tenant identifier — all data partitioned by this
+name
+VARCHAR(255)
+NOT NULL, UNIQUE
+Company legal name
+slug
+VARCHAR(100)
+NOT NULL, UNIQUE
+URL-safe identifier for career site subdomain
+plan_tier
+ENUM
+growth|enterprise|global
+Subscription tier controlling feature flags
+hris_provider
+VARCHAR(100)
+NULLABLE
+Workday|SAP|Oracle|BambooHR|Rippling|Custom
+default_timezone
+VARCHAR(64)
+NOT NULL, DEFAULT 'UTC'
+IANA timezone string
+default_locale
+VARCHAR(10)
+NOT NULL, DEFAULT 'en-US'
+BCP 47 language tag
+compliance_regions
+VARCHAR[]
+NOT NULL
+['US','EU','APAC'] — drives compliance module config
+data_residency_region
+ENUM
+us-east-1|eu-west-1|ap-southeast-1
+Enforces data locality for GDPR
+branding_config
+JSONB
+NOT NULL, DEFAULT '{}'
+Logo URL, brand colors, career site config
+ai_features_enabled
+JSONB
+NOT NULL
+Feature flag map for AI capabilities
+created_at
+TIMESTAMPTZ
+NOT NULL, DEFAULT NOW()
+Tenant creation timestamp
+subscription_expires_at
+TIMESTAMPTZ
+NOT NULL
+Subscription end date for billing
+Entity: User (Recruiter / Admin / HM / Interviewer)
+Field
+Type
+Constraints
+Description
+id
+UUID
+PK, NOT NULL
+User identifier
+org_id
+UUID
+FK → organizations.id, NOT NULL
+Tenant scoping
+email
+VARCHAR(320)
+NOT NULL, UNIQUE per org
+Primary identifier for login
+full_name
+VARCHAR(255)
+NOT NULL
+Display name
+role
+ENUM
+system_admin|ta_leader|recruiter|hiring_manager|interviewer|compliance_analyst
+Primary RBAC role
+custom_permissions
+JSONB
+DEFAULT '{}'
+Permission overrides beyond role defaults
+department
+VARCHAR(255)
+NULLABLE
+Org unit for scoping requisition visibility
+manager_id
+UUID
+FK → users.id, NULLABLE
+For approval chain routing
+calendar_integration
+JSONB
+DEFAULT '{}'
+Provider, OAuth tokens (encrypted), calendar IDs
+notification_preferences
+JSONB
+NOT NULL
+Channel preferences: email/Slack/in-app per event type
+last_active_at
+TIMESTAMPTZ
+NULLABLE
+For session management and license optimization
+mfa_enabled
+BOOLEAN
+NOT NULL, DEFAULT FALSE
+MFA enforcement status
+sso_provider_id
+VARCHAR(255)
+NULLABLE
+External IdP subject identifier
+is_active
+BOOLEAN
+NOT NULL, DEFAULT TRUE
+Soft delete flag
+Entity: Requisition (Job Opening)
+Field
+Type
+Constraints
+Description
+id
+UUID
+PK, NOT NULL
+Requisition identifier
+org_id
+UUID
+FK → organizations.id
+Tenant scoping
+req_number
+VARCHAR(50)
+NOT NULL, UNIQUE per org
+Human-readable ID (e.g. REQ-2025-0042)
+title
+VARCHAR(500)
+NOT NULL
+Job title (internal)
+external_title
+VARCHAR(500)
+NULLABLE
+SEO-optimised posting title (if different)
+department_id
+UUID
+FK → departments.id
+Owning business unit
+hiring_manager_id
+UUID
+FK → users.id, NOT NULL
+Primary hiring decision-maker
+recruiter_id
+UUID
+FK → users.id, NOT NULL
+Assigned recruiter
+location_type
+ENUM
+onsite|hybrid|remote|flexible
+Work arrangement
+locations
+JSONB[]
+NOT NULL
+Array of {city, state, country, postal_code}
+employment_type
+ENUM
+full_time|part_time|contract|temp|intern|freelance
+Contract type
+seniority_level
+ENUM
+intern|entry|mid|senior|staff|principal|director|vp|c_suite
+Leveling
+headcount
+INTEGER
+NOT NULL, DEFAULT 1
+Number of seats to fill
+target_start_date
+DATE
+NULLABLE
+Desired first day for new hire(s)
+comp_min
+INTEGER
+NULLABLE
+Minimum base salary (annual, USD cents)
+comp_max
+INTEGER
+NULLABLE
+Maximum base salary (annual, USD cents)
+comp_currency
+CHAR(3)
+DEFAULT 'USD'
+ISO 4217 currency code
+comp_disclosed
+BOOLEAN
+NOT NULL, DEFAULT FALSE
+Whether salary range is shown on posting
+description_raw
+TEXT
+NOT NULL
+Original JD text input by hiring manager
+description_ai_enhanced
+TEXT
+NULLABLE
+LLM-optimized JD with bias scan applied
+required_skills
+JSONB[]
+NOT NULL, DEFAULT '[]'
+Array of {skill_id, importance: required|preferred}
+education_requirement
+JSONB
+NULLABLE
+{degree_level, fields[], equivalent_experience_ok}
+interview_plan_id
+UUID
+FK → interview_plans.id, NULLABLE
+Structured interview guide
+scorecard_template_id
+UUID
+FK → scorecard_templates.id
+Evaluation criteria template
+pipeline_template_id
+UUID
+FK → pipeline_templates.id
+Stage configuration
+status
+ENUM
+draft|pending_approval|approved|open|on_hold|filled|cancelled|archived
+Lifecycle state
+approval_chain
+JSONB[]
+NOT NULL, DEFAULT '[]'
+Array of {approver_id, status, approved_at}
+target_days_to_fill
+INTEGER
+NULLABLE
+SLA target in business days
+actual_days_to_fill
+INTEGER
+NULLABLE
+Computed on first hire
+source_budget
+INTEGER
+NULLABLE
+Sourcing budget in USD cents
+confidential
+BOOLEAN
+NOT NULL, DEFAULT FALSE
+Hide from public job board
+internal_only
+BOOLEAN
+NOT NULL, DEFAULT FALSE
+Post to internal mobility board only
+ai_insights
+JSONB
+DEFAULT '{}'
+Cached AI predictions: ttf_forecast, difficulty_score
+ofccp_tracked
+BOOLEAN
+NOT NULL, DEFAULT FALSE
+Flag for federal contractor AAP tracking
+created_at
+TIMESTAMPTZ
+NOT NULL, DEFAULT NOW()
+
+updated_at
+TIMESTAMPTZ
+NOT NULL
+
+opened_at
+TIMESTAMPTZ
+NULLABLE
+When status changed to 'open'
+closed_at
+TIMESTAMPTZ
+NULLABLE
+When status changed to filled/cancelled
+Entity: Candidate
+Field
+Type
+Constraints
+Description
+id
+UUID
+PK, NOT NULL
+Candidate identifier (global, not tenant-scoped — candidates may apply to multiple orgs)
+email
+VARCHAR(320)
+NOT NULL, UNIQUE
+Primary deduplication key
+phone
+VARCHAR(50)
+NULLABLE
+E.164 format (+15551234567)
+full_name
+VARCHAR(500)
+NOT NULL
+Display name
+headline
+VARCHAR(500)
+NULLABLE
+Professional headline (LinkedIn-style)
+location
+JSONB
+NULLABLE
+{city, state, country, postal_code, lat, lng}
+resume_id
+UUID
+FK → documents.id, NULLABLE
+Latest parsed resume
+linkedin_url
+VARCHAR(500)
+NULLABLE
+LinkedIn profile URL (validated format)
+github_url
+VARCHAR(500)
+NULLABLE
+GitHub profile for developer enrichment
+portfolio_url
+VARCHAR(500)
+NULLABLE
+Personal site / portfolio
+skill_graph_node_id
+VARCHAR(100)
+NULLABLE
+Neo4j / Neptune node ID for graph queries
+embedding_id
+VARCHAR(100)
+NULLABLE
+Weaviate vector ID for semantic search
+source_channel
+VARCHAR(100)
+NULLABLE
+indeed|linkedin|referral|direct|agency|internal|campus
+source_detail
+VARCHAR(500)
+NULLABLE
+e.g. specific job board URL, referrer employee ID
+gdpr_consent_given
+BOOLEAN
+NOT NULL, DEFAULT FALSE
+Explicit GDPR processing consent
+gdpr_consent_at
+TIMESTAMPTZ
+NULLABLE
+Timestamp of consent capture
+data_retention_expires_at
+DATE
+NULLABLE
+Auto-delete trigger date per org retention policy
+ccpa_opted_out
+BOOLEAN
+NOT NULL, DEFAULT FALSE
+CCPA do-not-sell flag
+is_employee
+BOOLEAN
+NOT NULL, DEFAULT FALSE
+True if also an active employee (internal mobility)
+employee_id
+UUID
+FK → employees.id, NULLABLE
+Link to HRIS employee record
+preferred_channel
+ENUM
+DEFAULT 'email'
+email|sms|whatsapp — for communications
+preferred_locale
+VARCHAR(10)
+DEFAULT 'en-US'
+BCP 47 for communication language
+do_not_contact
+BOOLEAN
+NOT NULL, DEFAULT FALSE
+Opt-out of all outreach
+created_at
+TIMESTAMPTZ
+NOT NULL, DEFAULT NOW()
+
+updated_at
+TIMESTAMPTZ
+NOT NULL
+
+last_activity_at
+TIMESTAMPTZ
+NULLABLE
+Last meaningful engagement timestamp
+Entity: Application
+Field
+Type
+Constraints
+Description
+id
+UUID
+PK, NOT NULL
+Application identifier
+org_id
+UUID
+FK → organizations.id
+Tenant scoping
+candidate_id
+UUID
+FK → candidates.id, NOT NULL
+Applying candidate
+requisition_id
+UUID
+FK → requisitions.id, NOT NULL
+Applied-to role
+stage_id
+UUID
+FK → pipeline_stages.id, NOT NULL
+Current pipeline stage
+status
+ENUM
+active|hold|offer_extended|hired|declined_by_candidate|rejected|withdrawn|archived
+
+match_score
+DECIMAL(5,2)
+NULLABLE, CHECK 0–100
+AI match score vs requisition
+match_explanation
+JSONB
+NULLABLE
+Explainable AI breakdown by dimension
+screening_answers
+JSONB[]
+DEFAULT '[]'
+Responses to knockout/screening questions
+knockout_passed
+BOOLEAN
+NULLABLE
+Result of automated knockout evaluation
+source_channel
+VARCHAR(100)
+NULLABLE
+Specific source for this application (may differ from candidate source)
+referrer_employee_id
+UUID
+FK → users.id, NULLABLE
+Internal referral source
+agency_id
+UUID
+FK → agencies.id, NULLABLE
+Submitting agency (if applicable)
+custom_fields
+JSONB
+DEFAULT '{}'
+Org-defined custom application fields
+recruiter_notes
+TEXT
+NULLABLE
+Internal recruiter notes (not shown to candidate)
+disposition_code
+VARCHAR(100)
+NULLABLE
+OFCCP disposition codes for rejected applicants
+disposition_reason
+TEXT
+NULLABLE
+Free-text rejection rationale (internal)
+offer_id
+UUID
+FK → offers.id, NULLABLE
+Link to offer if extended
+applied_at
+TIMESTAMPTZ
+NOT NULL, DEFAULT NOW()
+
+stage_entered_at
+TIMESTAMPTZ
+NOT NULL
+When candidate entered current stage
+hired_at
+TIMESTAMPTZ
+NULLABLE
+When status set to 'hired'
+eeoc_data
+JSONB
+NULLABLE
+Self-ID data (gender, race, disability, veteran) — stored separately, access-controlled
+Entity: Interview
+Field
+Type
+Constraints
+Description
+id
+UUID
+PK, NOT NULL
+Interview event identifier
+application_id
+UUID
+FK → applications.id, NOT NULL
+
+interview_type
+ENUM
+phone_screen|video|onsite|technical|panel|case_study|async_video|assessment
+
+stage_id
+UUID
+FK → pipeline_stages.id
+Pipeline stage this interview belongs to
+interviewers
+UUID[]
+NOT NULL
+Array of user IDs
+scheduled_at
+TIMESTAMPTZ
+NULLABLE
+Confirmed start time
+duration_minutes
+INTEGER
+NOT NULL, DEFAULT 60
+
+timezone
+VARCHAR(64)
+NOT NULL
+IANA timezone for display
+location_type
+ENUM
+video|phone|in_person
+
+video_link
+VARCHAR(500)
+NULLABLE
+Zoom/Teams/Meet URL (auto-generated)
+in_person_address
+TEXT
+NULLABLE
+Physical location if onsite
+calendar_event_id
+VARCHAR(255)
+NULLABLE
+External calendar event ID for sync
+interview_guide_id
+UUID
+FK → interview_guides.id, NULLABLE
+Structured question set
+status
+ENUM
+scheduled|confirmed|completed|cancelled|no_show|rescheduled
+
+recording_url
+VARCHAR(500)
+NULLABLE
+Consent-gated recording link
+transcript_id
+UUID
+FK → documents.id, NULLABLE
+AI-generated transcript
+ai_analysis
+JSONB
+NULLABLE
+Interview intelligence: topic coverage, STAR detection, key excerpts
+candidate_confirmed_at
+TIMESTAMPTZ
+NULLABLE
+When candidate confirmed attendance
+reminder_sent_at
+TIMESTAMPTZ[]
+DEFAULT '{}'
+Timestamps of reminder notifications sent
+created_at
+TIMESTAMPTZ
+NOT NULL, DEFAULT NOW()
+
+Entity: Scorecard
+Field
+Type
+Constraints
+Description
+id
+UUID
+PK, NOT NULL
+
+interview_id
+UUID
+FK → interviews.id, NOT NULL
+
+application_id
+UUID
+FK → applications.id, NOT NULL
+Denormalized for query performance
+reviewer_id
+UUID
+FK → users.id, NOT NULL
+Interviewer submitting the card
+overall_recommendation
+ENUM
+strong_yes|yes|no|strong_no|undecided
+
+competency_scores
+JSONB[]
+NOT NULL
+Array of {competency_id, score: 1-4, notes, evidence_quotes[]}
+strengths
+TEXT
+NULLABLE
+Free-text positive observations
+concerns
+TEXT
+NULLABLE
+Free-text concerns or gaps
+private_notes
+TEXT
+NULLABLE
+Notes visible only to recruiter (not HM calibration)
+bias_alerts
+JSONB[]
+DEFAULT '[]'
+System-flagged potential bias indicators in text
+submitted_at
+TIMESTAMPTZ
+NULLABLE
+Null = draft, populated = submitted
+blind_mode
+BOOLEAN
+NOT NULL, DEFAULT FALSE
+Whether reviewer saw candidate name/demo info
+time_to_complete_seconds
+INTEGER
+NULLABLE
+Time from open to submit (engagement signal)
+Entity: Offer
+Field
+Type
+Constraints
+Description
+id
+UUID
+PK, NOT NULL
+
+application_id
+UUID
+FK → applications.id, NOT NULL, UNIQUE
+One offer per application
+org_id
+UUID
+FK → organizations.id
+
+base_salary
+INTEGER
+NOT NULL
+Annual base in cents (avoids float precision errors)
+currency
+CHAR(3)
+NOT NULL, DEFAULT 'USD'
+ISO 4217
+equity_amount
+INTEGER
+NULLABLE
+Equity grant in shares or unit value
+equity_type
+ENUM
+NULLABLE
+rsu|iso|nso|phantom
+signing_bonus
+INTEGER
+NULLABLE
+One-time signing bonus in cents
+bonus_target_pct
+DECIMAL(5,2)
+NULLABLE
+Annual bonus target as % of base
+start_date
+DATE
+NULLABLE
+Proposed first day
+offer_letter_document_id
+UUID
+FK → documents.id
+Generated offer letter PDF
+status
+ENUM
+draft|pending_approval|sent|viewed|accepted|declined|rescinded|expired
+
+sent_at
+TIMESTAMPTZ
+NULLABLE
+When offer was delivered to candidate
+viewed_at
+TIMESTAMPTZ
+NULLABLE
+When candidate opened offer letter
+responded_at
+TIMESTAMPTZ
+NULLABLE
+When candidate accepted or declined
+expiry_at
+TIMESTAMPTZ
+NULLABLE
+Offer expiration deadline
+decline_reason
+VARCHAR(255)
+NULLABLE
+Categorised decline reason for analytics
+decline_notes
+TEXT
+NULLABLE
+Detailed decline context
+esignature_id
+VARCHAR(255)
+NULLABLE
+DocuSign/HelloSign envelope ID
+approval_chain
+JSONB[]
+NOT NULL
+Required approvers with status
+comp_benchmark_data
+JSONB
+NULLABLE
+Market data snapshot used at offer creation
+ai_acceptance_probability
+DECIMAL(4,2)
+NULLABLE
+Predicted acceptance probability at send time
+created_by_id
+UUID
+FK → users.id
+
+created_at
+TIMESTAMPTZ
+NOT NULL, DEFAULT NOW()
+
+2.2  Skill Graph Data Model (Neo4j / Amazon Neptune)
+The skill graph is the foundational intelligence layer of NEXUS ATS. Unlike relational tables, the graph models the rich relationships between entities that drive AI matching, career trajectory prediction, and team gap analysis.
+Graph Node Types
+Node Label
+Properties
+Description
+Skill
+id, name, aliases[], taxonomy_id, category (technical|soft|domain|language|tool|certification), market_demand_score, growth_rate_yoy, last_updated
+A distinct capability unit. Linked to 50,000-node ESCO taxonomy.
+Candidate
+candidate_id, embedding_vector_id, seniority_level, years_experience, location_coordinates
+Shadow node mirroring relational candidate. Properties kept minimal — rich data in Postgres.
+Role
+requisition_id, title_normalized, seniority_level, industry, function, is_template
+Job role node. Template roles represent archetypal positions for market benchmarking.
+Company
+id, name, aliases[], industry, size_tier, hq_country, is_recognized_employer
+Employer node for resume entity resolution and prestige signals.
+Credential
+id, name, issuer, level, expiry_years, is_verified, blockchain_hash
+Degree, certification, or license. Can be linked to blockchain verification.
+Project
+id, title, description_embedding, technologies[], impact_level
+Open-source or portfolio project node (from GitHub enrichment).
+TeamSkillProfile
+team_id, snapshot_date
+Aggregate skill inventory for an existing team — used for gap analysis.
+Graph Relationship Types
+Relationship
+From → To
+Properties
+Purpose
+HAS_SKILL
+Candidate → Skill
+proficiency: 1-5, years_used, last_used_at, is_self_reported, confidence_score
+Core matching edge. Proficiency inferred by NLP from resume context.
+REQUIRES_SKILL
+Role → Skill
+importance: required|preferred|nice_to_have, min_proficiency, weight
+Defines role skill demand profile for matching.
+IMPLIES_SKILL
+Skill → Skill
+confidence: 0-1, direction: unidirectional|bidirectional
+If candidate has Skill A, they likely have Skill B. Enables adjacent skill matching.
+CO_OCCURS_WITH
+Skill → Skill
+frequency: 0-1, context: ['job_posting','resume']
+Skills that frequently appear together in market data — informs JD creation.
+TRANSFERS_TO
+Skill → Skill
+transfer_difficulty: easy|medium|hard, typical_ramp_weeks
+Career transition pathways. SQL → data engineering transferability.
+WORKED_AT
+Candidate → Company
+start_date, end_date, title, seniority_level, is_verified
+Work history. Company prestige signals feed candidate quality model.
+HOLDS_CREDENTIAL
+Candidate → Credential
+granted_at, expires_at, verification_status, blockchain_tx_id
+Education and certification linkage.
+SIMILAR_TO
+Candidate → Candidate
+similarity_score: 0-1, basis: ['skills','trajectory','role']
+Computed similarity for 'candidates like your top performers' queries.
+TEAM_HAS_SKILL
+TeamSkillProfile → Skill
+coverage_count, avg_proficiency, is_gap
+Team skill inventory for gap analysis against open roles.
+TRENDING_IN
+Skill → Role
+demand_growth_pct, time_period
+Market demand signal from job posting analysis.
+Sample Graph Queries (Cypher)
+Query 1 — Find candidates with 80%+ skill overlap with our top performers in a role:
+MATCH (top:Candidate)-[:HAS_SKILL]->(s:Skill)<-[:HAS_SKILL]-(c:Candidate)
+WHERE top.performance_tier = 'high' AND top.role_id = $role_id
+WITH c, COUNT(DISTINCT s) AS shared_skills
+MATCH (top2:Candidate)-[:HAS_SKILL]->(s2:Skill)
+WHERE top2.performance_tier = 'high' AND top2.role_id = $role_id
+WITH c, shared_skills, COUNT(DISTINCT s2) AS total_skills
+WHERE toFloat(shared_skills) / total_skills >= 0.8
+RETURN c.candidate_id, shared_skills, total_skills ORDER BY shared_skills DESC
+Query 2 — Find skill gaps in a team relative to an open role:
+MATCH (r:Role {requisition_id: $req_id})-[req:REQUIRES_SKILL]->(s:Skill)
+WHERE NOT EXISTS {
+  MATCH (t:TeamSkillProfile {team_id: $team_id})-[th:TEAM_HAS_SKILL]->(s)
+  WHERE th.avg_proficiency >= req.min_proficiency
+}
+RETURN s.name, req.importance, req.weight ORDER BY req.weight DESC
+Query 3 — Discover candidates with adjacent skills for a role (no exact match required):
+MATCH (r:Role {requisition_id: $req_id})-[:REQUIRES_SKILL]->(required:Skill)
+MATCH (required)<-[:IMPLIES_SKILL {confidence: > 0.7}]-(adjacent:Skill)
+MATCH (c:Candidate)-[hs:HAS_SKILL]->(adjacent)
+WHERE hs.proficiency >= 3
+RETURN c.candidate_id, COLLECT(adjacent.name) AS adjacent_skills,
+       COUNT(DISTINCT adjacent) AS adjacency_count
+ORDER BY adjacency_count DESC LIMIT 50
+SECTION 03
+API Design & Integration Specifications
+3.1  API Architecture Principles
+REST for synchronous CRUD operations (versioned at /api/v1/...)
+GraphQL for flexible, nested read queries (candidate + applications + interviews in one request)
+WebSockets for real-time pipeline updates and recruiter collaboration
+Webhooks for outbound event notifications to integrated systems
+All endpoints require OAuth 2.0 Bearer token or API key authentication
+Rate limiting: 1,000 req/min per org (burst to 5,000), 100 req/min per user token
+API versioning: URI versioning (/v1/, /v2/) with 24-month deprecation windows
+3.2  Core REST API Endpoints
+Requisitions API
+Method
+Endpoint
+Auth scope
+Description
+Key request/response fields
+POST
+/api/v1/requisitions
+recruiter, ta_leader
+Create a new requisition (draft)
+Body: title, department_id, hiring_manager_id, locations[], comp_range, pipeline_template_id. Response: requisition object with id, req_number
+GET
+/api/v1/requisitions
+all staff
+List requisitions with filters
+Query: status, department_id, recruiter_id, location, page, per_page (max 100). Response: {data: [], meta: {total, page}}
+GET
+/api/v1/requisitions/:id
+all staff
+Get single requisition with full detail
+Response includes pipeline_stages, active_candidate_count, ai_insights, approval_chain_status
+PATCH
+/api/v1/requisitions/:id
+recruiter, ta_leader
+Update requisition fields
+Partial update; triggers audit log entry for each changed field
+POST
+/api/v1/requisitions/:id/publish
+ta_leader, system_admin
+Publish requisition to job boards
+Body: {boards: ['indeed','linkedin','glassdoor','internal'], schedule_at?: ISO timestamp}
+POST
+/api/v1/requisitions/:id/approve
+approver (dynamic)
+Submit approval decision
+Body: {decision: 'approved'|'rejected', notes}. Advances approval chain.
+POST
+/api/v1/requisitions/:id/close
+ta_leader
+Close requisition (fill/cancel)
+Body: {reason: 'filled'|'cancelled'|'on_hold', hired_application_id?}
+GET
+/api/v1/requisitions/:id/analytics
+recruiter, ta_leader
+Pipeline funnel analytics
+Response: {stage_conversion_rates, avg_time_per_stage, source_breakdown, ai_forecast}
+Candidates API
+Method
+Endpoint
+Auth scope
+Description
+POST
+/api/v1/candidates
+recruiter, system
+Create or upsert candidate (deduplication by email)
+GET
+/api/v1/candidates/:id
+recruiter, ta_leader
+Get full candidate profile with parsed resume, skill graph data, application history
+PATCH
+/api/v1/candidates/:id
+recruiter
+Update candidate profile fields. Audit logged.
+DELETE
+/api/v1/candidates/:id
+system_admin, candidate (self)
+GDPR right to erasure — anonymises PII, preserves aggregate analytics
+POST
+/api/v1/candidates/:id/resume
+recruiter, candidate
+Upload and parse resume. Returns parsed_fields, skill_graph_delta, confidence_scores
+GET
+/api/v1/candidates/:id/match/:req_id
+recruiter
+Get AI match score and explanation for candidate vs requisition
+POST
+/api/v1/candidates/search
+recruiter, ta_leader
+Semantic candidate search. Body: {query, filters, skill_ids[], location_radius, include_internal}
+GET
+/api/v1/candidates/:id/similar
+recruiter
+Find similar candidates based on skill graph. Query: top_n (default 10), source: talent_pool|all
+POST
+/api/v1/candidates/:id/gdpr/export
+candidate (self), system_admin
+Generate GDPR data portability export (JSON + PDF)
+Applications API
+Method
+Endpoint
+Auth scope
+Description
+POST
+/api/v1/applications
+public (apply), recruiter
+Submit application. Triggers: resume parse, match score, knockout eval, acknowledgment email
+GET
+/api/v1/applications/:id
+recruiter, hiring_manager, candidate (own)
+Full application with candidate profile, scorecards, interview history, offer status
+PATCH
+/api/v1/applications/:id/stage
+recruiter
+Advance/retract pipeline stage. Body: {stage_id, note?}. Triggers stage-change automations
+PATCH
+/api/v1/applications/:id/status
+recruiter
+Set terminal status (reject, withdraw, hire). Triggers disposition code capture if rejected
+POST
+/api/v1/applications/:id/reject
+recruiter
+Reject with reason capture. Triggers EEOC adverse impact check. Sends candidate notification.
+GET
+/api/v1/applications/bulk
+ta_leader, system_admin
+Export applications with full data. Supports OFCCP AAP data extract format
+AI & Intelligence API
+Method
+Endpoint
+Description
+Latency SLA
+POST
+/api/v1/ai/match
+Score a candidate against a requisition. Body: {candidate_id, requisition_id}. Returns: {score, breakdown, top_strengths[], gaps[]}
+< 3s p95
+POST
+/api/v1/ai/parse-resume
+Parse uploaded resume document. Streams results as SSE. Returns: {candidate_fields, skills[], work_history[], education[], confidence_scores}
+< 5s p95
+POST
+/api/v1/ai/jd-enhance
+Enhance job description: bias scan, SEO optimization, salary benchmark, SMART requirement check. Returns: {enhanced_jd, bias_flags[], seo_score, improvement_suggestions[]}
+< 8s p95
+POST
+/api/v1/ai/predict/time-to-fill
+Predict hiring timeline. Body: {requisition_id}. Returns: {p50_days, p90_days, confidence, key_factors[]}
+< 4s p95
+POST
+/api/v1/ai/predict/offer-acceptance
+Predict offer acceptance probability. Body: {application_id, offer_params}. Returns: {probability, risk_factors[], recommendations[]}
+< 4s p95
+POST
+/api/v1/ai/bias-scan/pipeline
+Scan pipeline stage for adverse impact. Body: {requisition_id, stage_id}. Returns: {impact_ratio, flag_level: ok|warn|alert, affected_groups[], recommendations[]}
+< 6s p95
+POST
+/api/v1/ai/scorecard-insights
+Analyze scorecard set for calibration issues. Body: {application_id}. Returns: {rater_variance, halo_effect_flags[], consensus_score, calibration_recommendations[]}
+< 5s p95
+POST
+/api/v1/ai/talent-rediscovery
+Find matching past candidates for new role. Body: {requisition_id, max_results, min_match_score}. Returns: ranked candidate list with match explanations
+< 10s p95
+POST
+/api/v1/ai/chat/candidate
+Candidate chatbot message. Body: {session_id, message, application_id}. Returns: {reply, action?, next_prompt?}
+< 2s p95
+POST
+/api/v1/ai/chat/recruiter
+Recruiter copilot message. Body: {session_id, message, context}. Returns: {reply, actions[], data_payload?}
+< 3s p95
+3.3  Webhook Event Catalog
+Event type
+Fired when
+Payload includes
+application.created
+New application submitted
+application_id, candidate_id, requisition_id, source_channel, applied_at, match_score
+application.stage_changed
+Candidate moves to new stage
+application_id, from_stage, to_stage, moved_by_user_id, moved_at
+application.rejected
+Application rejected
+application_id, disposition_code, rejection_reason, rejected_at, eeoc_check_triggered
+application.hired
+Candidate marked as hired
+application_id, candidate_id, requisition_id, offer_id, start_date, hired_at
+interview.scheduled
+Interview booked
+interview_id, application_id, interviewer_ids[], scheduled_at, video_link
+interview.completed
+Interview marked complete
+interview_id, application_id, scorecard_submitted_count
+scorecard.submitted
+Interviewer submits scorecard
+scorecard_id, interview_id, reviewer_id, recommendation, submitted_at
+offer.sent
+Offer letter sent to candidate
+offer_id, application_id, sent_at, expiry_at, offer_summary
+offer.accepted
+Candidate accepts offer
+offer_id, application_id, accepted_at, start_date
+offer.declined
+Candidate declines offer
+offer_id, application_id, decline_reason, declined_at
+requisition.opened
+Requisition approved and opened
+requisition_id, req_number, title, opened_at
+requisition.filled
+Requisition marked filled
+requisition_id, hired_application_ids[], filled_at, actual_days_to_fill
+ai.bias_alert
+Adverse impact threshold breached
+requisition_id, stage_id, impact_ratio, affected_group, alert_level
+candidate.data_deletion_requested
+GDPR erasure request received
+candidate_id, requested_by, requested_at, deadline_at
+3.4  Key Integration Specifications
+HRIS Integration (Workday, SAP SuccessFactors, Oracle HCM)
+Protocol: REST API or SFTP file exchange with AES-256 encrypted payload
+Sync frequency: Real-time webhooks for hire events; nightly batch for org structure, cost centers, job families
+Data pushed to HRIS on hire: candidate name, email, start date, title, department, cost center, comp details, manager, location, employment type
+Data pulled from HRIS: org hierarchy, active employees (for internal mobility), job families, comp grades, open headcount budgets
+Authentication: OAuth 2.0 Client Credentials flow with rotating secrets (90-day rotation)
+LinkedIn Integration
+Recruiter System Connect (RSC) API for job posting and candidate import
+LinkedIn Apply integration: candidates apply with LinkedIn profile, pre-populating ATS fields
+InMail send via API for direct outreach from ATS recruiter view
+Job posting sync: NEXUS → LinkedIn via Job Posting API with structured data (salary, skills, benefits)
+Talent Insights API: market compensation benchmarks, skill supply/demand data
+Calendar Integration (Google Workspace / Microsoft 365)
+OAuth 2.0 per-user token for Google Calendar API and Microsoft Graph API
+Read availability: fetch free/busy slots with 15-minute granularity
+Create events: NEXUS creates calendar events with video link, interview guide attachment, scorecard deep-link
+Sync updates: calendar changes sync back to NEXUS interview record via push notifications (Google) and subscriptions (M365)
+Room booking: integrate with Google Room Resource or Exchange room management for onsite interviews
+Background Check (Checkr / Sterling)
+Trigger: NEXUS sends hire data to background check vendor API on offer acceptance (with candidate consent captured in ATS)
+Webhook receipt: background check status updates (clear/consider/dispute) push back to NEXUS offer record
+Adverse action: NEXUS triggers adverse action workflow with pre-adverse and adverse action letters (FCRA compliant)
+Data minimization: only required fields transmitted (name, DOB, SSN last 4, addresses) — no unnecessary PII sharing
+SECTION 04
+Machine Learning Systems Design
+4.1  ML Architecture Overview
+NEXUS ATS operates five distinct ML systems, each independently trained, evaluated, and deployed. All models run on AWS SageMaker with real-time inference endpoints. Models are versioned, A/B tested, and monitored for drift. A central ML Platform team owns the training pipelines; individual product teams consume model outputs via the AI API layer.
+4.2  Resume Parsing Pipeline
+Pipeline Architecture
+Stage 1 — Document Ingestion: PDF/DOCX/RTF → text extraction (PyMuPDF for PDF, python-docx). Image-based PDFs → OCR (AWS Textract with layout analysis).
+Stage 2 — Language Detection: langdetect library → route to language-specific parsing model.
+Stage 3 — Section Segmentation: fine-tuned BERT classifier trained on 500K labelled resume sections. Labels: CONTACT, SUMMARY, EXPERIENCE, EDUCATION, SKILLS, CERTIFICATIONS, PROJECTS, AWARDS, LANGUAGES, OTHER. F1 > 0.97.
+Stage 4 — Entity Extraction: custom NER model (SpaCy + fine-tuned RoBERTa) extracts: person name, email, phone, URLs, company names, job titles, dates, degree types, institutions, skills, certifications.
+Stage 5 — Skill Normalization: extracted skill strings → embedding similarity search against 50K-node skill taxonomy. Returns canonical skill ID + confidence score. Threshold: accept if cosine similarity > 0.82.
+Stage 6 — Work History Structuring: LLM prompt (GPT-4o or Claude 3 Haiku for cost efficiency) to resolve ambiguous entries, infer missing end dates, classify seniority level from title and responsibilities.
+Stage 7 — Graph Update: write parsed data to Neo4j (skill nodes + HAS_SKILL edges) and Weaviate (update candidate embedding vector).
+Stage 8 — Confidence Scoring: per-field confidence scores attached to output. Fields below 0.70 confidence flagged for recruiter review.
+Model Training Specification
+Model
+Architecture
+Training data
+Evaluation metric
+Retraining trigger
+Section segmenter
+BERT-base fine-tuned (HuggingFace)
+500K human-labelled resume sections, 40 languages
+F1 > 0.97 on held-out test set
+Monthly, or when F1 drops below 0.94 on production sample
+NER extractor
+RoBERTa-large fine-tuned
+1M annotated entities across 200K resumes
+Precision > 0.96, Recall > 0.93 per entity type
+Quarterly, or when new skill taxonomy version released
+Skill normalizer
+Sentence-Transformers (all-mpnet-base-v2) + FAISS index
+Skill taxonomy + 5M job posting skill mentions
+Top-1 accuracy > 0.91 on benchmark
+When taxonomy updated (monthly)
+Seniority classifier
+XGBoost on structured features (title, years_exp, reports_to, team_size)
+300K labelled work history entries
+Accuracy > 0.88, macro F1 > 0.86
+Quarterly
+4.3  Candidate Matching & Ranking System
+Multi-Dimensional Match Score (0–100)
+The match score is a weighted composite of five independent sub-scores, each computed by a separate model. Weights are configurable per org and role type. Default weights shown below:
+Dimension
+Default weight
+Model / approach
+Signal sources
+Skill match
+35%
+Graph similarity (Jaccard + semantic) between candidate HAS_SKILL edges and role REQUIRES_SKILL edges. Adjacent skills contribute at 60% value.
+Resume skills, skill graph HAS_SKILL edges, implied skills via IMPLIES_SKILL
+Experience relevance
+25%
+Embedding cosine similarity between candidate work history embedding and role description embedding. Role title normalization applied.
+Work history text, company prestige signal, title-to-level mapping
+Career trajectory fit
+15%
+Graph path analysis: does candidate's career progression pattern match that of high-performers in this role? Compares against SIMILAR_TO edges.
+Work history sequence, seniority progression, industry transitions
+Location / logistics fit
+10%
+Rule-based: remote role = 100%; onsite = proximity score based on candidate location vs role location; relocation flag boosts score.
+Candidate location, role location, candidate relocation preference
+Credential / education match
+10%
+Rule-based + ML: degree level match, field relevance (embedding similarity), institution rank if applicable. Penalizes credential inflation (PhD required for entry role).
+Education entities from resume, role education requirement field
+Engagement signals
+5%
+Recency and quality of candidate engagement with the org: career site visits, email opens, referral status, past application quality.
+Candidate activity logs, communication engagement events
+Explainability Output (per candidate-role pair)
+Every match score is accompanied by a structured explanation object delivered to the recruiter UI:
+{"overall_score": 82.4,
+ "breakdown": {
+   "skill_match": {"score": 91.0, "matched": ["Python","SQL","dbt","Spark"],
+                   "gaps": ["Scala"], "adjacent": ["Pandas → data engineering"]},
+   "experience_relevance": {"score": 78.0, "summary": "5yr data engineering at FAANG-tier"},
+   "career_trajectory": {"score": 84.0, "pattern": "IC → tech lead, matches top-performer cohort"},
+   "location_fit": {"score": 100.0, "type": "remote"},
+   "credential_match": {"score": 65.0, "note": "BSc vs preferred MSc, but 8yr experience"}
+ },
+ "top_strengths": ["Strong Spark + dbt stack match","FAANG experience signal"],
+ "key_gaps": ["No Scala experience (nice-to-have)"],
+ "similar_hired_candidates": ["uuid-abc", "uuid-def"]
+}
+4.4  Predictive Analytics Models
+Time-to-Fill Forecasting Model
+Feature category
+Features
+Notes
+Role characteristics
+seniority_level, department, location_type, is_niche_skill, headcount_target, comp_competitiveness_index
+comp_competitiveness_index = offered_comp / market_50th_percentile
+Pipeline state
+current_active_candidates, avg_match_score_pipeline, applications_per_week_rolling
+Dynamic features updated daily
+Market signals
+linkedin_applicant_supply_index, skill_market_shortage_score, competitor_hiring_activity_index
+External data from LinkedIn Talent Insights API + proprietary job board scraper
+Historical org data
+same_role_type_historical_ttf, recruiter_avg_ttf_by_role_type, sourcing_channel_mix
+Org-specific calibration improves accuracy by 30%+ vs generic model
+Temporal
+day_of_week_opened, month, is_q4 (budget flush), fiscal_year_position
+Hiring seasonality is significant — Q1 and Q4 move 20% faster than Q2/Q3 on average
+Model: Gradient Boosted Trees (XGBoost) with quantile regression for confidence intervals. Output: median days estimate (p50), p90 upper bound, and key factor explanations. Training data: 5 years of historical hiring data across customer orgs (anonymised, federated). RMSE target: < 7 days on 30-day horizon.
+Offer Acceptance Probability Model
+Feature group
+Features
+Offer economics
+comp_vs_candidate_expectation, comp_vs_market_p50, signing_bonus_present, equity_value, total_comp_vs_market
+Candidate engagement
+days_since_last_recruiter_contact, response_time_to_last_message, interview_no_show_count, enthusiasm_signals_from_transcript
+Process quality
+days_from_first_interview_to_offer, number_of_interview_rounds, interviewer_recommendation_consensus_score
+Competing offers
+candidate_reported_other_offers (from screener), time_in_market_days, role_scarcity_index
+Logistic signals
+location_match_score, remote_preference_match, start_date_flexibility_score
+Model: Logistic Regression ensemble + SHAP for feature attribution. Output: 0-100 probability with top 3 risk factors. Calibrated against actual accept/decline outcomes. AUC target: > 0.82.
+4.5  Bias Detection System
+Detection Layers
+Layer 1 — JD Scanner: NLP classifier trained on 50K human-labelled JD sentences. Labels: gendered_language, age_bias, credential_inflation, exclusionary_requirement, cultural_fit_ambiguity. Model: fine-tuned DistilBERT. Precision/Recall targets: > 0.90.
+Layer 2 — Funnel Adverse Impact: daily computation of 4/5ths rule across protected characteristics (race, gender, age_group, disability_status, veteran_status) at each pipeline stage. Threshold alerts at 0.80 ratio (warn) and 0.65 (critical).
+Layer 3 — Scorecard Language Analysis: NLP scan of free-text scorecard fields for coded language patterns (e.g., 'articulate' as a racial proxy, 'culture fit' without definition). Alerts reviewer before submission.
+Layer 4 — Rater Calibration: statistical analysis of interviewer score distributions. Flags outlier raters (systematic leniency, severity, or halo effect). Weekly report to TA leader.
+Layer 5 — Model Fairness Monitoring: continuous demographic parity and equalized odds measurement on AI match scores. Alert when disparity exceeds 0.10 between any two protected groups. Triggers model audit.
+IMPORTANT
+NEXUS ATS explicitly does NOT use facial expression analysis, voice tone affect scoring, or physical appearance features in any AI model. These inputs carry documented discriminatory risk and legal exposure under the Illinois Artificial Intelligence Video Interview Act and equivalent laws.
+SECTION 05
+Microservices Architecture & Infrastructure
+5.1  Service Decomposition
+Service
+Technology stack
+Database
+Scaling strategy
+Key responsibilities
+API Gateway
+Kong Gateway / AWS API GW
+Redis (rate limit state)
+Horizontal, stateless
+Auth validation, rate limiting, routing, request logging, WAF integration
+Requisition Service
+Node.js (NestJS)
+PostgreSQL (dedicated)
+Horizontal, 3+ replicas
+CRUD for requisitions, approval workflow engine, job board publishing orchestration
+Candidate Service
+Python (FastAPI)
+PostgreSQL + Weaviate
+Horizontal, 5+ replicas
+Candidate CRUD, deduplication, profile enrichment, GDPR data management
+Application Service
+Python (FastAPI)
+PostgreSQL
+Horizontal, 5+ replicas
+Application lifecycle, stage management, disposition tracking, EEOC data handling
+Interview Service
+Node.js (NestJS)
+PostgreSQL
+Horizontal, 3+ replicas
+Scheduling, calendar sync, video link generation, reminder orchestration
+Communication Service
+Node.js (NestJS)
+PostgreSQL + Redis
+Horizontal, 3+ replicas
+Email/SMS/WhatsApp send, template rendering, delivery tracking, unsubscribe management
+Notification Service
+Go
+Redis Streams
+Horizontal, 3+ replicas
+Real-time in-app notifications, WebSocket broadcast, push notifications (mobile)
+Offer Service
+Node.js (NestJS)
+PostgreSQL
+Horizontal, 2+ replicas
+Offer generation, e-signature orchestration, approval routing, acceptance/decline capture
+AI Orchestration Service
+Python (FastAPI)
+Redis (async job queue)
+Horizontal + GPU auto-scale
+Routes AI requests to appropriate models; handles async jobs, result caching, fallback
+Resume Parser Service
+Python (FastAPI)
+S3 (documents)
+GPU auto-scale (g5.xlarge)
+Document ingestion, NLP pipeline execution, skill graph updates
+Matching Engine Service
+Python (FastAPI)
+Weaviate + Neptune
+GPU auto-scale
+Candidate-role match scoring, batch ranking, talent rediscovery
+Analytics Service
+Python (FastAPI) + dbt
+Snowflake
+Horizontal, query-based scale
+Report generation, dashboard data APIs, predictive model serving for analytics
+Compliance Service
+Java (Spring Boot)
+PostgreSQL
+Horizontal, 2+ replicas
+EEOC/OFCCP report generation, GDPR consent management, data retention enforcement, audit logs
+Talent Pool Service
+Python (FastAPI)
+PostgreSQL + Neptune
+Horizontal, 3+ replicas
+CRM functionality, nurture campaign management, talent community portal backend
+Search Service
+Go
+Elasticsearch 8.x
+Horizontal + Elastic scaling
+Full-text candidate/requisition search, faceted filters, search analytics
+Integration Hub
+Node.js (NestJS)
+PostgreSQL (sync state)
+Horizontal, 3+ replicas
+HRIS connectors, job board publisher, background check triggers, webhook delivery
+Auth Service
+Go
+PostgreSQL + Redis
+Horizontal, 3+ replicas
+SSO/OIDC/SAML, JWT issuance, MFA, session management, API key management
+5.2  Event-Driven Architecture (Apache Kafka)
+All inter-service communication for non-synchronous operations flows through Kafka. This decouples services, enables event replay for debugging, and supports the audit log requirement.
+Kafka Topic Structure
+Topic
+Producers
+Consumers
+Partitions
+Retention
+ats.applications.events
+Application Service
+AI Orchestration (match scoring), Compliance (adverse impact check), Analytics, Notification, Communication
+24
+90 days
+ats.candidates.events
+Candidate Service
+Resume Parser, Matching Engine, Talent Pool, Search (index update), Analytics
+24
+90 days
+ats.interviews.events
+Interview Service
+Communication (reminders), Notification, AI Orchestration (scorecard prompts), Analytics
+12
+90 days
+ats.offers.events
+Offer Service
+Communication (offer delivery), Integration Hub (HRIS notify), Analytics, Compliance
+12
+90 days
+ats.ai.results
+AI Orchestration Service
+Application Service (update match score), Analytics, Compliance (bias alerts)
+48
+30 days
+ats.audit.log
+All services
+Compliance Service (immutable write to S3)
+6
+7 years (compliance)
+ats.webhooks.outbound
+All services
+Integration Hub (delivery to customer endpoints with retry)
+12
+14 days
+ats.search.index.updates
+All services
+Search Service
+12
+7 days
+5.3  Infrastructure as Code Specification
+Kubernetes Resource Specifications
+Every service is deployed as a Kubernetes Deployment with the following base configuration, scaled by Horizontal Pod Autoscaler (HPA) based on CPU and custom metrics:
+Service tier
+Min replicas
+Max replicas
+CPU request/limit
+Memory request/limit
+HPA trigger
+API Gateway
+3
+20
+500m / 2000m
+512Mi / 2Gi
+CPU > 70%
+Core domain services (stateless)
+3
+15
+250m / 1000m
+256Mi / 1Gi
+CPU > 75% OR RPS > 500/pod
+Resume Parser (CPU)
+2
+10
+2000m / 4000m
+2Gi / 4Gi
+Queue depth > 50
+Resume Parser (GPU)
+1
+5
+N/A (GPU node)
+8Gi / 16Gi
+Queue depth > 10
+Matching Engine
+2
+8
+1000m / 2000m
+4Gi / 8Gi
+Queue depth > 20 OR CPU > 70%
+Analytics Service
+2
+6
+500m / 2000m
+1Gi / 4Gi
+CPU > 70%
+Kafka (MSK)
+3 brokers
+9 brokers
+Managed (MSK)
+Managed
+Storage > 70% OR lag > 100K
+Elasticsearch
+3 data nodes
+12 data nodes
+4000m / 8000m
+8Gi / 32Gi
+JVM heap > 75% OR shard imbalance
+5.4  Multi-Region Deployment
+Region
+AWS region
+Primary use
+Data types stored
+Failover behavior
+Americas primary
+us-east-1
+Active (primary for US customers)
+All US customer data, global control plane
+Auto-failover to us-west-2 if region fails (RTO < 15min)
+Americas secondary
+us-west-2
+Active-standby (US DR)
+Async replica of us-east-1
+Promotes to primary automatically on health check failure
+Europe primary
+eu-west-1 (Ireland)
+Active (primary for EU customers)
+All EU customer data (GDPR data residency)
+Auto-failover to eu-central-1
+Europe secondary
+eu-central-1 (Frankfurt)
+Active-standby (EU DR)
+Async replica of eu-west-1
+Promotes to primary automatically
+APAC primary
+ap-southeast-1 (Singapore)
+Active (primary for APAC customers)
+All APAC customer data
+Auto-failover to ap-northeast-1
+SECTION 06
+Compliance & Security Framework
+6.1  GDPR Implementation
+Lawful Basis & Consent Management
+Lawful basis for processing candidate data: Legitimate interest (initial application) + Explicit consent (talent pool retention beyond application cycle)
+Consent capture: Granular checkboxes at application submission. Separate consents for: (1) process this application, (2) retain data for future roles, (3) share with recruitment partners. Each timestamped, IP-logged, and immutably stored.
+Consent withdrawal: One-click opt-out in every email footer. Candidate portal self-service. API endpoint for system-triggered withdrawal. Processing stops within 24 hours.
+Data minimization: Collect only fields required for the role. Optional fields clearly labelled. EEO data collected on separate, access-controlled form with clear purpose explanation.
+Data Subject Rights Implementation
+GDPR Right
+Article
+NEXUS implementation
+SLA
+Right of access
+Art. 15
+Candidate portal: 'Download my data' generates JSON + PDF export of all stored data, processing history, and third parties data was shared with
+72 hours
+Right to erasure
+Art. 17
+Erasure request triggers: anonymization of all PII fields (name→'Deleted', email→hash, phone→null), deletion of resume document, graph node anonymization. Aggregate analytics retained.
+30 days (14 days internal SLA)
+Right to rectification
+Art. 16
+Candidate can edit all profile fields in self-service portal. Changes audit-logged.
+Immediate (self-service)
+Right to portability
+Art. 20
+Structured JSON export + standardized CSV of all candidate data. Machine-readable format per W3C Data Portability standards.
+72 hours
+Right to restrict processing
+Art. 18
+Candidate can flag account as 'restricted' — data retained but not used in any AI processing or new matching
+Immediate
+Right to object to automated decisions
+Art. 22
+AI recommendations always have human-in-the-loop gate. Candidate can request human review of any AI-assisted decision. Flag triggers recruiter notification.
+24 hours response
+6.2  EEOC & OFCCP Compliance
+Internet Applicant Definition (41 CFR 60-1.3)
+NEXUS captures 'internet applicants' per the four-part OFCCP test: (1) submitted expression of interest via internet, (2) qualified per basic requirements, (3) not withdrawn, (4) employer considered them for a position.
+Disposition codes: full OFCCP disposition code library pre-built (Not Considered, Not Most Qualified, Position Filled Before Review, etc.). Codes required for every rejected applicant on OFCCP-tracked requisitions.
+Record retention: All application records for OFCCP-tracked positions retained for 2 years from closure (5 years for executive roles). Automated retention policies enforce this.
+Adverse Impact Analysis Engine
+The adverse impact engine runs on configurable schedules (daily for high-volume roles, weekly for standard roles) and computes the 4/5ths (80%) rule across all EEOC-protected characteristics:
+Adverse Impact Ratio = (Selection rate for protected group) / (Selection rate for highest-selected group)
+Alert thresholds: ratio < 0.80 → WARNING (yellow); ratio < 0.65 → CRITICAL (red); ratio < 0.50 → ESCALATE to legal
+Analysis computed at: initial application screen (knockout), resume review, phone screen, onsite interview, offer extended, offer accepted.
+Standard deviation test: Fisher's Exact Test applied when sample size < 30. Chi-square test for larger samples.
+Report outputs: EEOC-1 equivalent data, flow statistics, impact ratio by stage, trend over time, peer benchmark comparison.
+6.3  EU AI Act Compliance (High-Risk AI System)
+Hiring AI systems are classified as 'high-risk' under Annex III of the EU AI Act (effective August 2026 for new systems). NEXUS ATS compliance approach:
+EU AI Act Requirement
+NEXUS implementation
+Risk management system (Art. 9)
+Documented risk assessment for each AI model. Quarterly review. Risk register maintained by AI governance team.
+Data governance (Art. 10)
+Training data documentation: source, processing steps, demographic distribution, known limitations. Data quality metrics published in model cards.
+Technical documentation (Art. 11)
+Model cards for each AI system: architecture, training data summary, performance metrics, known limitations, intended use, prohibited use.
+Record keeping (Art. 12)
+Audit log of every AI recommendation, input data hash, model version, output score, human decision made. Retained 5 years.
+Transparency to users (Art. 13)
+Recruiters informed when AI is involved in any recommendation. Score explanations required. AI involvement disclosed in candidate-facing communications.
+Human oversight (Art. 14)
+AI cannot independently reject or hire any candidate. Every AI recommendation requires human confirmation. Override capability always present.
+Accuracy, robustness (Art. 15)
+Continuous production monitoring: drift detection, demographic parity measurement, accuracy on held-out labeled samples monthly.
+Conformity assessment (Art. 43)
+Third-party audit of high-risk AI systems before deployment. Annual re-audit. Certification documentation maintained.
+6.4  Security Controls Matrix
+Control domain
+Control
+Standard
+Implementation
+Access control
+MFA enforcement
+NIST 800-63B AAL2
+TOTP (authenticator app) or hardware key required for all privileged roles. Enforced at IdP level.
+Access control
+Privileged access management
+CIS Control 6
+Privileged actions (data export, config change) require just-in-time access approval via PagerDuty or Teleport.
+Encryption
+Data at rest
+FIPS 140-2
+AES-256-GCM via AWS KMS. Customer-managed keys (BYOK) for enterprise tier. Key rotation every 90 days.
+Encryption
+Data in transit
+TLS 1.3 only
+TLS 1.2 and below disabled at load balancer. HSTS with 1-year max-age. Certificate pinning on mobile apps.
+Network
+Zero trust micro-segmentation
+NIST SP 800-207
+Istio service mesh with mTLS between all services. NetworkPolicy denies all traffic by default; allow-listed only.
+Vulnerability management
+Container image scanning
+CIS Docker Benchmark
+Trivy scans every image in CI/CD. Critical/high CVEs block deployment. Weekly rescan of running containers.
+Vulnerability management
+DAST / penetration testing
+OWASP WSTG
+Annual third-party pentest. Quarterly internal DAST with OWASP ZAP. Bug bounty program on HackerOne.
+Audit & monitoring
+Security information & event management
+SOC 2 CC7
+AWS CloudTrail + GuardDuty + Datadog SIEM. Alert rules for: impossible travel, bulk data export, privilege escalation, unusual API patterns.
+Data loss prevention
+PII detection & masking
+GDPR Art. 25
+All API responses run through PII detector. Unnecessary PII masked based on requester role. Logs scrubbed before leaving secure boundary.
+Business continuity
+Backup & recovery
+ISO 22301
+PostgreSQL: continuous WAL streaming to S3. Point-in-time recovery to any second within 30 days. Daily snapshot tests. Annual DR exercise.
+SECTION 07
+Autonomous Hiring & Innovation Layer
+7.1  Autonomous Hiring Agent Architecture
+The autonomous hiring agent is an LLM-orchestrated workflow system (built on LangGraph or similar agentic framework) designed for high-volume, well-defined roles (customer service, warehouse, retail, call center). The agent manages the hiring funnel from application receipt to conditional offer issuance, with humans reviewing exceptions and all final offers.
+Agent Workflow Specification
+Step
+Agent action
+Decision logic
+Human gate?
+Guardrail
+1. Application received
+Parse resume, run knockout screen, compute match score
+Auto-advance if match_score >= 65 AND knockout_passed == true
+No
+Adverse impact check on every advance decision. Rate: monitor 4/5ths rule in real time.
+2. Screening questions
+Send AI-drafted SMS/email with 3–5 screening questions. Parse and evaluate responses using LLM.
+Auto-advance if response quality score >= 0.70 AND no disqualifying answer
+No
+LLM response evaluation prompt includes bias guardrails. Human spot-checks 5% of evaluations.
+3. Async video interview
+Send Aria (candidate chatbot) link to async video platform (HireVue/Spark Hire integration). Transcribe and score.
+Auto-advance if competency signal score >= 0.68 (configurable threshold)
+No — unless score is 0.55–0.68 (human review band)
+No emotion/biometric scoring. Text and content analysis only. STAR detection only.
+4. Scheduling (if live interview needed)
+Aria offers 3 available slots from interviewer calendar. Confirms booking.
+Automated scheduling with no human input
+No
+Candidate can always request to speak with a human recruiter.
+5. Conditional offer
+Agent prepares offer document using pre-approved comp band and benefit details for role
+Offer prepared automatically within approved comp range
+YES — hiring manager approves before sending
+Every offer requires human approval. Agent cannot send autonomously.
+6. Background check
+Trigger background check vendor API on offer acceptance. Monitor for result.
+Clear → auto-notify recruiter. Consider/Adverse → escalate to HR
+YES — adverse action requires human review
+FCRA pre-adverse and adverse action letter generated but sent only after human confirmation.
+7. Exception handling
+At any step: candidate requests human, score is in ambiguous band, system confidence is low, or bias alert fires
+Route immediately to human recruiter queue with full context
+YES — always
+Candidate can escalate to human at any point via Aria chatbot.
+7.2  Blockchain Credential Verification System
+Technical Architecture
+Blockchain: Hyperledger Fabric (permissioned) or Polygon PoS (public, lower cost). Permissioned preferred for enterprise privacy requirements.
+Standard: W3C Verifiable Credentials (VC) 2.0 + W3C DID (Decentralized Identifiers)
+Issuer network: universities, professional associations, certification bodies. Each issuer runs a node and signs credentials with their DID-anchored private key.
+Candidate wallet: NEXUS provides a lightweight credential wallet (mobile app + web). Candidates receive VCs from issuers and selectively disclose to employers.
+Verification flow: Candidate presents VC to NEXUS ATS → ATS resolves issuer DID from blockchain → verifies credential signature → returns verified status in < 500ms.
+Verification API Response
+{"credential_id": "did:nexus:cred:univ-stanford-bsc-cs-2019-jsmith",
+ "credential_type": "BachelorOfScience",
+ "institution": {"name": "Stanford University", "did": "did:example:stanford-edu", "verified_issuer": true},
+ "subject": {"degree": "Bachelor of Science", "field": "Computer Science", "graduated": "2019-06"},
+ "verification_status": "VALID",
+ "blockchain_tx": "0xabc123...",
+ "signature_valid": true,
+ "verified_at": "2025-03-15T14:22:01Z",
+ "verification_latency_ms": 312
+}
+7.3  Internal Mobility Marketplace
+Data Integration Requirements
+Data source
+Sync method
+Fields imported
+Sync frequency
+HRIS (employee records)
+REST API / SFTP
+employee_id, name, email, department, title, manager_id, location, hire_date, employment_type, skills (if available), performance_tier (if accessible)
+Nightly + real-time on termination
+Learning Management System (LMS)
+Webhook / REST API
+completed_courses[], certifications_earned[], learning_path_progress, skill_badges[]
+Real-time on completion
+Performance management system
+REST API (if org shares data)
+performance_rating, peer_review_summary, goal_completion_pct (aggregated — not individual review text)
+Quarterly (aligned to review cycles)
+Employee career preferences
+NEXUS self-service portal
+desired_roles[], preferred_locations[], open_to_relocation, career_goal_summary, skills_developing[], not_interested_in[]
+Employee-controlled, real-time
+Internal Mobility Features
+Employee job board: Separate internal-facing career site with all open roles. Employees can apply with pre-filled profile. Applications flagged as internal for differentiated process.
+Internal-first window: Configurable 3–7 day window where roles are posted internally before external publishing. Automatic extension if qualified internal candidates apply.
+Skills-to-role pathway: 'Roles you could grow into' section on employee portal. Shows open roles within 1–2 skill hops from current profile. Links directly to learning content to close gaps.
+Manager transparency controls: Employee chooses whether their manager can see they're exploring internal roles (three modes: fully private, notify on application, always visible).
+Succession planning integration: TA leaders can designate 'succession-tracked' roles. Internal candidates for these roles get additional consideration flags visible to senior leadership.
+7.4  LLM Integration Specification
+Model Selection & Routing Strategy
+Use case
+Model
+Rationale
+Avg tokens/request
+Cost tier
+JD bias scan & enhancement
+Claude 3.5 Sonnet
+Best instruction-following for nuanced language analysis. Constitutional AI alignment reduces discriminatory output risk.
+2,000–8,000
+Medium
+Resume parsing (ambiguous sections)
+GPT-4o
+Strongest structured data extraction. JSON mode output reliability.
+1,000–4,000
+Medium
+Candidate chatbot (Aria)
+Claude 3 Haiku
+Low latency, cost-effective for high-volume conversational use. Fast enough for real-time chat.
+500–2,000
+Low
+Recruiter copilot (Rex)
+Claude 3.5 Sonnet
+Complex reasoning, long context window for pipeline analysis, NL to SQL translation.
+2,000–20,000
+Medium-High
+Interview transcript analysis
+GPT-4o
+Long context window (128K), strong extraction of structured insights from unstructured text.
+10,000–80,000
+High
+Offer letter generation
+Claude 3 Haiku
+Template-filling task; cost and speed matter. Quality sufficient for pre-reviewed template.
+1,000–3,000
+Low
+Scorecard language bias detection
+Fine-tuned DistilBERT (self-hosted)
+Latency-critical (runs on every scorecard save). Cost-effective at scale. Privacy: no PII leaves org boundary.
+N/A (local)
+Very Low
+Batch matching (overnight)
+Llama 3.1 70B (self-hosted on SageMaker)
+Cost-efficient for batch workloads. No per-token cost. Acceptable quality for bulk pre-scoring.
+N/A (self-hosted)
+Very Low
+SECURITY NOTE
+All PII (candidate name, email, phone, SSN, DOB) is redacted from prompts before sending to any third-party LLM API. Candidate ID tokens replace identifiers in all LLM prompts. PII is reattached after response is received. Zero PII leaves the NEXUS secure boundary to external model providers.
+SECTION 08
+Engineering Team & Build Roadmap
+8.1  Recommended Team Structure
+Team
+Roles
+Headcount
+Responsibility
+Platform / Infra
+Staff SRE (lead), 2× SRE, DevOps engineer
+4
+Kubernetes, CI/CD, monitoring, incident response, security patching, DR runbooks
+Core ATS (Backend)
+Staff engineer (lead), 4× senior engineers, 2× mid engineers
+7
+Requisition, application, interview, offer, compliance microservices
+AI / ML Platform
+Staff ML engineer (lead), 3× senior ML engineers, 1× ML ops engineer
+5
+Resume parsing, matching engine, predictive models, bias detection, LLM integration
+Data & Analytics
+Staff data engineer (lead), 2× data engineers, 1× analytics engineer (dbt)
+4
+Data warehouse, dbt models, Snowflake, Kafka pipelines, reporting APIs
+Frontend (Web)
+Staff frontend engineer (lead), 4× senior engineers, 2× mid engineers
+7
+React SPA, recruiter UX, candidate portal, admin UI, design system
+Mobile
+2× senior mobile engineers (React Native)
+2
+iOS and Android candidate app, push notifications, mobile interview UX
+Integration
+Senior engineer (lead), 2× integration engineers
+3
+HRIS connectors, job board publisher, webhook delivery, background check APIs
+Security
+Security engineer (part-time shared service)
+0.5
+Threat modeling, security review, pentest coordination, compliance audit support
+Product & Design
+Product manager (lead), 1× PM, 2× designers (UX/UI)
+4
+Roadmap, requirements, user research, design system, accessibility
+QA / Testing
+2× senior QA engineers (embedded across teams)
+2
+Test automation, performance testing, regression, contract testing (Pact)
+Total team at full scale: approximately 38–40 people (including 4 non-engineering product/design). MVP team (Phase 0–1): 12–15 engineers recommended.
+8.2  Technology Stack Summary
+Layer
+Technology
+Version / tier
+License / cost model
+Backend (core services)
+Node.js + NestJS (TypeScript)
+Node 22 LTS, NestJS 10
+MIT / Open source
+Backend (AI/data services)
+Python + FastAPI
+Python 3.12, FastAPI 0.110
+MIT / Open source
+Backend (high-throughput)
+Go 1.22
+Go 1.22
+BSD / Open source
+Frontend
+React 18 + TypeScript + Vite
+React 18.3, TS 5.4
+MIT / Open source
+Mobile
+React Native 0.74 + Expo
+Expo SDK 51
+MIT / Open source
+Relational DB
+PostgreSQL 16
+Amazon RDS Multi-AZ
+Per-instance pricing (~$0.40/hr for db.r7g.large)
+Graph DB
+Amazon Neptune (serverless)
+Neptune Analytics
+Per-NCU-hour + storage
+Vector DB
+Weaviate Cloud
+Weaviate 1.25
+Consumption-based SaaS
+Search
+Amazon OpenSearch / Elasticsearch 8
+3-node cluster
+Per-instance pricing
+Cache / messaging
+Redis 7 (ElastiCache)
+Multi-AZ cluster mode
+Per-node pricing
+Event streaming
+Amazon MSK (Kafka 3.6)
+3-broker + 3-ZK
+Per-broker-hour
+Object storage
+Amazon S3
+Standard + Intelligent-Tiering
+Per GB + request pricing
+Data warehouse
+Snowflake
+Enterprise edition
+Credit-based consumption
+Orchestration
+Amazon EKS + Karpenter
+Kubernetes 1.30
+Per EC2 instance (no EKS node charge)
+AI inference
+AWS SageMaker Endpoints
+Real-time + async
+Per-instance-hour (ml.g5.xlarge ~$1.41/hr)
+Observability
+Datadog APM + Infrastructure
+Enterprise
+Per-host/month (~$23)
+CI/CD
+GitHub Actions + ArgoCD
+GitHub Enterprise
+Per-seat + Actions minutes
+E-signature
+DocuSign eSignature API
+Business Pro
+Per envelope ($0.50–$2.00)
+Email delivery
+Amazon SES + SendGrid
+SES for bulk, SendGrid for transactional
+Per-message ($0.0001–$0.001)
+SMS / WhatsApp
+Twilio Programmable Messaging
+Flex tier
+Per-message ($0.007–$0.05)
+Video interviews
+Zoom Video SDK + HireVue API
+SDK: per-minute; HireVue: per-use
+Per-usage
+Background checks
+Checkr API
+Pay-per-use
+Per-package ($29–$79)
+8.3  Phase 0 MVP Specification (Weeks 1–12)
+The MVP delivers a working, deployable ATS with the minimal viable feature set to begin customer pilots. It is built as a modular monolith (a single deployable unit with clear internal service boundaries), enabling rapid development while maintaining the ability to extract microservices as load demands it.
+Week
+Milestone
+Deliverables
+1–2
+Infrastructure foundation
+EKS cluster provisioned, CI/CD pipeline (GitHub Actions → ArgoCD), PostgreSQL on RDS, Redis, S3, monitoring (Datadog), staging + prod environments
+3–4
+Auth & tenant foundation
+Multi-tenant data model, Auth service (SSO + email/password + MFA), RBAC middleware, API gateway, audit logging foundation
+5–6
+Core hiring workflow
+Requisition CRUD + approval workflow, Pipeline stage management, Application submission (candidate-facing form), Basic candidate profile
+7–8
+Resume parsing (v1)
+Resume upload → text extraction → basic NER (SpaCy pre-trained model, no custom training yet) → skill tagging. Good enough for pilot, refined in Phase 1.
+9–10
+Interview scheduling
+Google/O365 calendar integration, Interview creation, basic self-scheduling link, Video link generation (Zoom SDK)
+11
+Offer management
+Offer letter template, DocuSign integration, offer send/accept/decline workflow
+12
+Pilot-ready
+Basic analytics dashboard, 5 HRIS integrations (Workday, BambooHR, Rippling, HiBob, Personio), LinkedIn job posting, Indeed posting, candidate portal, mobile-responsive
+8.4  Definition of Done — Quality Gates
+Code coverage: minimum 80% unit test coverage, 60% integration test coverage on all new service code
+API contract testing: Pact consumer-driven contract tests between every service pair. No contract breakage allowed in CI.
+Performance: every new API endpoint must pass load test at 10x expected production traffic before merge to main
+Security: no Critical or High CVEs in container images. SAST scan (Semgrep) must pass. No secrets in code (Trufflehog).
+Accessibility: WCAG 2.1 AA compliance for all candidate-facing UI. Automated axe-core scan in CI + manual quarterly audit.
+Bias: any new AI model must pass fairness testing (demographic parity < 0.10 disparity) before production deployment
+Documentation: OpenAPI spec updated for any API change. Runbook updated for any new infrastructure component. Decision log entry for any architectural decision.
+NEXUS ATS — Build Blueprint
+This document is the single source of truth for the NEXUS ATS product architecture.
+Version 1.0  |  Confidential  |  2025

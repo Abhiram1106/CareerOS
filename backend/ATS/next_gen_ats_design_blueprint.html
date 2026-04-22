@@ -1,0 +1,708 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.nav{display:flex;flex-wrap:wrap;gap:6px;padding:1rem 0 1.5rem;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1.5rem}
+.nav-btn{padding:6px 14px;border:0.5px solid var(--color-border-secondary);border-radius:20px;font-size:12px;cursor:pointer;background:transparent;color:var(--color-text-secondary);transition:all .15s}
+.nav-btn.active{background:var(--color-background-info);border-color:var(--color-border-info);color:var(--color-text-info);font-weight:500}
+.nav-btn:hover:not(.active){background:var(--color-background-secondary)}
+.section{display:none}.section.active{display:block}
+h2{font-size:18px;font-weight:500;margin-bottom:1rem;color:var(--color-text-primary)}
+h3{font-size:15px;font-weight:500;margin:1.25rem 0 .5rem;color:var(--color-text-primary)}
+p{font-size:14px;line-height:1.7;color:var(--color-text-secondary);margin-bottom:.75rem}
+.table-wrap{overflow-x:auto;margin:1rem 0}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--color-background-secondary);padding:8px 10px;text-align:left;font-weight:500;color:var(--color-text-primary);border-bottom:0.5px solid var(--color-border-secondary)}
+td{padding:8px 10px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500}
+.badge-green{background:var(--color-background-success);color:var(--color-text-success)}
+.badge-red{background:var(--color-background-danger);color:var(--color-text-danger)}
+.badge-amber{background:var(--color-background-warning);color:var(--color-text-warning)}
+.badge-blue{background:var(--color-background-info);color:var(--color-text-info)}
+.badge-gray{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1rem}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:1rem 0}
+.metric-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem;text-align:center}
+.metric-val{font-size:22px;font-weight:500;color:var(--color-text-primary)}
+.metric-lbl{font-size:12px;color:var(--color-text-secondary);margin-top:4px}
+.pill-row{display:flex;flex-wrap:wrap;gap:6px;margin:.5rem 0}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:4px 10px;border:0.5px solid var(--color-border-secondary);border-radius:12px;color:var(--color-text-secondary)}
+.pill svg{width:10px;height:10px}
+.req-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:1rem 0}
+.req-block{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem}
+.req-block ul{list-style:none;padding:0}
+.req-block ul li{font-size:12px;color:var(--color-text-secondary);padding:4px 0;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;gap:6px}
+.req-block ul li:last-child{border-bottom:none}
+.req-block ul li::before{content:"→";color:var(--color-text-tertiary);flex-shrink:0}
+.arch-layer{border-left:3px solid;padding:.75rem 1rem;margin:.5rem 0;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0}
+.layer-blue{border-color:#185FA5;background:var(--color-background-info)}
+.layer-teal{border-color:#0F6E56;background:var(--color-background-success)}
+.layer-amber{border-color:#854F0B;background:var(--color-background-warning)}
+.layer-purple{border-color:#534AB7;background:#EEEDFE}
+.layer-gray{border-color:#5F5E5A;background:var(--color-background-secondary)}
+.layer-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.layer-desc{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+.feature-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem;margin-bottom:.75rem}
+.feature-tag{font-size:11px;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:.5rem}
+.fc-ai{background:var(--color-background-info);color:var(--color-text-info)}
+.fc-ux{background:var(--color-background-success);color:var(--color-text-success)}
+.fc-comp{background:var(--color-background-warning);color:var(--color-text-warning)}
+.fc-inno{background:#EEEDFE;color:#534AB7}
+.inno-card{border-left:3px solid #534AB7;padding:.75rem 1rem;background:var(--color-background-secondary);border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;margin-bottom:.75rem}
+.progress-bar{height:6px;background:var(--color-background-secondary);border-radius:3px;margin-top:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:width .3s}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:500px){.two-col,.req-grid{grid-template-columns:1fr}}
+</style>
+
+<h2 style="font-size:20px;margin-bottom:.25rem">Next-generation ATS — design blueprint</h2>
+<p style="margin-bottom:1rem;font-size:13px">A complete architecture & product specification for an enterprise-grade applicant tracking system that surpasses current market leaders.</p>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="show('market')">1. Market analysis</button>
+  <button class="nav-btn" onclick="show('requirements')">2. Requirements</button>
+  <button class="nav-btn" onclick="show('features')">3. Advanced features</button>
+  <button class="nav-btn" onclick="show('architecture')">4. Architecture</button>
+  <button class="nav-btn" onclick="show('innovation')">5. Innovation layer</button>
+  <button class="nav-btn" onclick="show('roadmap')">6. Roadmap</button>
+</div>
+
+<!-- SECTION 1: MARKET -->
+<div id="s-market" class="section active">
+  <h2>Market &amp; competitor analysis</h2>
+  <div class="card-grid">
+    <div class="metric-card"><div class="metric-val">$3.2B</div><div class="metric-lbl">Global ATS market (2024)</div></div>
+    <div class="metric-card"><div class="metric-val">9.1%</div><div class="metric-lbl">CAGR through 2030</div></div>
+    <div class="metric-card"><div class="metric-val">6</div><div class="metric-lbl">Major incumbent platforms</div></div>
+    <div class="metric-card"><div class="metric-val">68%</div><div class="metric-lbl">Fortune 500 ATS adoption</div></div>
+  </div>
+
+  <h3>Platform comparison matrix</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Platform</th><th>Target segment</th><th>Architecture</th><th>AI capability</th><th>Pricing model</th><th>Key strength</th><th>Critical gap</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Workday Recruiting</strong></td>
+          <td>Enterprise (5,000+ employees)</td>
+          <td>Unified HCM suite, cloud SaaS</td>
+          <td><span class="badge badge-amber">Medium</span> Workday Illuminate AI, basic matching</td>
+          <td>PEPM subscription, $40–$180/user/mo</td>
+          <td>Deep HRIS integration, single data model</td>
+          <td>Rigid UX, very slow innovation cycle, high implementation cost ($500K+)</td>
+        </tr>
+        <tr>
+          <td><strong>Greenhouse</strong></td>
+          <td>Mid-market to enterprise (200–5,000)</td>
+          <td>Purpose-built ATS, REST API-first</td>
+          <td><span class="badge badge-green">High</span> Greenhouse Intelligence, candidate scoring</td>
+          <td>$6,000–$80,000/yr based on headcount</td>
+          <td>Best-in-class structured hiring, DEI tooling, 400+ integrations</td>
+          <td>No native HRIS, weak internal mobility, limited analytics depth</td>
+        </tr>
+        <tr>
+          <td><strong>Lever</strong></td>
+          <td>Growth companies (50–2,000)</td>
+          <td>CRM + ATS hybrid, cloud-native</td>
+          <td><span class="badge badge-green">High</span> LeverTRM AI, talent relationship intelligence</td>
+          <td>$3,000–$30,000/yr, modular add-ons</td>
+          <td>Candidate relationship management, nurture workflows</td>
+          <td>Enterprise scalability limits, compliance gaps for large regulated industries</td>
+        </tr>
+        <tr>
+          <td><strong>iCIMS</strong></td>
+          <td>Large enterprise (1,000–50,000+)</td>
+          <td>Modular talent cloud, multi-tenant</td>
+          <td><span class="badge badge-amber">Medium</span> iCIMS Talent Cloud AI, basic NLP</td>
+          <td>$100K–$500K/yr for enterprise</td>
+          <td>Volume hiring, hourly/frontline worker workflows, compliance</td>
+          <td>Dated UX, fragmented product suite, slow integrations</td>
+        </tr>
+        <tr>
+          <td><strong>SAP SuccessFactors</strong></td>
+          <td>Global enterprise (5,000+), regulated industries</td>
+          <td>ERP-integrated, SAP BTP cloud</td>
+          <td><span class="badge badge-amber">Medium</span> SAP AI, Joule copilot (nascent)</td>
+          <td>PEPM $8–$25, total cost $300K–$2M+/yr</td>
+          <td>Global compliance, multi-country payroll linkage, regulated sectors</td>
+          <td>Extremely complex implementation, poor UX, AI is surface-level</td>
+        </tr>
+        <tr>
+          <td><strong>Oracle Taleo</strong></td>
+          <td>Large enterprise, legacy installed base</td>
+          <td>Legacy + Oracle HCM Cloud migration path</td>
+          <td><span class="badge badge-red">Low</span> Oracle AI is add-on, largely marketing</td>
+          <td>$80–$200/user/yr, high services cost</td>
+          <td>Oracle ecosystem depth, mature compliance engine</td>
+          <td>Severely dated product, declining investment, candidate experience is poor</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Market gap analysis</h3>
+  <div class="card">
+    <p style="font-size:13px;font-weight:500;margin-bottom:.75rem">Critical gaps across all incumbents:</p>
+    <div class="two-col">
+      <div>
+        <p style="font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px">Candidate experience</p>
+        <div class="progress-bar"><div class="progress-fill" style="width:28%;background:#E24B4A"></div></div>
+        <p style="font-size:11px;color:var(--color-text-secondary);margin-top:4px">Most ATS apply flows score 2.1/5 on candidate satisfaction surveys</p>
+      </div>
+      <div>
+        <p style="font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px">Real-time AI decision support</p>
+        <div class="progress-bar"><div class="progress-fill" style="width:35%;background:#BA7517"></div></div>
+        <p style="font-size:11px;color:var(--color-text-secondary);margin-top:4px">AI is largely bolt-on, not natively embedded in workflow</p>
+      </div>
+      <div>
+        <p style="font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px">Bias detection &amp; DEI intelligence</p>
+        <div class="progress-bar"><div class="progress-fill" style="width:22%;background:#E24B4A"></div></div>
+        <p style="font-size:11px;color:var(--color-text-secondary);margin-top:4px">Checkbox compliance, not proactive bias mitigation</p>
+      </div>
+      <div>
+        <p style="font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px">Internal mobility integration</p>
+        <div class="progress-bar"><div class="progress-fill" style="width:20%;background:#E24B4A"></div></div>
+        <p style="font-size:11px;color:var(--color-text-secondary);margin-top:4px">Treated as afterthought; siloed from external hiring</p>
+      </div>
+      <div>
+        <p style="font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px">Predictive analytics</p>
+        <div class="progress-bar"><div class="progress-fill" style="width:30%;background:#BA7517"></div></div>
+        <p style="font-size:11px;color:var(--color-text-secondary);margin-top:4px">Descriptive dashboards only; no offer acceptance or attrition prediction</p>
+      </div>
+      <div>
+        <p style="font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px">Automation depth</p>
+        <div class="progress-bar"><div class="progress-fill" style="width:40%;background:#639922"></div></div>
+        <p style="font-size:11px;color:var(--color-text-secondary);margin-top:4px">Partial automation; human gates remain for most steps</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: REQUIREMENTS -->
+<div id="s-requirements" class="section">
+  <h2>System requirements definition</h2>
+
+  <h3>Functional requirements — end-to-end hiring workflow</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Domain</th><th>Requirement</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr><td>Requisition management</td><td>Create, approve, clone, and archive job requisitions with multi-level approval workflows and budget integration hooks</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>Job posting</td><td>Publish to 200+ job boards, LinkedIn, Indeed, Glassdoor via unified API; SEO-optimised JD generation via LLM; posting analytics</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>Application intake</td><td>Mobile-first apply (3 clicks or fewer), resume/LinkedIn import, custom screening questions, referral portal, agency submission portal</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>Resume parsing</td><td>Semantic NLP parsing with 98%+ field extraction accuracy; structured skill graph output; multi-language support (40+ languages)</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>Candidate matching &amp; ranking</td><td>AI-driven match score against JD using skill graph, experience, culture signals; explainable scoring with recruiter override</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>Pipeline management</td><td>Drag-and-drop kanban, configurable stages per requisition, bulk actions, SLA tracking, pipeline velocity metrics</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>Interview scheduling</td><td>Calendar sync (Google, O365, Outlook), automated self-scheduling, panel coordination, timezone intelligence, video platform integration</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>Structured evaluation</td><td>Scorecards with custom competency frameworks, calibration sessions, consensus workflow, interview guide generation</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>Offer management</td><td>Offer letter generation, e-signature, comp benchmarking data, approval routing, offer decline capture with reason tracking</td><td><span class="badge badge-red">P0</span></td></tr>
+        <tr><td>Pre-boarding handoff</td><td>HRIS data push on hire, background check triggers, onboarding task creation, day-one readiness tracking</td><td><span class="badge badge-amber">P1</span></td></tr>
+        <tr><td>Talent pool &amp; CRM</td><td>Candidate relationship management, nurture campaigns, silver medalist rediscovery, talent community portal</td><td><span class="badge badge-amber">P1</span></td></tr>
+        <tr><td>Internal mobility</td><td>Employee job board, internal candidate tracking, skill gap analysis vs open roles, manager endorsement workflow</td><td><span class="badge badge-amber">P1</span></td></tr>
+        <tr><td>Analytics &amp; reporting</td><td>Real-time dashboards, custom report builder, EEOC/OFCCP standard reports, predictive hiring analytics, time-to-fill forecasting</td><td><span class="badge badge-amber">P1</span></td></tr>
+        <tr><td>Agency &amp; vendor management</td><td>Vendor portal, fee tracking, submission deduplication, performance scorecards for agencies</td><td><span class="badge badge-green">P2</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Non-functional requirements</h3>
+  <div class="req-grid">
+    <div class="req-block">
+      <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:.5rem">Performance</p>
+      <ul>
+        <li>Page load &lt; 1.5s (p95), API response &lt; 200ms</li>
+        <li>Resume parsing &lt; 3s for standard documents</li>
+        <li>AI match score computation &lt; 5s per candidate</li>
+        <li>Support 50,000 concurrent users without degradation</li>
+        <li>Search index updates within 2s of data change</li>
+      </ul>
+    </div>
+    <div class="req-block">
+      <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:.5rem">Scalability</p>
+      <ul>
+        <li>Horizontal auto-scaling on all stateless services</li>
+        <li>Support 10M+ candidate records per tenant</li>
+        <li>Process 500K applications per day at peak</li>
+        <li>Multi-region active-active deployment</li>
+        <li>Tenant isolation with zero cross-contamination</li>
+      </ul>
+    </div>
+    <div class="req-block">
+      <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:.5rem">Security</p>
+      <ul>
+        <li>SOC 2 Type II, ISO 27001, FedRAMP Moderate</li>
+        <li>AES-256 at rest, TLS 1.3 in transit</li>
+        <li>Zero-trust network architecture</li>
+        <li>SAML 2.0 / OIDC SSO, MFA enforced for all admin</li>
+        <li>Penetration testing quarterly, bug bounty program</li>
+      </ul>
+    </div>
+    <div class="req-block">
+      <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:.5rem">Availability</p>
+      <ul>
+        <li>99.99% SLA (max 52 min downtime/year)</li>
+        <li>RTO &lt; 15 minutes, RPO &lt; 5 minutes</li>
+        <li>Automatic failover across availability zones</li>
+        <li>Maintenance windows of zero for stateless services</li>
+        <li>Real-time status page with incident notifications</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Compliance requirements</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Regulation</th><th>Region</th><th>Key obligations</th><th>Implementation approach</th></tr></thead>
+      <tbody>
+        <tr><td><strong>GDPR</strong></td><td>EU / EEA</td><td>Consent management, right to erasure, data portability, DPA agreements, cross-border transfer controls</td><td>Consent capture at apply, automated data retention policies, deletion workflows, SCCs with sub-processors</td></tr>
+        <tr><td><strong>CCPA / CPRA</strong></td><td>California, USA</td><td>Do-not-sell rights, opt-out mechanisms, data inventory, annual data disclosure</td><td>Preference centre in candidate portal, automated data mapping, annual audit tooling</td></tr>
+        <tr><td><strong>EEOC</strong></td><td>USA</td><td>Adverse impact analysis, Uniform Guidelines on Employee Selection Procedures, self-ID collection</td><td>Built-in adverse impact dashboards, 4/5ths rule calculator, anonymous self-ID forms</td></tr>
+        <tr><td><strong>OFCCP</strong></td><td>USA (federal contractors)</td><td>AAP recordkeeping, outreach tracking, disposition codes, internet applicant rule</td><td>OFCCP-ready disposition library, AAP module with automatic data aggregation, audit log export</td></tr>
+        <tr><td><strong>Pay Transparency</strong></td><td>CO, NY, CA, IL + EU Pay Transparency Directive</td><td>Salary range disclosure on postings, pay equity analysis, reporting obligations</td><td>Comp range field on JD builder, pay equity analytics integrated with offer data</td></tr>
+        <tr><td><strong>AI Act (EU)</strong></td><td>EU</td><td>High-risk AI system disclosure, human oversight for hiring decisions, algorithmic transparency</td><td>Explainable AI scores, human-in-the-loop gates for AI recommendations, model card documentation</td></tr>
+        <tr><td><strong>PDPA / PIPA</strong></td><td>APAC (SG, KR, TH)</td><td>Consent for collection, purpose limitation, cross-border transfer controls</td><td>Region-specific consent templates, data residency controls, purpose-of-use audit trail</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Role-based access control (RBAC) model</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Role</th><th>Core permissions</th><th>Restrictions</th></tr></thead>
+      <tbody>
+        <tr><td><strong>System administrator</strong></td><td>Full system configuration, user management, integration setup, audit log access, compliance report generation</td><td>Cannot modify candidate data without audit trail; change log on all actions</td></tr>
+        <tr><td><strong>Talent acquisition leader</strong></td><td>All requisitions org-wide, team analytics, sourcing budget, agency management, compensation visibility</td><td>Cannot delete historical data; EEO data access requires compliance role</td></tr>
+        <tr><td><strong>Recruiter</strong></td><td>Manage assigned requisitions, view/edit candidates in pipeline, schedule interviews, send offers within approved ranges</td><td>Cannot see other recruiters' pipelines by default; comp data masked unless configured</td></tr>
+        <tr><td><strong>Hiring manager</strong></td><td>View candidates for their open roles, complete scorecards, request requisitions, approve/reject offers</td><td>Read-only on candidate contact data; cannot move stages without recruiter co-action</td></tr>
+        <tr><td><strong>Interviewer</strong></td><td>View candidates assigned to them, submit scorecards, view interview guide</td><td>Cannot see other interviewers' scores until after submission (blind evaluation mode)</td></tr>
+        <tr><td><strong>Agency / vendor</strong></td><td>Submit candidates to assigned jobs, view own submission status</td><td>Cannot see internal candidates, other agencies' submissions, or internal pipeline stages</td></tr>
+        <tr><td><strong>HR / compliance analyst</strong></td><td>EEO/OFCCP data, audit logs, DEI analytics, anonymised pipeline data</td><td>Cannot see individual candidate PII in compliance reports (aggregated only)</td></tr>
+        <tr><td><strong>Candidate</strong></td><td>View own application status, update profile, self-schedule interviews, download personal data</td><td>Cannot see other candidates; full GDPR/CCPA rights enforced</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 3: FEATURES -->
+<div id="s-features" class="section">
+  <h2>Advanced feature design</h2>
+
+  <h3>AI-driven candidate matching &amp; ranking</h3>
+  <div class="feature-card">
+    <span class="feature-tag fc-ai">AI core</span>
+    <p>A multi-dimensional matching engine that goes beyond keyword overlap. The system builds a <strong>skill graph</strong> from the job description — decomposing requirements into hard skills, soft competencies, domain knowledge, and contextual signals. Each candidate resume is similarly encoded into a graph. The match score is computed via graph similarity + semantic embedding cosine distance, weighted by role-specific importance rankings.</p>
+    <div class="pill-row">
+      <span class="pill">Explainable match score (why this candidate)</span>
+      <span class="pill">Recruiter override with reason capture</span>
+      <span class="pill">Continuous model retraining from hire outcomes</span>
+      <span class="pill">Blind scoring mode (EEO protected attributes excluded)</span>
+      <span class="pill">Adjacent skill inference (SQL → data analysis)</span>
+    </div>
+    <p style="margin-top:.5rem;font-size:12px;color:var(--color-text-tertiary)">Technology stack: fine-tuned transformer model (based on open-weight LLM), vector database (Weaviate/Pinecone), real-time inference via GPU inference endpoint.</p>
+  </div>
+
+  <h3>Automated interview scheduling &amp; communication</h3>
+  <div class="feature-card">
+    <span class="feature-tag fc-ux">Workflow automation</span>
+    <p>An AI scheduling agent that eliminates the back-and-forth entirely. It reads interviewer availability from connected calendars, candidate preferences from their profile, timezone intelligence, and interview panel composition rules — then proposes and books slots autonomously. The agent also drafts and sends personalised, on-brand communications at every stage.</p>
+    <div class="pill-row">
+      <span class="pill">Candidate self-scheduling portal (Calendly-grade UX)</span>
+      <span class="pill">Panel scheduling with buffer time rules</span>
+      <span class="pill">Automated reminders &amp; rescheduling</span>
+      <span class="pill">LLM-drafted outreach personalised to candidate profile</span>
+      <span class="pill">WhatsApp / SMS / email channel preference</span>
+      <span class="pill">Zoom / Teams / Meet auto-link generation</span>
+    </div>
+  </div>
+
+  <h3>Semantic resume parsing</h3>
+  <div class="feature-card">
+    <span class="feature-tag fc-ai">AI core</span>
+    <p>Far beyond regex extraction — the parser understands context. It resolves company aliases (ex-Googler at Alphabet → Google), infers skills from job titles and responsibilities, normalises education credentials across geographies, and detects career progression patterns. Output is a structured JSON candidate entity that feeds directly into the skill graph.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Parsing dimension</th><th>Capability</th><th>Accuracy target</th></tr></thead>
+        <tbody>
+          <tr><td>Hard skills</td><td>Ontology-mapped to a 50K-node skill taxonomy (ESCO + proprietary)</td><td>97%+</td></tr>
+          <tr><td>Soft skills</td><td>Inferred from language, achievements, scope of role</td><td>82%+</td></tr>
+          <tr><td>Work history</td><td>Entity resolution, date normalisation, seniority classification</td><td>99%+</td></tr>
+          <tr><td>Education</td><td>Degree level, field, institution ranking (100+ country models)</td><td>96%+</td></tr>
+          <tr><td>Languages</td><td>Proficiency level inference from context, ISO 639-1 codes</td><td>94%+</td></tr>
+          <tr><td>Document formats</td><td>PDF, DOCX, RTF, HTML, LinkedIn import, plain text, image OCR</td><td>Universal</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3>Predictive hiring analytics</h3>
+  <div class="feature-card">
+    <span class="feature-tag fc-ai">AI core</span>
+    <p>Transforms the ATS from a record-keeping system into a strategic forecasting tool. Multiple ML models operate in parallel, each predicting a different outcome in the hiring funnel.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Prediction model</th><th>Input signals</th><th>Output</th><th>Business value</th></tr></thead>
+        <tbody>
+          <tr><td>Time-to-fill forecast</td><td>Role type, seniority, location, market demand index, pipeline velocity</td><td>Days estimate + confidence interval</td><td>Capacity planning, SLA setting</td></tr>
+          <tr><td>Offer acceptance probability</td><td>Comp vs market, candidate engagement signals, competing offers (if shared), commute data</td><td>0–100% score + decline risk factors</td><td>Improve offer strategy, reduce counter-offer losses</td></tr>
+          <tr><td>Candidate quality score</td><td>Match score, interview scorecard trend, similar hire performance data</td><td>Predicted performance tier</td><td>Prioritise pipeline capacity on high-quality candidates</td></tr>
+          <tr><td>Attrition risk at hire</td><td>Role match quality, commute, compensation gap, historical tenure patterns</td><td>12-month attrition probability</td><td>Avoid costly early exits; flag misaligned hires</td></tr>
+          <tr><td>Sourcing channel ROI</td><td>Applications, interviews, hires, cost, quality, retention per source</td><td>Channel efficiency score + budget recommendation</td><td>Redirect sourcing spend to highest-ROI channels</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3>Bias detection &amp; mitigation system</h3>
+  <div class="feature-card">
+    <span class="feature-tag fc-comp">Compliance &amp; DEI</span>
+    <p>A proactive, always-on bias watchdog embedded at every human decision point in the hiring funnel — not a post-hoc report. The system flags patterns in real time and surfaces them to decision-makers before they compound.</p>
+    <div class="pill-row">
+      <span class="pill">JD bias scanner (gendered language, credential inflation, exclusionary requirements)</span>
+      <span class="pill">Structured interview question bank with bias-risk ratings</span>
+      <span class="pill">Real-time adverse impact monitoring by stage (4/5ths rule)</span>
+      <span class="pill">Interviewer scorecard pattern analysis (rater calibration alerts)</span>
+      <span class="pill">Blind review mode (name, gender, age, photo stripped)</span>
+      <span class="pill">DEI funnel analytics with peer-company benchmarking</span>
+      <span class="pill">AI model fairness monitoring with demographic parity metrics</span>
+    </div>
+  </div>
+
+  <h3>Talent pool intelligence &amp; rediscovery</h3>
+  <div class="feature-card">
+    <span class="feature-tag fc-ux">Talent intelligence</span>
+    <p>The ATS becomes a living talent database, not a graveyard of past applicants. Every candidate who ever touched the system is continuously re-evaluated against open roles as their profile and the market evolve. Passive talent is surfaced before a role is even posted.</p>
+    <div class="pill-row">
+      <span class="pill">Silver medalist auto-matching to new openings</span>
+      <span class="pill">Talent pool health scoring (size, quality, recency)</span>
+      <span class="pill">Automated re-engagement sequences for cold talent</span>
+      <span class="pill">External signal enrichment (GitHub, publications, open-source contributions)</span>
+      <span class="pill">Talent community self-serve portal with preference management</span>
+      <span class="pill">Pipeline pre-build before requisition opens (proactive sourcing mode)</span>
+    </div>
+  </div>
+
+  <h3>Conversational AI — dual-persona chatbot</h3>
+  <div class="feature-card">
+    <span class="feature-tag fc-ai">AI core</span>
+    <p>Two distinct AI assistants serving different personas, powered by the same underlying LLM but with persona-specific tools, guardrails, and knowledge bases.</p>
+    <div class="two-col">
+      <div style="background:var(--color-background-info);border-radius:var(--border-radius-md);padding:1rem">
+        <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:.5rem">Candidate assistant "Aria"</p>
+        <ul style="list-style:none;padding:0;font-size:12px;color:var(--color-text-secondary)">
+          <li style="padding:3px 0">→ Application status updates 24/7</li>
+          <li style="padding:3px 0">→ Interview prep guidance (role-specific)</li>
+          <li style="padding:3px 0">→ Document submission assistance</li>
+          <li style="padding:3px 0">→ FAQ answering about the company &amp; role</li>
+          <li style="padding:3px 0">→ Rescheduling &amp; availability management</li>
+          <li style="padding:3px 0">→ Offer negotiation triage to recruiter</li>
+          <li style="padding:3px 0">→ Multilingual (50+ languages)</li>
+        </ul>
+      </div>
+      <div style="background:var(--color-background-success);border-radius:var(--border-radius-md);padding:1rem">
+        <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:.5rem">Recruiter copilot "Rex"</p>
+        <ul style="list-style:none;padding:0;font-size:12px;color:var(--color-text-secondary)">
+          <li style="padding:3px 0">→ Natural language pipeline queries ("show me all ML engineers with 5+ years")</li>
+          <li style="padding:3px 0">→ Draft JDs, outreach emails, scorecards</li>
+          <li style="padding:3px 0">→ Summarise interview scorecard patterns</li>
+          <li style="padding:3px 0">→ Suggest next actions on stalled candidates</li>
+          <li style="padding:3px 0">→ Generate weekly hiring reports</li>
+          <li style="padding:3px 0">→ Alert on pipeline risks &amp; SLA breaches</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: ARCHITECTURE -->
+<div id="s-architecture" class="section">
+  <h2>System architecture</h2>
+
+  <h3>Architecture decision: microservices</h3>
+  <div class="card">
+    <p>Recommendation: <strong>domain-driven microservices</strong> with an API gateway, deployed on Kubernetes (EKS/GKE). Each bounded domain owns its data and exposes a versioned REST + GraphQL API. This enables independent scaling (the AI matching service under load doesn't affect the scheduling service), independent deployment cadence, and fault isolation.</p>
+    <p style="font-size:12px;color:var(--color-text-tertiary)">Monolith-first for MVP (0–6 months) is acceptable if team is &lt;20 engineers. Decompose into services as bounded contexts crystallise. Avoid premature microservices.</p>
+  </div>
+
+  <h3>Service layer decomposition</h3>
+  <div class="arch-layer layer-blue">
+    <div class="layer-name">Client layer</div>
+    <div class="layer-desc">React 18 + TypeScript SPA (web) · React Native (mobile iOS/Android) · Embeddable widget SDK (career site) · Chrome extension (sourcing) · REST/GraphQL API for third-party clients</div>
+  </div>
+  <div class="arch-layer layer-gray">
+    <div class="layer-name">API gateway &amp; edge layer</div>
+    <div class="layer-desc">Kong Gateway or AWS API Gateway · Rate limiting, auth token validation (JWT/SAML), request routing, response caching (Redis), WAF (Cloudflare), CDN for static assets</div>
+  </div>
+  <div class="arch-layer layer-teal">
+    <div class="layer-name">Core domain services (microservices)</div>
+    <div class="layer-desc">Requisition service · Candidate service · Application service · Pipeline service · Interview service · Offer service · Communication service · Notification service · Reporting service · Compliance service · Talent pool service</div>
+  </div>
+  <div class="arch-layer layer-purple">
+    <div class="layer-name">AI platform layer</div>
+    <div class="layer-desc">Resume parsing service (GPU) · Matching &amp; ranking service (vector DB + LLM) · JD analysis service · Interview intelligence service · Bias detection service · Predictive analytics service (ML pipeline on Spark) · LLM gateway (multi-model routing: GPT-4o, Claude, Llama)</div>
+  </div>
+  <div class="arch-layer layer-amber">
+    <div class="layer-name">Integration platform</div>
+    <div class="layer-desc">HRIS connectors (Workday, SAP, Oracle HCM, BambooHR) · Job board publisher (Indeed, LinkedIn, Glassdoor, 150+ boards) · Video interview (Zoom, Teams, HireVue) · Background check (Checkr, Sterling) · Assessment platforms (HackerRank, Codility, Pymetrics) · E-signature (DocuSign) · Calendar (Google, O365) · Payroll (ADP, Paychex)</div>
+  </div>
+  <div class="arch-layer layer-gray">
+    <div class="layer-name">Data layer</div>
+    <div class="layer-desc">PostgreSQL (transactional, per-domain) · Elasticsearch (search &amp; analytics) · Weaviate (vector store for embeddings) · Redis (cache &amp; pub/sub) · S3-compatible object store (resumes, documents) · Apache Kafka (event streaming) · Apache Spark (batch ML pipelines) · Snowflake (data warehouse for analytics)</div>
+  </div>
+
+  <h3>Cloud infrastructure</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Component</th><th>Recommendation</th><th>Rationale</th></tr></thead>
+      <tbody>
+        <tr><td>Primary cloud</td><td>AWS (primary) + Azure (secondary)</td><td>AWS breadth (EKS, Bedrock, SageMaker), Azure for M365/Teams enterprise integration; multi-cloud for resiliency and negotiation leverage</td></tr>
+        <tr><td>Container orchestration</td><td>Amazon EKS with Karpenter autoscaling</td><td>Managed Kubernetes, cost-efficient node provisioning, spot instance support for AI workloads</td></tr>
+        <tr><td>AI/ML compute</td><td>AWS SageMaker + GPU instances (g5.xlarge for inference, p4d for training)</td><td>Managed model serving, auto-scaling, A/B testing of model versions</td></tr>
+        <tr><td>Data residency</td><td>Multi-region active-active (US-East, EU-West-1, AP-Southeast-1)</td><td>GDPR data residency compliance, latency optimisation, DR requirements</td></tr>
+        <tr><td>Secrets management</td><td>AWS Secrets Manager + HashiCorp Vault</td><td>Dynamic secrets, automatic rotation, fine-grained access policies</td></tr>
+        <tr><td>Observability</td><td>Datadog (APM + infrastructure) + OpenTelemetry</td><td>Distributed tracing across microservices, AI model latency monitoring, cost attribution</td></tr>
+        <tr><td>CI/CD</td><td>GitHub Actions + ArgoCD (GitOps)</td><td>Declarative deployments, rollback safety, environment parity</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Security architecture</h3>
+  <div class="req-grid">
+    <div class="req-block">
+      <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:.5rem">Identity &amp; access</p>
+      <ul>
+        <li>Zero-trust: every request authenticated, never implicit trust</li>
+        <li>SAML 2.0 / OIDC SSO integration (Okta, Azure AD, Ping)</li>
+        <li>MFA required for all privileged roles</li>
+        <li>Attribute-based access control (ABAC) for fine-grained data access</li>
+        <li>Session management: JWT short-lived tokens + refresh token rotation</li>
+      </ul>
+    </div>
+    <div class="req-block">
+      <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:.5rem">Data protection</p>
+      <ul>
+        <li>AES-256 encryption at rest (customer-managed keys via KMS)</li>
+        <li>TLS 1.3 for all data in transit</li>
+        <li>Field-level encryption for PII (SSN, DOB, salary data)</li>
+        <li>Pseudonymisation for analytics data sets</li>
+        <li>Immutable audit logs (write-once S3 + CloudTrail)</li>
+      </ul>
+    </div>
+    <div class="req-block">
+      <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:.5rem">Network security</p>
+      <ul>
+        <li>VPC with private subnets for all backend services</li>
+        <li>Cloudflare WAF + DDoS protection at edge</li>
+        <li>Service mesh (Istio) for mTLS between microservices</li>
+        <li>No direct public internet access to databases</li>
+        <li>Network policies enforced via Kubernetes NetworkPolicy</li>
+      </ul>
+    </div>
+    <div class="req-block">
+      <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:.5rem">AI-specific security</p>
+      <ul>
+        <li>Prompt injection guardrails on all LLM inputs</li>
+        <li>PII redaction before data enters LLM inference pipeline</li>
+        <li>Model output filtering for harmful/discriminatory content</li>
+        <li>Audit trail for every AI-generated recommendation</li>
+        <li>Human-in-the-loop gates for high-stakes AI decisions</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: INNOVATION -->
+<div id="s-innovation" class="section">
+  <h2>Innovation layer — next-generation capabilities</h2>
+
+  <h3>AI interview analysis</h3>
+  <div class="inno-card">
+    <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:.25rem">Multimodal interview intelligence</p>
+    <p>AI analysis of recorded (consented) video interviews captures linguistic patterns, response structure, vocabulary sophistication, STAR method adherence, and competency signal density — without relying on biometric or affective data (which carries discrimination risk). Output is a structured competency signal report that supplements, not replaces, human scorecard judgment.</p>
+    <div class="pill-row">
+      <span class="pill">Automatic transcript generation (40+ languages)</span>
+      <span class="pill">STAR response detection &amp; quality scoring</span>
+      <span class="pill">Vocabulary and communication clarity metrics</span>
+      <span class="pill">Question coverage analysis (did interviewer ask all scorecard items?)</span>
+      <span class="pill">Ethical guardrails: NO emotion detection, NO facial expression scoring</span>
+    </div>
+    <p style="font-size:11px;color:var(--color-text-tertiary);margin-top:.5rem">Implementation: Whisper-large for transcription → custom fine-tuned NLP for competency extraction → human reviewer receives a structured summary, not a binary hire/reject signal</p>
+  </div>
+
+  <h3>Skill graph-based hiring</h3>
+  <div class="inno-card">
+    <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:.25rem">Graph-native talent intelligence</p>
+    <p>The foundational data model is a property graph (Neo4j or Amazon Neptune), not a relational schema. Candidates, roles, skills, companies, learning credentials, and project outputs are all nodes. Relationships between them (has-skill, derived-from, transferable-to, co-occurs-with) encode rich contextual meaning. This enables queries impossible in traditional ATS — "find candidates whose skill adjacency graph has 80%+ overlap with our top performers in this role."</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Capability</th><th>What it enables</th></tr></thead>
+        <tbody>
+          <tr><td>Skill adjacency inference</td><td>A Python developer with NumPy/Pandas experience is identified as a strong match for a data engineering role — without the word "data engineer" appearing on their resume</td></tr>
+          <tr><td>Career trajectory modeling</td><td>Predict what skills a candidate is likely to have in 2 years based on peers' career paths; hire for future-state role needs</td></tr>
+          <tr><td>Team skill gap analysis</td><td>Given current team skill graph, identify the exact skill nodes a new hire must fill; stop hiring for skills already on the team</td></tr>
+          <tr><td>Market skill trend detection</td><td>Track skill node growth rates across the talent pool; alert TA leaders when emerging skills (e.g. RAG engineering) spike in candidate profiles before they spike in JDs</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3>Internal mobility intelligence</h3>
+  <div class="inno-card">
+    <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:.25rem">Unified internal + external talent marketplace</p>
+    <p>Today's ATS treats internal candidates as an afterthought. The next-generation system treats every employee as a potential candidate for every open role, with the system proactively surfacing matches before external sourcing begins. The internal talent marketplace integrates with HRIS (skills data, performance ratings, career aspirations) and learning platforms (completed courses, certifications) to build a live skills inventory of the existing workforce.</p>
+    <div class="pill-row">
+      <span class="pill">Employee-facing role recommendation engine</span>
+      <span class="pill">Manager transparency controls (opt-in visibility to manager)</span>
+      <span class="pill">Skills-gap-to-learning pathway generation</span>
+      <span class="pill">Internal first-look window (auto-post internally 5 days before external)</span>
+      <span class="pill">Succession planning integration</span>
+      <span class="pill">Gig / project marketplace for cross-functional exposure</span>
+    </div>
+  </div>
+
+  <h3>Blockchain credential verification</h3>
+  <div class="inno-card">
+    <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:.25rem">Verifiable credentials on distributed ledger</p>
+    <p>Partner with universities, certification bodies, and professional associations to issue W3C Verifiable Credentials anchored to a permissioned blockchain (Hyperledger Fabric or Ethereum L2). Candidates carry a portable, unforgeable credential wallet. The ATS verifies in milliseconds — eliminating the 3–5 day background check delay for education verification. Fraud rate for education credentials (currently 30% globally) drops to near zero.</p>
+    <div class="pill-row">
+      <span class="pill">Integration: Salesforce Credentials Network, Credly, Accredible</span>
+      <span class="pill">Instant degree &amp; certification verification (sub-second)</span>
+      <span class="pill">Candidate-controlled data sharing (selective disclosure)</span>
+      <span class="pill">Audit trail of verifications for compliance records</span>
+    </div>
+  </div>
+
+  <h3>Autonomous hiring workflows</h3>
+  <div class="inno-card">
+    <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:.25rem">AI agent-orchestrated hiring for high-volume roles</p>
+    <p>For high-volume, well-defined roles (customer service, warehouse, retail), an autonomous hiring agent handles the full funnel from application receipt to conditional offer — with humans reviewing only exceptions, appeals, and edge cases. The agent applies, screens, schedules, evaluates, and presents offers within a configured time window (e.g. same-day offers for qualifying candidates).</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Agent capability</th><th>Human gate required?</th><th>Guardrail</th></tr></thead>
+        <tbody>
+          <tr><td>Application screening vs. minimum requirements</td><td>No (auto-advance or auto-decline)</td><td>Adverse impact monitoring; decline reasons logged</td></tr>
+          <tr><td>Scheduling async video interview</td><td>No</td><td>Candidate can request human recruiter at any point</td></tr>
+          <tr><td>Scoring async interview responses</td><td>No (above threshold auto-advance)</td><td>Score explainability; recruiter spot-check 10% of decisions</td></tr>
+          <tr><td>Conditional offer issuance</td><td>Yes — hiring manager approval</td><td>Always a human approves a job offer; agent prepares, human signs off</td></tr>
+          <tr><td>Background check initiation</td><td>No (candidate consent already captured)</td><td>Conditional on offer; candidate can dispute</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3>Additional frontier capabilities</h3>
+  <div class="card-grid">
+    <div class="card" style="padding:.875rem">
+      <p style="font-size:13px;font-weight:500;margin-bottom:.25rem">Workforce demand forecasting</p>
+      <p style="font-size:12px">Integrates with financial planning tools (Anaplan, Adaptive) to predict headcount needs 12–18 months ahead and pre-build talent pipelines before requisitions open.</p>
+    </div>
+    <div class="card" style="padding:.875rem">
+      <p style="font-size:13px;font-weight:500;margin-bottom:.25rem">Competitive intelligence layer</p>
+      <p style="font-size:12px">Tracks competitor hiring activity, salary postings, and skill demand signals from public data — giving TA leaders market intelligence without expensive third-party subscriptions.</p>
+    </div>
+    <div class="card" style="padding:.875rem">
+      <p style="font-size:13px;font-weight:500;margin-bottom:.25rem">Candidate experience personalisation</p>
+      <p style="font-size:12px">AI-personalised career site content, tailored role recommendations, and adaptive application flows based on candidate source, role type, and inferred preferences.</p>
+    </div>
+    <div class="card" style="padding:.875rem">
+      <p style="font-size:13px;font-weight:500;margin-bottom:.25rem">LLM-powered job description studio</p>
+      <p style="font-size:12px">Auto-generates JDs from a 5-minute intake form, applying inclusive language rules, pay transparency requirements, and SEO optimisation. A/B tests JD variations on job boards.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 6: ROADMAP -->
+<div id="s-roadmap" class="section">
+  <h2>Implementation roadmap &amp; differentiation summary</h2>
+
+  <h3>Phased delivery roadmap</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Phase</th><th>Timeline</th><th>Milestone</th><th>Key deliverables</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-blue">Phase 0</span></td>
+          <td>M0–M3</td>
+          <td>Foundation</td>
+          <td>Cloud infrastructure, auth platform, core data model, API gateway, monolithic MVP with basic ATS workflow, first 5 HRIS integrations</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-blue">Phase 1</span></td>
+          <td>M3–M9</td>
+          <td>Core ATS parity</td>
+          <td>Full requisition-to-offer workflow, resume parsing (v1), job board publisher (50 boards), interview scheduling, offer management, mobile app, GDPR/EEOC compliance module</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-amber">Phase 2</span></td>
+          <td>M9–M18</td>
+          <td>AI differentiation</td>
+          <td>AI matching engine (v1), predictive analytics (time-to-fill, offer acceptance), bias detection dashboard, candidate chatbot, recruiter copilot, talent pool &amp; rediscovery, skill graph v1</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-amber">Phase 3</span></td>
+          <td>M18–M24</td>
+          <td>Intelligence layer</td>
+          <td>Interview analysis AI, internal mobility marketplace, autonomous hiring workflows (volume roles), blockchain credential verification (pilot), advanced DEI analytics, enterprise SSO &amp; RBAC hardening</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-green">Phase 4</span></td>
+          <td>M24–M36</td>
+          <td>Market leadership</td>
+          <td>Workforce demand forecasting, competitive intelligence layer, full skill graph v2, multi-region GA (US / EU / APAC), FedRAMP certification, partner ecosystem / marketplace launch</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Competitive differentiation scorecard</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Capability dimension</th><th>Workday</th><th>Greenhouse</th><th>iCIMS</th><th style="background:var(--color-background-info)">Our ATS</th></tr></thead>
+      <tbody>
+        <tr><td>AI match quality</td><td><span class="badge badge-amber">Medium</span></td><td><span class="badge badge-green">Good</span></td><td><span class="badge badge-amber">Medium</span></td><td style="background:var(--color-background-info)"><span class="badge badge-green">Best-in-class</span></td></tr>
+        <tr><td>Candidate UX</td><td><span class="badge badge-red">Poor</span></td><td><span class="badge badge-green">Good</span></td><td><span class="badge badge-red">Poor</span></td><td style="background:var(--color-background-info)"><span class="badge badge-green">Best-in-class</span></td></tr>
+        <tr><td>Bias &amp; DEI tooling</td><td><span class="badge badge-amber">Basic</span></td><td><span class="badge badge-amber">Good</span></td><td><span class="badge badge-amber">Basic</span></td><td style="background:var(--color-background-info)"><span class="badge badge-green">Best-in-class</span></td></tr>
+        <tr><td>Predictive analytics</td><td><span class="badge badge-amber">Descriptive</span></td><td><span class="badge badge-amber">Descriptive</span></td><td><span class="badge badge-amber">Basic</span></td><td style="background:var(--color-background-info)"><span class="badge badge-green">Predictive</span></td></tr>
+        <tr><td>Internal mobility</td><td><span class="badge badge-amber">Medium</span></td><td><span class="badge badge-red">Weak</span></td><td><span class="badge badge-red">Weak</span></td><td style="background:var(--color-background-info)"><span class="badge badge-green">Native &amp; unified</span></td></tr>
+        <tr><td>Autonomous workflows</td><td><span class="badge badge-red">None</span></td><td><span class="badge badge-red">None</span></td><td><span class="badge badge-red">None</span></td><td style="background:var(--color-background-info)"><span class="badge badge-green">Volume roles</span></td></tr>
+        <tr><td>Skill graph</td><td><span class="badge badge-red">None</span></td><td><span class="badge badge-red">None</span></td><td><span class="badge badge-red">None</span></td><td style="background:var(--color-background-info)"><span class="badge badge-green">Native data model</span></td></tr>
+        <tr><td>Blockchain credentials</td><td><span class="badge badge-red">None</span></td><td><span class="badge badge-red">None</span></td><td><span class="badge badge-red">None</span></td><td style="background:var(--color-background-info)"><span class="badge badge-green">Pilot at launch</span></td></tr>
+        <tr><td>Global compliance</td><td><span class="badge badge-green">Strong</span></td><td><span class="badge badge-amber">Medium</span></td><td><span class="badge badge-green">Strong</span></td><td style="background:var(--color-background-info)"><span class="badge badge-green">Best-in-class</span></td></tr>
+        <tr><td>Implementation simplicity</td><td><span class="badge badge-red">Complex</span></td><td><span class="badge badge-green">Simple</span></td><td><span class="badge badge-amber">Medium</span></td><td style="background:var(--color-background-info)"><span class="badge badge-green">Low-code config</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Pricing strategy recommendation</h3>
+  <div class="card">
+    <div class="card-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:.875rem;text-align:center">
+        <p style="font-size:13px;font-weight:500;margin-bottom:.25rem">Growth</p>
+        <p style="font-size:20px;font-weight:500;margin:.25rem 0">$599<span style="font-size:12px;font-weight:400">/mo</span></p>
+        <p style="font-size:11px;color:var(--color-text-secondary)">Up to 50 open roles · 5 recruiters · Core ATS + AI matching · 30 integrations</p>
+      </div>
+      <div style="border:2px solid var(--color-border-info);border-radius:var(--border-radius-md);padding:.875rem;text-align:center;background:var(--color-background-info)">
+        <span class="badge badge-blue" style="margin-bottom:.25rem;display:inline-block">Most popular</span>
+        <p style="font-size:13px;font-weight:500;margin-bottom:.25rem">Enterprise</p>
+        <p style="font-size:20px;font-weight:500;margin:.25rem 0">$2,499<span style="font-size:12px;font-weight:400">/mo</span></p>
+        <p style="font-size:11px;color:var(--color-text-secondary)">Unlimited roles · 50 users · Full AI suite · Bias detection · Internal mobility · 200+ integrations · SLA</p>
+      </div>
+      <div style="border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:.875rem;text-align:center">
+        <p style="font-size:13px;font-weight:500;margin-bottom:.25rem">Global enterprise</p>
+        <p style="font-size:20px;font-weight:500;margin:.25rem 0">Custom</p>
+        <p style="font-size:11px;color:var(--color-text-secondary)">Unlimited · All features + autonomous workflows + blockchain + dedicated CSM + FedRAMP + on-premise option</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('s-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>

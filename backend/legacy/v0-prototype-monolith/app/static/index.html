@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareerOS Working Model</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+  <div class="shell">
+    <aside class="sidebar">
+      <h1>CareerOS</h1>
+      <p class="tag">Working Model v0.1</p>
+      <nav>
+        <button class="nav-btn active" data-screen="onboarding">Onboarding</button>
+        <button class="nav-btn" data-screen="resume">Resume Builder</button>
+        <button class="nav-btn" data-screen="ats">ATS Score</button>
+        <button class="nav-btn" data-screen="jobs">Job Match</button>
+        <button class="nav-btn" data-screen="dashboard">Analytics</button>
+      </nav>
+      <div class="phase-note">
+        <p>Status</p>
+        <strong id="authState">Not signed in</strong>
+      </div>
+    </aside>
+
+    <main class="content">
+      <section class="screen active" id="onboarding">
+        <div class="section-head"><h2>Auth + Career Profile</h2><span id="statusText">Ready</span></div>
+        <div class="grid two">
+          <div class="card">
+            <h3>Account</h3>
+            <label>Full Name <input id="nameInput" type="text" placeholder="Arjun Mehta"></label>
+            <label>Email <input id="emailInput" type="email" placeholder="you@example.com"></label>
+            <label>Password <input id="passwordInput" type="password" placeholder="min 6 characters"></label>
+            <div class="actions">
+              <button id="registerBtn">Register</button>
+              <button id="loginBtn" class="ghost">Login</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Career Profile</h3>
+            <label>City <input id="cityInput" type="text" placeholder="Nagpur"></label>
+            <label>Professional Status
+              <select id="statusInput">
+                <option>Student</option><option>Fresher</option><option>Experienced</option><option>Career Break</option>
+              </select>
+            </label>
+            <label>Target Role <input id="roleInput" type="text" placeholder="Software Engineer"></label>
+            <label>Skills (comma-separated)
+              <textarea id="skillsInput" rows="3" placeholder="Python, React, SQL, AWS"></textarea>
+            </label>
+            <button id="saveProfileBtn">Save Profile</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="resume">
+        <div class="section-head"><h2>Resume Builder</h2><span>Saved to backend</span></div>
+        <div class="grid two">
+          <div class="card">
+            <label>Professional Summary <textarea id="summaryInput" rows="4"></textarea></label>
+            <label>Experience Bullet <textarea id="expInput" rows="4"></textarea></label>
+            <label>Template
+              <select id="templateSelect"><option value="classic">Classic ATS</option><option value="tech">Technical Focus</option><option value="fresher">Fresher First</option></select>
+            </label>
+            <div class="actions">
+              <button id="autofillBtn" class="ghost">Generate Sample Content</button>
+              <button id="saveProfileFromResumeBtn">Save Text to Profile</button>
+              <button id="generateResumeBtn">Generate Resume</button>
+            </div>
+          </div>
+          <div class="card preview">
+            <h3 id="pvName">Your Name</h3>
+            <p id="pvRole">Target Role</p>
+            <h4>Summary</h4>
+            <p id="pvSummary">Professional summary appears here.</p>
+            <h4>Experience</h4>
+            <ul><li id="pvExp">Experience bullet appears here.</li></ul>
+            <h4>Skills</h4>
+            <p id="pvSkills">Skills appear here.</p>
+            <pre id="resumeText" class="resume-text"></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="ats">
+        <div class="section-head"><h2>ATS Simulation</h2><span>API-backed scoring</span></div>
+        <div class="card">
+          <label>Job Description <textarea id="jdInput" rows="5" placeholder="Paste target JD"></textarea></label>
+          <button id="scanBtn">Run ATS Scan</button>
+        </div>
+        <div class="grid three">
+          <div class="metric"><p>Composite</p><strong id="composite">--</strong></div>
+          <div class="metric"><p>Keyword Match</p><strong id="keyword">--</strong></div>
+          <div class="metric"><p>Format</p><strong id="format">--</strong></div>
+          <div class="metric"><p>Content Quality</p><strong id="quality">--</strong></div>
+          <div class="metric"><p>Completeness</p><strong id="complete">--</strong></div>
+          <div class="metric"><p>Contact</p><strong id="contact">--</strong></div>
+        </div>
+      </section>
+
+      <section class="screen" id="jobs">
+        <div class="section-head"><h2>Job Matches</h2><span>Profile-based ranking</span></div>
+        <div class="actions"><button id="refreshJobsBtn">Refresh Matches</button></div>
+        <div id="jobList" class="job-list"></div>
+      </section>
+
+      <section class="screen" id="dashboard">
+        <div class="section-head"><h2>Dashboard</h2><span>Live metrics</span></div>
+        <div class="actions"><button id="refreshDashBtn">Refresh Dashboard</button></div>
+        <div class="grid three">
+          <div class="metric"><p>Best ATS Score</p><strong id="bestScore">0</strong></div>
+          <div class="metric"><p>Total Resumes</p><strong id="totalResumes">0</strong></div>
+          <div class="metric"><p>Scans Performed</p><strong id="scansPerformed">0</strong></div>
+          <div class="metric"><p>Jobs Matched >70%</p><strong id="jobs70">0</strong></div>
+          <div class="metric"><p>Applications Tracked</p><strong id="appsTracked">0</strong></div>
+          <div class="metric"><p>Profile Completeness</p><strong id="profileComplete">0%</strong></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
