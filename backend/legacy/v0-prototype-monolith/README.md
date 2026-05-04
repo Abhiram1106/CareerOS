@@ -1,36 +1,54 @@
-# CareerOS Working Model
+# CareerOS — MVP v0.1
 
-This is a runnable end-to-end implementation of the CareerOS working model with:
+> AI-powered career intelligence platform. ATS resume scoring, job matching, and analytics — all in one.
 
-- Auth (register/login)
-- Career profile save/load
-- Resume generation from profile data
-- ATS scan scoring API
-- Job match ranking API
-- Dashboard metrics API
+## Quick Start
 
-## Run
-
-1. Install dependencies:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+```bash
+cd backend/legacy/v0-prototype-monolith
 pip install -r requirements.txt
-```
-
-2. Start server:
-
-```powershell
 uvicorn app.main:app --reload --port 8000
 ```
 
-3. Open app:
+Open **http://localhost:8000**
 
-- http://127.0.0.1:8000
+## Demo Flow
 
-## Notes
+1. **Register** — create an account with name / email / password
+2. **Career Profile** — fill city, status, target role, skills → Save Profile
+3. **Resume Builder** — click "Autofill Sample" → Generate Resume → see live preview
+4. **ATS Scanner** — paste any job description → Run ATS Scan → see 6 scores + actionable suggestions
+5. **Job Matches** — click Refresh → see 15 ranked job listings with match %
+6. **Analytics** — click Refresh → see all career health metrics
 
-- Database: local SQLite file `careeros.db`
-- This is a functional foundation for MVP, not final production hardening.
-- Password hashing is SHA-256 for prototype speed; replace with `bcrypt` for production.
+## What's Working
+
+| Module | Status | Details |
+|--------|--------|---------|
+| Auth (Register / Login) | ✅ | Token-based sessions, SQLite persistence |
+| Career Profile | ✅ | 6-field persistent career profile |
+| Resume Builder | ✅ | 3 templates, live preview, backend save |
+| ATS Scanner | ✅ | 6-dimension scoring + actionable suggestions + missing keywords |
+| Job Matching | ✅ | 15 curated listings, skill-match ranked |
+| Analytics Dashboard | ✅ | 6 live metrics, profile completeness bar |
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Backend | Python 3.11, FastAPI, SQLAlchemy |
+| Database | SQLite (careeros_dev.db) |
+| Frontend | Vanilla HTML / CSS / JS (no build step) |
+| Auth | Bearer token sessions |
+
+## ATS Scoring Model
+
+The ATS engine scores resumes across 6 dimensions:
+
+| Dimension | Weight | What it measures |
+|-----------|--------|-----------------|
+| Keyword Match | 30% | Overlap between resume tokens and JD tokens |
+| Format Quality | 20% | ATS-safe structure (simulated) |
+| Content Quality | 20% | Action verbs + quantified achievements |
+| Completeness | 15% | All profile fields filled |
+| Contact Info | 15% | Email presence |
