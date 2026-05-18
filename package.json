@@ -1,0 +1,16 @@
+{
+  "name": "careeros-campus-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CareerOS Campus AI — Intel-optimized placement-readiness operating layer for Indian colleges",
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "lint": "pnpm --filter web lint",
+    "web": "pnpm --filter web"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=18"
+  }
+}
