@@ -1,4 +1,10 @@
 version: "3.9"
+
+# CareerOS Campus AI — Intel-optimized placement-readiness operating layer.
+# Services intentionally narrow: core-api orchestrates, ats-engine scores parse-safety,
+# ai-rewriter does proof-linked rewriting. resume-parser, match-engine, intel-bench
+# are stubbed in later weeks.
+
 services:
   postgres:
     image: postgres:16
@@ -14,14 +20,12 @@ services:
 
   core-api:
     build:
-      context: ../services/core-api
+      context: ./services/core-api
     environment:
       DATABASE_URL: postgresql+psycopg2://careeros:careeros@postgres:5432/careeros
       REDIS_URL: redis://redis:6379/0
       ATS_ENGINE_URL: http://ats-engine:8001
-      JOB_INTEL_URL: http://job-intel:8002
-      AI_INFERENCE_URL: http://ai-inference:8003
-      NEXUS_ATS_URL: http://nexus-ats:8010
+      AI_REWRITER_URL: http://ai-rewriter:8003
       JWT_SECRET: super-secret-change-me
       AUTO_CREATE_TABLES: "false"
       EXPORTS_DIR: /tmp/careeros-exports
@@ -30,48 +34,23 @@ services:
       - postgres
       - redis
       - ats-engine
-      - job-intel
-      - ai-inference
-      - nexus-ats
+      - ai-rewriter
     ports:
       - "8000:8000"
 
   core-worker:
     build:
-      context: ../services/core-api
+      context: ./services/core-api
     command: celery -A app.workers.celery_app.celery worker --loglevel=INFO
     environment:
       DATABASE_URL: postgresql+psycopg2://careeros:careeros@postgres:5432/careeros
       REDIS_URL: redis://redis:6379/0
       ATS_ENGINE_URL: http://ats-engine:8001
-      JOB_INTEL_URL: http://job-intel:8002
-      AI_INFERENCE_URL: http://ai-inference:8003
-      NEXUS_ATS_URL: http://nexus-ats:8010
+      AI_REWRITER_URL: http://ai-rewriter:8003
       JWT_SECRET: super-secret-change-me
       AUTO_CREATE_TABLES: "false"
       EXPORTS_DIR: /tmp/careeros-exports
       EXPORT_STORAGE: local
-    depends_on:
-      - redis
-      - postgres
-      - core-api
-
-  core-beat:
-    build:
-      context: ../services/core-api
-    command: celery -A app.workers.celery_app.celery beat --loglevel=INFO
-    environment:
-      DATABASE_URL: postgresql+psycopg2://careeros:careeros@postgres:5432/careeros
-      REDIS_URL: redis://redis:6379/0
-      ATS_ENGINE_URL: http://ats-engine:8001
-      JOB_INTEL_URL: http://job-intel:8002
-      AI_INFERENCE_URL: http://ai-inference:8003
-      NEXUS_ATS_URL: http://nexus-ats:8010
-      JWT_SECRET: super-secret-change-me
-      AUTO_CREATE_TABLES: "false"
-      EXPORTS_DIR: /tmp/careeros-exports
-      EXPORT_STORAGE: local
-      ALERT_DISPATCH_INTERVAL_MINUTES: "15"
     depends_on:
       - redis
       - postgres
@@ -79,19 +58,11 @@ services:
 
   ats-engine:
     build:
-      context: ../services/ats-engine
+      context: ./services/ats-engine
 
-  job-intel:
+  ai-rewriter:
     build:
-      context: ../services/job-intel
-
-  ai-inference:
-    build:
-      context: ../services/ai-inference
-
-  nexus-ats:
-    build:
-      context: ../../ATS/nexus_ats
+      context: ./services/ai-rewriter
 
 volumes:
   pg_data:

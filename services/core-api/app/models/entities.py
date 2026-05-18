@@ -73,55 +73,6 @@ class ATSScan(Base):
     user = relationship("User", back_populates="scans")
 
 
-class JobAlert(Base):
-    __tablename__ = "job_alerts"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
-    query: Mapped[str] = mapped_column(String(120), default="")
-    location: Mapped[str] = mapped_column(String(120), default="")
-    min_score: Mapped[int] = mapped_column(Integer, default=70)
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
-
-class ApplicationTrack(Base):
-    __tablename__ = "applications"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
-    company: Mapped[str] = mapped_column(String(200), nullable=False)
-    role: Mapped[str] = mapped_column(String(200), nullable=False)
-    status: Mapped[str] = mapped_column(String(50), default="applied")
-    notes: Mapped[str] = mapped_column(Text, default="")
-    applied_on: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
-
-class Subscription(Base):
-    __tablename__ = "subscriptions"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, unique=True, index=True)
-    plan_code: Mapped[str] = mapped_column(String(50), default="free")
-    status: Mapped[str] = mapped_column(String(50), default="active")
-    renews_on: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
-
-class PaymentTransaction(Base):
-    __tablename__ = "payment_transactions"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
-    provider: Mapped[str] = mapped_column(String(40), nullable=False)
-    plan_code: Mapped[str] = mapped_column(String(50), nullable=False)
-    amount_inr: Mapped[int] = mapped_column(Integer, nullable=False)
-    currency: Mapped[str] = mapped_column(String(10), default="INR")
-    external_ref: Mapped[str] = mapped_column(String(120), default="")
-    status: Mapped[str] = mapped_column(String(40), default="created")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
-
 class ResumeExportJob(Base):
     __tablename__ = "resume_export_jobs"
 
@@ -133,15 +84,3 @@ class ResumeExportJob(Base):
     error_message: Mapped[str] = mapped_column(Text, default="")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-
-class AlertNotification(Base):
-    __tablename__ = "alert_notifications"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
-    alert_id: Mapped[int] = mapped_column(ForeignKey("job_alerts.id"), nullable=False, index=True)
-    title: Mapped[str] = mapped_column(String(255), nullable=False)
-    body: Mapped[str] = mapped_column(Text, default="")
-    is_read: Mapped[bool] = mapped_column(Boolean, default=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

@@ -12,5 +12,3 @@ redis==5.1.1
 alembic==1.13.2
 boto3==1.34.162
 weasyprint==62.3
-stripe==10.12.0
-razorpay==1.4.2

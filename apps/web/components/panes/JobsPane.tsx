@@ -1,84 +1,29 @@
-import {
-  Alert,
-  AlertFormState,
-  Application,
-  AppFormState,
-  Dashboard,
-  JobMatch,
-  Notification,
-  StateSetter,
-} from "./types";
-import { JobAlertsCard } from "./sections/JobAlertsCard";
-import { DashboardApplicationsCard } from "./sections/DashboardApplicationsCard";
+import { Dashboard } from "./types";
+import { CardSection, MetricTile } from "../ui/primitives";
 
 type Props = {
-  jobs: JobMatch[];
-  refreshJobs: () => Promise<void>;
-  alertForm: AlertFormState;
-  setAlertForm: StateSetter<AlertFormState>;
-  onCreateAlert: () => Promise<void>;
-  refreshAlerts: () => Promise<void>;
-  onDispatchAlerts: () => Promise<void>;
-  refreshNotifications: () => Promise<void>;
-  alerts: Alert[];
-  onDeleteAlert: (id: number) => Promise<void>;
-  notifications: Notification[];
   dashboard: Dashboard;
   refreshDashboard: () => Promise<void>;
-  appForm: AppFormState;
-  setAppForm: StateSetter<AppFormState>;
-  onCreateApplication: () => Promise<void>;
-  refreshApplications: () => Promise<void>;
-  applications: Application[];
-  onDeleteApplication: (id: number) => Promise<void>;
 };
 
-export function JobsPane({
-  jobs,
-  refreshJobs,
-  alertForm,
-  setAlertForm,
-  onCreateAlert,
-  refreshAlerts,
-  onDispatchAlerts,
-  refreshNotifications,
-  alerts,
-  onDeleteAlert,
-  notifications,
-  dashboard,
-  refreshDashboard,
-  appForm,
-  setAppForm,
-  onCreateApplication,
-  refreshApplications,
-  applications,
-  onDeleteApplication,
-}: Props) {
+// Placeholder pane — slated to become the Placement Officer JD/Cohort manager
+// in Week 4. For now it surfaces the surviving readiness dashboard metrics.
+export function JobsPane({ dashboard, refreshDashboard }: Props) {
   return (
     <div className="grid pane-grid">
-      <JobAlertsCard
-        jobs={jobs}
-        refreshJobs={refreshJobs}
-        alertForm={alertForm}
-        setAlertForm={setAlertForm}
-        onCreateAlert={onCreateAlert}
-        refreshAlerts={refreshAlerts}
-        onDispatchAlerts={onDispatchAlerts}
-        refreshNotifications={refreshNotifications}
-        alerts={alerts}
-        onDeleteAlert={onDeleteAlert}
-        notifications={notifications}
-      />
-      <DashboardApplicationsCard
-        dashboard={dashboard}
-        refreshDashboard={refreshDashboard}
-        appForm={appForm}
-        setAppForm={setAppForm}
-        onCreateApplication={onCreateApplication}
-        refreshApplications={refreshApplications}
-        applications={applications}
-        onDeleteApplication={onDeleteApplication}
-      />
+      <CardSection title="Placement Readiness — Snapshot">
+        <p className="muted">
+          Officer-side cohort dashboard, batch upload, and JD manager land in Week 4.
+          For now, this pane shows aggregate readiness metrics for the signed-in account.
+        </p>
+        <div className="row"><button onClick={refreshDashboard}>Refresh</button></div>
+        <div className="metric-grid" style={{ marginTop: 12 }}>
+          <MetricTile label="Best ATS" value={dashboard.best_ats_score} />
+          <MetricTile label="Resumes" value={dashboard.total_resumes} />
+          <MetricTile label="Scans" value={dashboard.scans_performed} />
+          <MetricTile label="Profile %" value={dashboard.profile_completeness} />
+        </div>
+      </CardSection>
     </div>
   );
 }

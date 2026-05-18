@@ -4,9 +4,7 @@ import { useState } from "react";
 import { SectionNav } from "../components/SectionNav";
 import { AccountPane } from "../components/panes/AccountPane";
 import { ResumePane } from "../components/panes/ResumePane";
-import { NexusPane } from "../components/panes/NexusPane";
 import { JobsPane } from "../components/panes/JobsPane";
-import { BillingPane } from "../components/panes/BillingPane";
 import { ActivePane } from "../components/panes/types";
 import { useCareerOSWorkspace } from "../hooks/useCareerOSWorkspace";
 
@@ -18,8 +16,8 @@ export default function Page() {
     <main>
       <div className="top">
         <div>
-          <h1>CareerOS Workspace</h1>
-          <p className="muted">Clean console for profile, resume, ATS, jobs, payments, and NEXUS workflows</p>
+          <h1>CareerOS Campus AI</h1>
+          <p className="muted">Placement-readiness console — profile, resume, ATS scoring</p>
         </div>
         <strong>{workspace.status}</strong>
       </div>
@@ -62,68 +60,11 @@ export default function Page() {
         />
       ) : null}
 
-      {activePane === "nexus" ? <p className="pane-title">Hiring pipeline operations</p> : null}
-      {activePane === "nexus" ? (
-        <NexusPane
-          nexusReqForm={workspace.nexusReqForm}
-          setNexusReqForm={workspace.setNexusReqForm}
-          onCreateNexusReq={workspace.onCreateNexusReq}
-          refreshNexusReqs={workspace.refreshNexusReqs}
-          nexusReqs={workspace.nexusReqs}
-          nexusCandidateForm={workspace.nexusCandidateForm}
-          setNexusCandidateForm={workspace.setNexusCandidateForm}
-          onCreateNexusCandidate={workspace.onCreateNexusCandidate}
-          refreshNexusCandidates={workspace.refreshNexusCandidates}
-          nexusCandidates={workspace.nexusCandidates}
-          onCreateNexusApplication={workspace.onCreateNexusApplication}
-          refreshNexusApps={workspace.refreshNexusApps}
-          nexusApps={workspace.nexusApps}
-          onMoveNexusAppStage={workspace.onMoveNexusAppStage}
-          onRunNexusAiMatch={workspace.onRunNexusAiMatch}
-          nexusMatchResult={workspace.nexusMatchResult}
-          onCreateNexusInterview={workspace.onCreateNexusInterview}
-          onSubmitNexusScorecard={workspace.onSubmitNexusScorecard}
-          onCreateNexusOffer={workspace.onCreateNexusOffer}
-          onSendNexusOffer={workspace.onSendNexusOffer}
-          refreshNexusEvents={workspace.refreshNexusEvents}
-          latestInterviewId={workspace.latestInterviewId}
-          latestOfferId={workspace.latestOfferId}
-          nexusEvents={workspace.nexusEvents}
-        />
-      ) : null}
-
-      {activePane === "jobs" ? <p className="pane-title">Matching, alerts, notifications, and application tracking</p> : null}
+      {activePane === "jobs" ? <p className="pane-title">Placement readiness snapshot</p> : null}
       {activePane === "jobs" ? (
         <JobsPane
-          jobs={workspace.jobs}
-          refreshJobs={workspace.refreshJobs}
-          alertForm={workspace.alertForm}
-          setAlertForm={workspace.setAlertForm}
-          onCreateAlert={workspace.onCreateAlert}
-          refreshAlerts={workspace.refreshAlerts}
-          onDispatchAlerts={workspace.onDispatchAlerts}
-          refreshNotifications={workspace.refreshNotifications}
-          alerts={workspace.alerts}
-          onDeleteAlert={workspace.onDeleteAlert}
-          notifications={workspace.notifications}
           dashboard={workspace.dashboard}
           refreshDashboard={workspace.refreshDashboard}
-          appForm={workspace.appForm}
-          setAppForm={workspace.setAppForm}
-          onCreateApplication={workspace.onCreateApplication}
-          refreshApplications={workspace.refreshApplications}
-          applications={workspace.applications}
-          onDeleteApplication={workspace.onDeleteApplication}
-        />
-      ) : null}
-
-      {activePane === "billing" ? <p className="pane-title">Plans, checkout, and roadmap visibility</p> : null}
-      {activePane === "billing" ? (
-        <BillingPane
-          myPlan={workspace.myPlan}
-          plans={workspace.plans}
-          onSubscribe={workspace.onSubscribe}
-          onCheckout={workspace.onCheckout}
         />
       ) : null}
     </main>

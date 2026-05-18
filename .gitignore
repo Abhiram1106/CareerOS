@@ -21,6 +21,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+tsconfig.tsbuildinfo
 
 # Python
 __pycache__/
@@ -51,3 +52,17 @@ logs/
 
 # Docker
 docker-data/
+
+# AI / IDE assistant runtime state (local only — protocol docs like AGENTS.md, CLAUDE.md stay tracked)
+.omnix/
+.obsidian-ai-memory/
+.cursor/
+.claude/
+
+# Stray parser scratch dirs
+**/.tmp_docx_extract*/
+**/.tmp_pdf_extract*/
+
+# Generated resume exports
+**/exports/*.pdf
+**/exports/*.docx

@@ -44,49 +44,5 @@ class ATSScanResponse(BaseModel):
     contact: float
 
 
-class JobAlertCreate(BaseModel):
-    query: str
-    location: str
-    min_score: int = 70
-
-
-class JobAlertResponse(BaseModel):
-    id: int
-    query: str
-    location: str
-    min_score: int
-    is_active: bool
-
-
-class ApplicationCreate(BaseModel):
-    company: str
-    role: str
-    status: str = "applied"
-    notes: str = ""
-
-
-class ApplicationUpdate(BaseModel):
-    status: str
-    notes: str = ""
-
-
-class ApplicationResponse(BaseModel):
-    id: int
-    company: str
-    role: str
-    status: str
-    notes: str
-    applied_on: str
-
-
-class SubscribeRequest(BaseModel):
-    plan_code: str
-
-
-class CheckoutRequest(BaseModel):
-    provider: str
-    plan_code: str
-
-
 class ExportResumeRequest(BaseModel):
     resume_id: int

@@ -1,8 +1,8 @@
-"""initial schema
+"""initial schema — placement-readiness core
 
 Revision ID: 0001_initial
 Revises:
-Create Date: 2026-04-21
+Create Date: 2026-05-19
 """
 
 from alembic import op
@@ -77,56 +77,6 @@ def upgrade() -> None:
     )
 
     op.create_table(
-        "job_alerts",
-        sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("user_id", sa.Integer(), nullable=False),
-        sa.Column("query", sa.String(length=120), nullable=False),
-        sa.Column("location", sa.String(length=120), nullable=False),
-        sa.Column("min_score", sa.Integer(), nullable=False),
-        sa.Column("is_active", sa.Boolean(), nullable=False),
-        sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
-    )
-
-    op.create_table(
-        "applications",
-        sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("user_id", sa.Integer(), nullable=False),
-        sa.Column("company", sa.String(length=200), nullable=False),
-        sa.Column("role", sa.String(length=200), nullable=False),
-        sa.Column("status", sa.String(length=50), nullable=False),
-        sa.Column("notes", sa.Text(), nullable=False),
-        sa.Column("applied_on", sa.DateTime(), nullable=False),
-        sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
-    )
-
-    op.create_table(
-        "subscriptions",
-        sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("user_id", sa.Integer(), nullable=False),
-        sa.Column("plan_code", sa.String(length=50), nullable=False),
-        sa.Column("status", sa.String(length=50), nullable=False),
-        sa.Column("renews_on", sa.DateTime(), nullable=False),
-        sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
-        sa.UniqueConstraint("user_id"),
-    )
-
-    op.create_table(
-        "payment_transactions",
-        sa.Column("id", sa.Integer(), primary_key=True),
-        sa.Column("user_id", sa.Integer(), nullable=False),
-        sa.Column("provider", sa.String(length=40), nullable=False),
-        sa.Column("plan_code", sa.String(length=50), nullable=False),
-        sa.Column("amount_inr", sa.Integer(), nullable=False),
-        sa.Column("currency", sa.String(length=10), nullable=False),
-        sa.Column("external_ref", sa.String(length=120), nullable=False),
-        sa.Column("status", sa.String(length=40), nullable=False),
-        sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
-    )
-
-    op.create_table(
         "resume_export_jobs",
         sa.Column("id", sa.Integer(), primary_key=True),
         sa.Column("user_id", sa.Integer(), nullable=False),
@@ -143,10 +93,6 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_table("resume_export_jobs")
-    op.drop_table("payment_transactions")
-    op.drop_table("subscriptions")
-    op.drop_table("applications")
-    op.drop_table("job_alerts")
     op.drop_table("ats_scans")
     op.drop_table("resumes")
     op.drop_table("career_profiles")

@@ -10,9 +10,7 @@ export function SectionNav({ activePane, onChange }: Props) {
     <div className="section-nav">
       <button className={activePane === "account" ? "active" : ""} onClick={() => onChange("account")}>Account</button>
       <button className={activePane === "resume" ? "active" : ""} onClick={() => onChange("resume")}>Resume & ATS</button>
-      <button className={activePane === "nexus" ? "active" : ""} onClick={() => onChange("nexus")}>NEXUS ATS</button>
       <button className={activePane === "jobs" ? "active" : ""} onClick={() => onChange("jobs")}>Jobs</button>
-      <button className={activePane === "billing" ? "active" : ""} onClick={() => onChange("billing")}>Billing</button>
     </div>
   );
 }

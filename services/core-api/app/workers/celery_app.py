@@ -1,6 +1,4 @@
-from datetime import timedelta
-
-from ..config import ALERT_DISPATCH_INTERVAL_MINUTES, REDIS_URL
+from ..config import REDIS_URL
 
 try:
     from celery import Celery
@@ -11,12 +9,6 @@ try:
         result_serializer="json",
         accept_content=["json"],
         timezone="UTC",
-        beat_schedule={
-            "dispatch-job-alerts": {
-                "task": "app.workers.tasks.dispatch_job_alerts",
-                "schedule": timedelta(minutes=max(1, ALERT_DISPATCH_INTERVAL_MINUTES)),
-            }
-        },
     )
 except Exception:
     class _FakeTask:
