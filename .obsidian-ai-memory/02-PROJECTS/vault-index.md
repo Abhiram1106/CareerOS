@@ -80,6 +80,7 @@ Most recent sessions (newest first):
 
 | Session file | Date | Tool | Type | Key outcome |
 |---|---|---|---|---|
+| `01-SESSIONS/2026-05-20/session-1600-claude.md` | 2026-05-20 | claude | project-setup | .cursor power-up (AGENTS, context/, agents/) + all pending changes pushed to origin |
 | `01-SESSIONS/2026-05-20/session-1430-cursor.md` | 2026-05-20 | cursor | feature-build + frontend | Enterprise shell, hero page, workspace tabs, `frontend-ux.md` |
 | `01-SESSIONS/2026-05-20/session-0001-claude.md` | 2026-05-20 | claude | feature-build | W1.3 migration + W1.4 role auth + W1.5 resume parser — all Week 1 tasks done |
 | `01-SESSIONS/2026-05-19/session-1800-claude.md` | 2026-05-19 | claude | docs | AI agent docs personalization + strict memory protocol |
