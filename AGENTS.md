@@ -36,14 +36,32 @@ Routing: {workflow} | Agents: {roles}
 | 7 | `.obsidian-ai-memory/05-ARCHITECTURE/` | architecture tasks |
 | 8 | `.obsidian-ai-memory/01-SESSIONS/` last 3 | context continuity |
 
-**After work** — write only when condition is true:
+**After work — STRICT write enforcement:**
 
-| Condition | Write to |
-|---|---|
-| Meaningful files changed | `01-SESSIONS/YYYY-MM-DD/session-HHMM-claude.md` |
-| Bug fixed | `03-ERRORS/error-memory.md` (append) |
-| Non-trivial decision | `04-DECISIONS/decisions.md` (append) |
-| Project state changed | `02-PROJECTS/current-state.md` (overwrite) |
+The memory write is **not optional**. Every meaningful session ends with
+a committed vault update. See `MEMORY-WRITE-PROTOCOL.md` for the full
+format. The short rules:
+
+| Condition | Write to | How |
+|---|---|---|
+| Meaningful files changed | `01-SESSIONS/YYYY-MM-DD/session-HHMM-<tool>.md` | Create from template |
+| Bug fixed | `03-ERRORS/error-memory.md` | Append — never overwrite |
+| Non-trivial decision | `04-DECISIONS/decisions.md` | Append — never overwrite |
+| Project state changed | `02-PROJECTS/current-state.md` | Overwrite (it's a snapshot) |
+| Goal completed | `02-PROJECTS/active-goals.md` | Mark `[ ]` → `[x]` |
+| Any of the above | `02-PROJECTS/vault-index.md` | Update session table + counts |
+
+**After writing — always commit the vault:**
+```
+git add .obsidian-ai-memory/
+git commit -m "memory: YYYY-MM-DD session digest [+ error/decision if applicable]"
+```
+Use prefix `memory:` so vault commits are easy to filter from code commits.
+
+**Cross-platform guarantee**: when this protocol is followed, any AI tool
+(Claude Code, Cursor, Copilot) picking up the next session will have exact
+verification state, next 3 tasks, any new bugs, and any new decisions —
+without the user needing to re-explain anything.
 
 ---
 

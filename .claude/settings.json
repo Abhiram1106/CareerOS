@@ -2,5 +2,29 @@
   "permissions": {
     "allow": [],
     "deny": []
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"\n[CareerOS Memory] Session ending. Before you close:\n  1. Write session digest → .obsidian-ai-memory/01-SESSIONS/YYYY-MM-DD/session-HHMM-claude.md\n  2. Append any bug fixes → 03-ERRORS/error-memory.md\n  3. Append any decisions → 04-DECISIONS/decisions.md\n  4. Update active-goals.md checkboxes if goals completed\n  5. Run: git add .obsidian-ai-memory/ && git commit -m 'memory: $(date +%Y-%m-%d) session digest'\n  See .obsidian-ai-memory/MEMORY-WRITE-PROTOCOL.md for the full protocol.\""
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"[CareerOS] Running Bash tool — ensure memory was read at session start (MEMORY-READ-PROTOCOL.md)\""
+          }
+        ]
+      }
+    ]
   }
 }
