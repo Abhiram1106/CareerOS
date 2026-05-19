@@ -1,0 +1,58 @@
+# CareerOS Campus AI — ownership map
+#
+# Solo build today; CODEOWNERS exists so the pattern is in place for the
+# moment a second engineer joins. GitHub uses the LAST matching pattern
+# per file, so ordering matters: most specific at the bottom.
+
+# Default: project owner reviews everything that isn't otherwise claimed.
+*                                       @Abhiram1106
+
+# --- Applications ---
+/apps/web/                              @Abhiram1106
+
+# --- Backend services ---
+/services/                              @Abhiram1106
+/services/core-api/                     @Abhiram1106
+/services/ats-engine/                   @Abhiram1106
+/services/ai-rewriter/                  @Abhiram1106
+
+# --- Shared packages ---
+/packages/                              @Abhiram1106
+/packages/contracts/                    @Abhiram1106
+/packages/scoring/                      @Abhiram1106
+/packages/ts-types/                     @Abhiram1106
+
+# --- Engineering platform (sensitive — touch with care) ---
+/platform/                              @Abhiram1106
+/platform/ci/                           @Abhiram1106
+/platform/build/                        @Abhiram1106
+/platform/omnix/                        @Abhiram1106
+/.github/                               @Abhiram1106
+/.github/workflows/                     @Abhiram1106
+
+# --- Infrastructure ---
+/infra/                                 @Abhiram1106
+/docker-compose.yml                     @Abhiram1106
+/.env.example                           @Abhiram1106
+
+# --- Docs (treated as code; owner per area as it grows) ---
+/docs/                                  @Abhiram1106
+/docs/adr/                              @Abhiram1106
+/docs/pitch/                            @Abhiram1106
+/docs/benchmarks/                       @Abhiram1106
+
+# --- AI / IDE assistant configuration ---
+# Project-shared Claude/Omnix/Cursor config. Personal overrides
+# (settings.local.json, CLAUDE.local.md) are gitignored and not reviewed.
+/.claude/                               @Abhiram1106
+/.cursor/rules/                         @Abhiram1106
+/.omnix/agents/                         @Abhiram1106
+/.omnix/workflows/                      @Abhiram1106
+/.omnix/commands/                       @Abhiram1106
+/.omnix/settings/                       @Abhiram1106
+/.obsidian-ai-memory/                   @Abhiram1106
+/AGENTS.md                              @Abhiram1106
+/CLAUDE.md                              @Abhiram1106
+
+# --- Tests ---
+/tests/                                 @Abhiram1106

@@ -1,0 +1,23 @@
+---
+description: Backend engineering rules
+globs:
+  - "server/**"
+  - "api/**"
+  - "lib/**"
+  - "src/server/**"
+  - "src/api/**"
+alwaysApply: false
+---
+
+# Backend Rules — Omnix Runtime
+
+Source: `packages/core/standards/backend.md`
+
+- Validate input at the boundary (Zod / Pydantic / equivalent).
+- Authenticate + authorize before business logic — never after.
+- Domain errors are typed and mapped to HTTP codes at the edge.
+- Never leak stack traces to clients.
+- Every error log has a correlation/request ID.
+- Don't block requests on slow work — enqueue.
+- Config from env vars, validated at startup. Fail fast on missing required config.
+- Structured logs, RED metrics, OpenTelemetry-compatible tracing.

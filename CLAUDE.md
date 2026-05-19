@@ -1,20 +1,34 @@
-# CLAUDE.md — Omnix
+# CLAUDE.md — CareerOS Campus AI
 
-> Claude Code reads this file on every session.
+> Claude Code auto-loads this file on every session. It defers to `AGENTS.md`
+> for the Omnix startup protocol and to `.claude/CLAUDE.md` for project
+> Claude-specific config.
 
 @AGENTS.md
 
-## Claude Code-specific settings
+## Project at a glance
 
-**Memory retrieval mode:** balanced by default. Switch to `deep` for architecture changes, `debugging` for error investigation, `minimal` for one-liner answers.
+- **Name**: CareerOS Campus AI
+- **Positioning**: Intel-optimized placement-readiness operating layer for Indian colleges
+- **Stack**: Next.js 14 (`apps/web`) · FastAPI (`services/core-api`, `services/ats-engine`, `services/ai-rewriter`) · PostgreSQL · Redis · Celery · WeasyPrint
+- **Monorepo layout**: `apps/` · `packages/` · `services/` · `infra/` · `platform/` · `docs/` · `tests/`
+- **Plan**: `C:\Users\ADMIN\.claude\plans\brutal-upgrade-direction-make-humble-parnas.md`
+- **ADRs**: `docs/adr/`
 
-**Active skills** (uncomment to activate):
-<!-- @packages/core/skills/debugging-specialist/SKILL.md -->
-<!-- @packages/core/skills/test-architect/SKILL.md -->
-<!-- @packages/core/skills/security-threat-modeler/SKILL.md -->
-<!-- @packages/core/skills/context-manager/SKILL.md -->
+## Project Claude config
 
-**Completion gate — do not say "done" until:**
+See `.claude/CLAUDE.md` for Claude Code-specific instructions, modular rules
+(`code-style.md`, `frontend/react.md`), and the project MCP config.
+
+## Memory retrieval mode
+
+`balanced` by default. Switch to `deep` for architecture changes, `debugging`
+for error investigation, `minimal` for one-liner answers.
+
+## Completion gate
+
+Don't say "done" until:
+
 - [ ] Changed files are correct and match intent
 - [ ] Tests/typecheck ran (state result or reason skipped)
 - [ ] Docs updated if behavior changed

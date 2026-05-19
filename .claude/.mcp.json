@@ -1,0 +1,5 @@
+{
+  "$schema": "https://json.schemastore.org/mcp.json",
+  "_comment": "Project-scoped MCP servers. Empty by default. Add servers here (postgres, github, etc.) when the project needs them. Each server's auth is collaborator-specific; don't commit secrets — use env interpolation.",
+  "mcpServers": {}
+}

@@ -1,0 +1,24 @@
+---
+description: Testing rules
+globs:
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "**/*.spec.ts"
+  - "**/*.spec.tsx"
+  - "tests/**"
+  - "test/**"
+alwaysApply: false
+---
+
+# Testing Rules — Omnix Runtime
+
+Source: `packages/core/standards/testing.md`
+
+- Unit: fast, no IO, no framework. Test behavior, not implementation.
+- Integration: real DB/queue in container.
+- E2E: critical flows only, single-digit count.
+- One reason to fail per test.
+- Every bug fix gets a regression test.
+- No shared mutable state between tests.
+- Flaky tests are bugs — quarantine, fix, or delete. Never retry-until-green.
+- Mock at boundaries (HTTP, time, randomness). Don't mock the thing under test.

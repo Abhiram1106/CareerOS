@@ -1,0 +1,25 @@
+---
+description: Frontend engineering rules
+globs:
+  - "**/*.tsx"
+  - "**/*.jsx"
+  - "**/*.ts"
+  - "**/*.css"
+  - "**/*.module.css"
+  - "app/**"
+  - "src/**"
+alwaysApply: false
+---
+
+# Frontend Rules — Omnix Runtime
+
+Source: `packages/core/standards/frontend.md`
+
+- TypeScript strict. No `any`.
+- Tailwind + design tokens. No inline styles for non-trivial UI.
+- shadcn/ui or Radix primitives. Do not reinvent.
+- Server/client component split is intentional — not accidental.
+- Every interactive element is keyboard-reachable and announces correctly.
+- Test with Testing Library; query by role.
+- Measure before optimizing.
+- No layout shift: reserve space for images, async content, fonts.
