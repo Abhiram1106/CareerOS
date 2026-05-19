@@ -7,9 +7,9 @@
 
 - [x] **Phase 1**: archive branch + cut billing/nexus/job-intel/legacy
 - [x] **Phase 2**: monorepo skeleton (apps/packages/services/infra/platform/docs/tests) + .claude/ + CODEOWNERS + README + Omnix memory populated
-- [ ] **W1.3 — Real Alembic delta migration**: add colleges, departments, resume_sections, resume_evidence, job_descriptions, scorecards, recommendations, batches, batch_resumes, events_audit, benchmark_runs.
-- [ ] **W1.4 — Role-based auth**: add `role` claim to JWT; gate routes by `student` / `officer` / `admin`.
-- [ ] **W1.5 — Resume upload + parser**: build `services/resume-parser` with pdfplumber + python-docx + spaCy section extractor; wire `/resumes/parse` endpoint in core-api; render extracted sections in `apps/web/(student)/resume/`.
+- [x] **W1.3 — Real Alembic delta migration**: add colleges, departments, resume_sections, resume_evidence, job_descriptions, scorecards, recommendations, batches, batch_resumes, events_audit, benchmark_runs.
+- [x] **W1.4 — Role-based auth**: add `role` claim to JWT; gate routes by `student` / `officer` / `admin`.
+- [x] **W1.5 — Resume upload + parser**: build `services/resume-parser` with pdfplumber + python-docx + section extractor; wire `/resumes/upload` endpoint in core-api; render extracted sections in `apps/web`.
 
 ## Up next (Week 2)
 
