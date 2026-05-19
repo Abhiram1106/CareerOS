@@ -1,32 +1,46 @@
 ---
-description: Omnix Runtime universal project rules
+description: CareerOS Campus AI — universal project rules (always active)
 globs:
   - "**/*"
 alwaysApply: true
 ---
 
-# Project Rules — Omnix Runtime
+# CareerOS Campus AI — Project Rules
 
-## Startup protocol
+## What this project is
 
-Execute `STARTUP_PROTOCOL.md` before every response:
-detect Omnix Runtime → identify project type → retrieve memory (balanced) → auto-route → activate agents → startup block → work.
+Intel-optimized placement-readiness operating layer for Indian colleges.
+Demo loop: resumes in → ATS-safe + JD-matched + proof-linked scoring out →
+student fixes + placement-officer cohort dashboard → Intel benchmark panel.
 
-> "The user gives a goal. The Omnix Runtime determines workflow, agents, context, checks, and memory updates."
+NOT: a job board, LinkedIn scraper, recruiter platform, or billing product.
 
-## Memory loop
+## Startup — execute before every response
 
-**Before:** Read `.obsidian-ai-memory/02-PROJECTS/project-context.md`, last 3 session digests, `03-ERRORS/error-memory.md`.
-**After:** Write session digest. Update error/decision memory as applicable.
+1. Read `.obsidian-ai-memory/02-PROJECTS/project-context.md`
+2. Read `.obsidian-ai-memory/02-PROJECTS/active-goals.md`
+3. Read `.obsidian-ai-memory/03-ERRORS/error-memory.md`
+4. Read `.obsidian-ai-memory/03-ERRORS/anti-patterns.md`
+5. Emit startup block, then work
 
-## Rules
+Full protocol: `STARTUP_PROTOCOL.md`
 
-- Retrieve memory before answering or editing.
-- Never repeat known errors (check `03-ERRORS/`).
-- Verify before claiming done.
-- Write session digest after every meaningful session.
-- Ask before destructive commands.
-- Never expose secrets.
-- Update docs when behavior changes.
+## Non-negotiable rules
+
+- Read memory before every response or edit
+- Never repeat known errors (check `03-ERRORS/error-memory.md` first)
+- Never expose secrets — no JWT secrets, DB passwords, API keys in any file
+- Verify before "done": `tsc --noEmit` clean (apps/web) + Python AST-parse clean (services/*)
+- No fabrication in `services/ai-rewriter` — unsupported claims go in `unsupported_claims[]`
+- PlacementReadinessScore formula lives in `packages/scoring/` only — never duplicated
+- Confirm before destructive ops: `rm`, `DROP TABLE`, force push, `git reset --hard`, Alembic on live DB
+- One concern per commit; no WIP commits on `main`
+- Update docs when behaviour changes
+- Write session digest after every meaningful session (> 15 min or meaningful changes)
+
+## Current-week focus
+
+Always check `.obsidian-ai-memory/02-PROJECTS/active-goals.md` for the active week.
+Do not jump ahead to later-week tasks unless the user explicitly asks.
 
 Full rules: `AGENTS.md` · `AI_RULES.md` · `STARTUP_PROTOCOL.md`

@@ -1,24 +1,52 @@
 ---
-description: Testing rules
+description: Testing rules for CareerOS Campus AI
 globs:
-  - "**/*.test.ts"
-  - "**/*.test.tsx"
-  - "**/*.spec.ts"
-  - "**/*.spec.tsx"
+  - "services/**/tests/**/*.py"
+  - "apps/web/__tests__/**/*.ts"
+  - "apps/web/__tests__/**/*.tsx"
   - "tests/**"
-  - "test/**"
 alwaysApply: false
 ---
 
-# Testing Rules — Omnix Runtime
+# Testing Rules — CareerOS Campus AI
 
-Source: `packages/core/standards/testing.md`
+## Test layout
 
-- Unit: fast, no IO, no framework. Test behavior, not implementation.
-- Integration: real DB/queue in container.
-- E2E: critical flows only, single-digit count.
+- Unit + integration tests next to the code: `services/<svc>/tests/`, `apps/web/__tests__/`.
+- Cross-domain end-to-end: `tests/` at the repo root only.
+- Resume parsing fixtures in `services/resume-parser/tests/fixtures/`. Must include:
+  single-column well-formed, Canva two-column, scanned/image-only, DOCX. Each new
+  parsing edge case found in the wild gets a fixture added here.
+
+## Python tests
+
+- Unit: fast, no IO, no real DB. Test behaviour, not implementation detail.
+- Integration: real Postgres + Redis in Docker. Never mock the database.
+  (Anti-pattern: mock DB test passed while prod migration failed — see `anti-patterns.md`.)
 - One reason to fail per test.
 - Every bug fix gets a regression test.
 - No shared mutable state between tests.
-- Flaky tests are bugs — quarantine, fix, or delete. Never retry-until-green.
-- Mock at boundaries (HTTP, time, randomness). Don't mock the thing under test.
+- Flaky tests are bugs: quarantine → fix → or delete. Never `retry-until-green`.
+
+## TypeScript / React tests
+
+- React Testing Library. Query by role first, then label, then testId.
+- Unit-test custom hooks (`useStudentWorkspace`, `useOfficerWorkspace`) in isolation.
+- Mock at the `lib/api.ts` boundary only — not `fetch` itself, not internal components.
+- Never mock the component or hook under test.
+
+## Critical test requirements
+
+- **PlacementReadinessScore**: verify weighted output for known inputs. Regression tests
+  for the formula in `packages/scoring/` — score drift breaks the "score lift" demo story.
+- **Alembic migrations**: every migration must pass `upgrade` + `downgrade` on a fresh empty DB.
+- **AI rewriter guardrails**: unsupported claims must appear in `unsupported_claims[]`,
+  never in `section_rewrites[]`. Test this explicitly for each guardrail rule.
+- **Intel benchmark accuracy**: baseline and Intel-optimised paths must produce the same
+  scores (within 1% delta). Accuracy regression → fail the benchmark, not just report it.
+
+## What not to test
+
+- FastAPI plumbing (framework-guaranteed).
+- Pydantic validation (library-guaranteed).
+- SQLAlchemy ORM query mechanics (library-guaranteed).

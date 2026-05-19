@@ -1,139 +1,127 @@
-# AGENTS.md — Omnix
+# AGENTS.md — CareerOS Campus AI
 
-> Source of truth for all AI tool adapters. Every adapter points here.
-> Read this file at the start of every session.
+> Source of truth for all AI tool adapters (Claude Code, Cursor, Copilot, Omnix).
+> Every adapter reads this file at session start before doing anything else.
 
 ## Startup protocol
 
-Before any response, edit, or command:
+1. Confirm repo markers: `AGENTS.md` + `.obsidian-ai-memory/` + `pnpm-workspace.yaml` + `services/core-api/`
+2. Read memory in priority order (see Memory loop).
+3. Route to the correct workflow.
+4. Activate agent roles.
+5. Emit the startup block, then begin work.
 
-1. Detect Omnix markers in this project (`.obsidian-ai-memory/`, `.omnix/`, `AGENTS.md`).
-2. Identify project type and stack from manifests.
-3. Retrieve relevant memory from `.obsidian-ai-memory/` using task-type-aware priority:
-   - **debug/error task** → load error-memory first, then project-context
-   - **feature task** → load project-context + active-goals first
-   - **architecture task** → load 05-ARCHITECTURE/ + decisions first
-   - **default** → project-context → active-goals → last 3 sessions → error-memory
-4. Auto-route to the correct workflow based on request signals.
-5. Activate required agent roles (see routing table below).
-6. Emit a compact startup block, then begin work.
-
-**Startup block format:**
+**Startup block (emit every session):**
 ```
-[Omnix] Project: {name} | Stack: {stack} | Mode: {retrieval-mode}
-Loaded: {files-loaded} | Known errors: {N} | Last session: {date}
+[CareerOS Campus AI] Stack: Next.js 14 + FastAPI + Postgres/Redis | Mode: {mode}
+Loaded: {files} | Known errors: {N} | Last session: {date}
+Week {N} goal: {one-line from active-goals.md}
 Routing: {workflow} | Agents: {roles}
 ```
 
+---
+
 ## Memory loop
 
-**Before work** — retrieve in this priority order, stop when budget hit (balanced = ~1500 tokens):
-1. `02-PROJECTS/project-context.md` — always
-2. `02-PROJECTS/active-goals.md` — always
-3. `02-PROJECTS/vault-index.md` — if exists (lightweight session index)
-4. `03-ERRORS/error-memory.md` — always (never repeat known errors)
-5. `03-ERRORS/anti-patterns.md` — always
-6. `04-DECISIONS/decisions.md` — for architecture/design tasks
-7. `05-ARCHITECTURE/` — for architecture tasks
-8. `01-SESSIONS/` last 3 — for context continuity
+**Before work** — retrieve in order, stop at ~1 500-token budget:
 
-**After work** — write only when the condition applies:
-- Session digest → `01-SESSIONS/YYYY-MM-DD/session-HHMM-<tool>.md` (meaningful work only)
-- Error fix → `03-ERRORS/error-memory.md` (always when a bug is fixed)
-- Decision → `04-DECISIONS/decisions.md` (non-trivial choices with rationale)
-- State change → `02-PROJECTS/current-state.md` (when project status changes)
+| # | File | Load when |
+|---|---|---|
+| 1 | `.obsidian-ai-memory/02-PROJECTS/project-context.md` | always |
+| 2 | `.obsidian-ai-memory/02-PROJECTS/active-goals.md` | always |
+| 3 | `.obsidian-ai-memory/02-PROJECTS/vault-index.md` | always |
+| 4 | `.obsidian-ai-memory/03-ERRORS/error-memory.md` | always |
+| 5 | `.obsidian-ai-memory/03-ERRORS/anti-patterns.md` | always |
+| 6 | `.obsidian-ai-memory/04-DECISIONS/decisions.md` | architecture / design tasks |
+| 7 | `.obsidian-ai-memory/05-ARCHITECTURE/` | architecture tasks |
+| 8 | `.obsidian-ai-memory/01-SESSIONS/` last 3 | context continuity |
+
+**After work** — write only when condition is true:
+
+| Condition | Write to |
+|---|---|
+| Meaningful files changed | `01-SESSIONS/YYYY-MM-DD/session-HHMM-claude.md` |
+| Bug fixed | `03-ERRORS/error-memory.md` (append) |
+| Non-trivial decision | `04-DECISIONS/decisions.md` (append) |
+| Project state changed | `02-PROJECTS/current-state.md` (overwrite) |
+
+---
 
 ## Mandatory rules
 
-**Position-critical rules (read first, highest recall):**
+1. **Memory first.** Read vault before any response or edit. Prevents repeated mistakes.
+2. **No repeated errors.** Check `03-ERRORS/error-memory.md` before diagnosing anything.
+3. **No secrets.** No JWT secrets, DB passwords, API keys, or private keys in any file — not even in comments.
+4. **Confirm before destructive ops.** Stop and ask before: `rm`, `DROP TABLE`, force push, `git reset --hard`, Alembic on non-empty DB.
+5. **Verify before "done".** `tsc --noEmit` clean on `apps/web`. All `services/*.py` AST-parse (or import) clean. State result explicitly.
+6. **No fabrication in rewriter.** `services/ai-rewriter` must never invent metrics, tools, certifications, internships, or team size. Flag them in `unsupported_claims[]`.
+7. **Score formula in `packages/scoring/` only.** Never duplicate PlacementReadinessScore in service code — import the shared package.
+8. **One concern per commit.** No WIP or "broken" commits on `main`.
+9. **Update docs with behaviour changes.** Changed endpoint without updated README or ADR is incomplete.
+10. **Write a session digest** after sessions > 15 min or with meaningful changes.
 
-1. **Always retrieve memory before answering or editing.** Context from vault prevents repeated mistakes.
-2. **Never repeat known errors.** Check `03-ERRORS/error-memory.md` before diagnosing.
-3. **Never expose secrets.** No API keys, tokens, passwords, or private keys in any file.
-4. **Ask before destructive operations.** Confirm before: `rm`, `drop table`, force push, hard reset, migrations.
-5. **Run verification before claiming done.** Tests pass + typecheck clean + no regressions.
+---
 
-**Supporting rules:**
+## Routing table — CareerOS-specific signals
 
-6. Never ignore existing project conventions (naming, error handling, async patterns).
-7. Update docs when behavior or setup changes.
-8. Prefer small safe changes over large rewrites.
-9. Record assumptions made (they may be wrong).
-10. Record unresolved questions (they may block others).
-11. Update memory after meaningful work.
+| Signal | Workflow | Roles |
+|---|---|---|
+| resume-parser / pdfplumber / section extractor | feature-build + database | backend + architect + reviewer |
+| match-engine / TF-IDF / embeddings / sklearnex | feature-build + intel | backend + data-science + reviewer |
+| officer dashboard / batch / readiness heatmap | feature-build + frontend | frontend + backend + reviewer |
+| intel-bench / OpenVINO / benchmark / latency | perf + intel | data-science + devops + reviewer |
+| placement readiness score / scoring formula | feature-build | backend + data-science |
+| proof-linked rewrite / AI rewriter / guardrails | feature-build | backend + security + reviewer |
+| alembic / migration / schema / new table | feature-build + database | database + backend |
+| JWT / role / RBAC / auth gate | feature-build + security | security + backend |
+| DPDP / audit log / consent / retention | code-review + security | security + reviewer |
+| ATS parse safety / heuristics / penalty | feature-build | backend + reviewer |
+| pane / component / UI / officer surface | feature-build + frontend | frontend + reviewer |
+| tsc error / type error / TypeScript | bug-fix | frontend + reviewer |
+| error / broken / crash / exception | debug → bug-fix | debugger + security |
+| slow / performance / optimize | debug + perf | data-science + devops |
+| review / audit / quality | code-review | reviewer + security |
+| refactor / clean / simplify | refactor | architect + reviewer |
+| docker / compose / deploy | deployment | devops |
+| docs / ADR / README / runbook | docs-update | docs |
 
-## Agent routing
+---
 
-| Request signal | Workflow | Activate roles |
-|----------------|----------|----------------|
-| build / add / implement / create | feature-build | architect + fullstack + reviewer |
-| error / broken / crash / failing / exception | debugging → bug-fix | debugger + security |
-| test failing / test broken | bug-fix + testing | debugger + qa |
-| review / audit / check quality | code-review | reviewer + security |
-| refactor / clean / improve / simplify | refactor | architect + reviewer |
-| deploy / ship / release / publish | deployment | devops (specialized) |
-| slow / performance / optimize | debugging + performance | debugger + performance (specialized) |
-| docs / readme / document / runbook | docs-update | docs (specialized) |
-| security / auth / vulnerability / CVE | code-review + security | security + reviewer |
-| schema / migration / database / query | feature-build + database | architect + database (specialized) |
-| first run / empty vault / setup | project-onboarding | fullstack |
+## Stack map (use for glob/routing accuracy)
 
-## Safety rules
+| Layer | Tech | Canonical path |
+|---|---|---|
+| Web app | Next.js 14 app router, TypeScript strict, no Tailwind | `apps/web/` |
+| Web panes | React client components, `useCareerOSWorkspace` hook | `apps/web/components/panes/` |
+| UI primitives | `CardSection`, `FormField`, `MetricTile` | `apps/web/components/ui/primitives.tsx` |
+| API client | Typed `lib/api.ts` — never `fetch()` inline in components | `apps/web/lib/api.ts` |
+| Types | `ActivePane`, `Scan`, `Dashboard`, `History`, `ResumeItem` | `apps/web/components/panes/types.ts` |
+| Core API | FastAPI 0.115, SQLAlchemy 2.0 mapped-column, Pydantic v2 | `services/core-api/app/main.py` |
+| Auth | JWT (python-jose), Bearer, SessionTokens table | `services/core-api/app/services/auth.py` |
+| DB models | SQLAlchemy mapped-column style | `services/core-api/app/models/entities.py` |
+| Pydantic schemas | Pydantic v2 BaseModel + EmailStr | `services/core-api/app/schemas/contracts.py` |
+| Service clients | httpx async calls to downstream services | `services/core-api/app/services/clients.py` |
+| Config | `os.getenv()` + fallbacks, validated at startup | `services/core-api/app/config.py` |
+| Celery tasks | PDF export task; Redis broker | `services/core-api/app/workers/tasks.py` |
+| PDF export | WeasyPrint (disabled on Windows; use Docker) | `services/core-api/app/services/pdf_export.py` |
+| Migrations | Alembic — real migration files, not `AUTO_CREATE_TABLES` | `services/core-api/migrations/versions/` |
+| ATS engine | Rule-based parse-safety scorer (becomes ATS_Parse_Safety sub-score) | `services/ats-engine/app/main.py` |
+| AI rewriter | Proof-linked rewriter, JSON schema output (Week 3 retarget) | `services/ai-rewriter/app/main.py` |
+| Resume parser | pdfplumber + python-docx + spaCy (Week 1 build) | `services/resume-parser/` (pending) |
+| Match engine | TF-IDF + sentence-transformers + sklearnex (Week 2 build) | `services/match-engine/` (pending) |
+| Intel bench | OpenVINO + sklearnex harness (Week 5 build) | `services/intel-bench/` (pending) |
+| Scoring pkg | PlacementReadinessScore formula — shared lib | `packages/scoring/` (pending) |
+| Contracts | JSON Schema (Resume, JD, Scorecard, Rewrite) + OpenAPI | `packages/contracts/` |
 
-Before any of these operations, **stop and confirm with user**:
-- Delete files or directories
-- Drop or truncate database tables
-- Force push to any branch
+---
+
+## Safety gates
+
+Stop and confirm before any of:
+- Deleting files or directories
+- Dropping or truncating database tables
+- Running Alembic on a non-empty database
+- Force-pushing any branch
 - `git reset --hard`
-- Run database migrations against production
-- Overwrite files with `--force`
-- Publish packages to npm/PyPI
-
-## Skill discovery
-
-Before acting on any task, check if a relevant Omnix skill exists:
-
-```
-packages/skills/              — 30 superpower skills (DevOps, security, testing, etc.)
-packages/core/skills/         — core context + memory skills
-.omnix/skills/                — user-installed skills
-```
-
-**Skill lookup by task type:**
-
-| Task type | Recommended skill |
-|-----------|------------------|
-| Debugging / errors | `debugging-specialist` + `error-intelligence` |
-| Test strategy | `test-architect` |
-| Security review | `security-threat-modeler` |
-| API design review | `api-contract-reviewer` |
-| Database migration | `database-migration-guard` |
-| Docker/containers | `docker-specialist` |
-| Kubernetes | `kubernetes-operator` |
-| CI/CD pipeline | `ci-cd-engineer` |
-| Performance issues | `performance-profiler` |
-| Monitoring/alerts | `observability-engineer` |
-| Frontend/React | `frontend-architect` |
-| UI/UX improvements | `ui-ux-enhancer` |
-| Web scraping | `scraping-specialist` |
-| External research | `external-research-specialist` |
-| Browser automation | `browser-automation-specialist` |
-| Documentation | `documentation-maintainer` |
-| Release/publish | `release-manager` |
-| Prompt quality | `prompt-instruction-linter` |
-| Dependency audit | `dependency-doctor` |
-| Vault maintenance | `memory-curator` |
-
-**Activation:** If the task matches a skill's triggers, read its SKILL.md before proceeding. The skill defines exact steps, memory reads/writes, and verification.
-
-## When to write a digest
-
-Write when:
-- Files were meaningfully changed
-- A bug was fixed
-- A significant decision was made
-- Session lasted > 15 minutes
-
-Skip for: one-liner answers, exploratory reading, read-only sessions.
-
-Use `--auto` for a minimal 3-field digest from git diff: `omnix session-digest --auto --tool <tool-name>`
+- Writing real values to `.env` or `.env.example`
+- Publishing to PyPI or npm

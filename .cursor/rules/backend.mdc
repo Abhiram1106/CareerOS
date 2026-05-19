@@ -1,23 +1,64 @@
 ---
-description: Backend engineering rules
+description: Backend rules for CareerOS Campus AI Python services
 globs:
-  - "server/**"
-  - "api/**"
-  - "lib/**"
-  - "src/server/**"
-  - "src/api/**"
+  - "services/**/*.py"
+  - "packages/scoring/**/*.py"
+  - "packages/backend/**/*.py"
 alwaysApply: false
 ---
 
-# Backend Rules — Omnix Runtime
+# Backend Rules — CareerOS Campus AI
 
-Source: `packages/core/standards/backend.md`
+## FastAPI conventions
 
-- Validate input at the boundary (Zod / Pydantic / equivalent).
-- Authenticate + authorize before business logic — never after.
-- Domain errors are typed and mapped to HTTP codes at the edge.
-- Never leak stack traces to clients.
-- Every error log has a correlation/request ID.
-- Don't block requests on slow work — enqueue.
-- Config from env vars, validated at startup. Fail fast on missing required config.
-- Structured logs, RED metrics, OpenTelemetry-compatible tracing.
+- Route handlers stay slim: validate input → call service layer → return response.
+- Business logic in `services/<svc>/app/services/`, not in route functions.
+- Use `Depends(current_user)` and `Depends(get_db)` — never access globals directly.
+- All cross-service HTTP calls via `services/core-api/app/services/clients.py` (httpx async).
+- Never import from a peer service's internal modules — call its HTTP API only.
+
+## SQLAlchemy 2.0
+
+- `Mapped[T]` / `mapped_column(...)` style only. No legacy `Column()`.
+- Session lifecycle: open in `Depends(get_db)`, yield, close. In Celery tasks: close in `finally`.
+- All schema changes require a real Alembic migration in `services/core-api/migrations/versions/`.
+- `AUTO_CREATE_TABLES=false` in all environments once Week 1 migration lands. Never rely on `create_all()`.
+
+## Pydantic v2
+
+- `BaseModel` + `Field(...)`. Email fields: `EmailStr`.
+- `.model_dump()` not `.dict()`. `.model_validate()` not `.parse_obj()`.
+- Input schemas: `services/core-api/app/schemas/contracts.py`.
+- Cross-service domain schemas: `packages/contracts/schemas/` (JSON Schema, consumed by both Python + TS).
+
+## Auth / RBAC
+
+- `current_user` dependency in `services/core-api/app/dependencies.py` — every protected route uses it.
+- Role claim in JWT payload: `student` | `officer` | `admin`. Gate at dependency level, not in route logic.
+- College-scoped data access: officers see only their own college's students.
+- Never leak stack traces to clients — catch at route edge, return `HTTPException` with safe message.
+
+## Config and secrets
+
+- Config via `os.getenv()` with safe fallback. Validated at startup. Missing required config → fail fast.
+- Never log full request bodies on auth / resume / PII endpoints.
+- No real secrets in `.env.example` — placeholder values only.
+
+## Python style
+
+- Type-hint all public functions. `from __future__ import annotations` if forward refs proliferate.
+- Import order: stdlib → third-party → first-party, separated by blank lines.
+- No `requests` — use `httpx`. No `__pycache__/` or `*.pyc` committed.
+
+## Scoring / Intel specifics
+
+- PlacementReadinessScore formula exclusively in `packages/scoring/` — import it, never duplicate.
+- `sklearnex.patch_sklearn()` before any scikit-learn estimator import, never after.
+- OpenVINO: measure accuracy delta before committing INT8. Fall back to FP16 if delta > 1%.
+- Intel benchmark numbers must be real measurements on the actual workload — no mocked latency.
+
+## Celery
+
+- Always close DB session in `finally` — see `services/core-api/app/workers/tasks.py` for the pattern.
+- Tasks must be idempotent where possible.
+- Use `.delay()` in production; `.apply()` as local fallback when broker unavailable.

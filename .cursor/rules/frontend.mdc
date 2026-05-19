@@ -1,25 +1,66 @@
 ---
-description: Frontend engineering rules
+description: Frontend rules for CareerOS Campus AI Next.js app
 globs:
-  - "**/*.tsx"
-  - "**/*.jsx"
-  - "**/*.ts"
-  - "**/*.css"
-  - "**/*.module.css"
-  - "app/**"
-  - "src/**"
+  - "apps/web/**/*.ts"
+  - "apps/web/**/*.tsx"
+  - "apps/web/**/*.css"
+  - "packages/ts-types/**/*.ts"
 alwaysApply: false
 ---
 
-# Frontend Rules — Omnix Runtime
+# Frontend Rules — CareerOS Campus AI
 
-Source: `packages/core/standards/frontend.md`
+## Next.js 14 app router
 
-- TypeScript strict. No `any`.
-- Tailwind + design tokens. No inline styles for non-trivial UI.
-- shadcn/ui or Radix primitives. Do not reinvent.
-- Server/client component split is intentional — not accidental.
-- Every interactive element is keyboard-reachable and announces correctly.
-- Test with Testing Library; query by role.
-- Measure before optimizing.
-- No layout shift: reserve space for images, async content, fonts.
+- App router only (`apps/web/app/`). No pages router, ever.
+- Default to server components. Add `"use client"` only for hooks, browser APIs, or event handlers.
+- Route groups: `(student)/` for student surface (active), `(officer)/` for officer surface (Week 4).
+- Co-locate route-specific components in the route folder. Promote to `apps/web/components/` only when
+  the component is used in 2 or more routes.
+
+## TypeScript
+
+- `strict: true`. No `any`. Unknown types → `unknown`, then narrow.
+- All pane-level types in `apps/web/components/panes/types.ts`.
+- Cross-service domain types consumed from `packages/ts-types/` once schemas ship.
+
+## State management
+
+- Central hook: `useCareerOSWorkspace` in `apps/web/hooks/useCareerOSWorkspace.ts`.
+- Split into `useStudentWorkspace` / `useOfficerWorkspace` when officer surface lands.
+- `localStorage` for auth token only. Everything else is server-derived.
+- No Redux, Zustand, or Jotai until an ADR approves it.
+- No `useEffect` for derived state — compute in render or `useMemo`.
+- No data fetching inside `useEffect` when data is route-stable — use server components.
+
+## API calls
+
+- All HTTP via `apps/web/lib/api.ts`. Never `fetch()` inline from components.
+- Auth header attached centrally in `api.ts`. Components receive `token` and pass it.
+- New endpoints get typed wrapper functions added to `api.ts`.
+
+## Styling
+
+- Dark-theme CSS variables in `apps/web/app/globals.css`. Extend, do not replace.
+- Inline `style={{...}}` tolerated for one-off tweaks on existing components.
+- New reusable components use CSS classes.
+- No Tailwind, no CSS-in-JS, no styled-components — needs an ADR to introduce.
+
+## Components
+
+- UI primitives first: `CardSection`, `FormField`, `MetricTile` in `apps/web/components/ui/primitives.tsx`.
+- Pane components: `apps/web/components/panes/`.
+- Section cards: `apps/web/components/panes/sections/`.
+- Props are explicit — no `...rest` spreads unless wrapping a DOM element.
+
+## Accessibility
+
+- Buttons: `type="button"` (non-submit) or `type="submit"` (inside forms). No typeless buttons.
+- Form fields: use `FormField` wrapper with a real `<label>`.
+- No `tabIndex="-1"` on interactive controls.
+- No `dangerouslySetInnerHTML` without a sanitiser.
+
+## Import order
+
+External packages → workspace packages → relative imports.
+No barrel `index.ts` re-exports unless they remove real import ceremony.

@@ -1,25 +1,58 @@
 ---
-description: Security rules — auto-activates on auth/payment/secrets files
+description: Security rules for CareerOS Campus AI — auth, RBAC, DPDP, PII, rewriter guardrails
 globs:
-  - "**/auth/**"
-  - "**/middleware/**"
-  - "**/api/auth/**"
-  - "**/*payment*"
-  - "**/*billing*"
+  - "services/core-api/app/services/auth.py"
+  - "services/core-api/app/dependencies.py"
+  - "services/core-api/app/config.py"
+  - "services/core-api/app/models/entities.py"
+  - "services/ai-rewriter/app/**"
+  - "apps/web/lib/api.ts"
   - "**/.env*"
 alwaysApply: false
 ---
 
-# Security Rules — Omnix Runtime
+# Security Rules — CareerOS Campus AI
 
-Source: `packages/core/standards/security.md`
+## Authentication
 
-- Never commit secrets. Rotate any secret that touched a repo.
-- Parameterized queries always. No string concatenation into SQL/shell/HTML.
-- Argon2id (or bcrypt ≥12) for passwords.
-- HttpOnly + Secure + SameSite cookies. Or short-lived JWT + refresh.
-- Authorization on every endpoint — not just the gateway.
-- CSRF tokens on state-changing form submissions.
-- CSP, X-Content-Type-Options, X-Frame-Options headers set.
-- Never log secrets, full PII, or full request bodies of sensitive endpoints.
-- Every security incident: postmortem + prevention rule in `03-ERRORS/anti-patterns.md`.
+- JWT via `python-jose`. Secret from `config.JWT_SECRET` (env var only — never hardcoded).
+- Bearer token scheme. Verified in `services/core-api/app/dependencies.py::current_user`.
+- `role` claim in JWT: `student` | `officer` | `admin`. Gate at dependency level, not in route logic.
+- Session tokens in `session_tokens` table — invalidate on logout.
+
+## Authorisation
+
+- Every protected route: `Depends(current_user)`.
+- Officer routes: additionally assert `user.role == "officer"` at the dependency level.
+- College-scoped RBAC: officers see only their college's data. Never trust college ID from the frontend.
+- `resume_evidence` proof URIs: gated by college-scoped RBAC — never broadly accessible.
+
+## Data / PII (DPDP-aware)
+
+- Separate raw PII from scoring / analytics tables.
+- `events_audit` payloads: never log names, emails, or file content — log entity IDs only.
+- File uploads: validate MIME type + file size before parsing. Reject non-PDF/DOCX.
+- Explicit consent captured before resume processing.
+- Retention schedule by graduating batch — deletion endpoint required before production.
+
+## Secrets hygiene
+
+- Never commit secrets — not in `.env`, not in comments, not in migration files.
+- Rotate any secret that touched version control, no matter how briefly.
+- `.env.example` contains placeholder values only (already enforced — see repo pattern).
+- `config.py` uses `os.getenv()` — safe dev fallbacks for non-secret config only.
+
+## Input safety
+
+- Parameterised queries only. SQLAlchemy ORM handles this — never raw SQL with f-strings.
+- Pydantic v2 validates all request bodies at the boundary.
+- Never execute or eval uploaded file content.
+- Never leak stack traces to clients — catch at route edge, return safe `HTTPException`.
+
+## AI rewriter guardrails (critical)
+
+- `services/ai-rewriter` must NEVER invent metrics, team size, tools, certifications, or internships.
+- Every rewrite suggestion carries `evidence_ids[]` pointing to source resume sections.
+- Claims without evidence → `unsupported_claims[]` — never silently included in `section_rewrites[]`.
+- User confirms `requires_confirmation[]` items before they are applied.
+- Any fabrication incident: postmortem + new rule in `.obsidian-ai-memory/03-ERRORS/anti-patterns.md`.
