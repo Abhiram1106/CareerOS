@@ -1,10 +1,15 @@
-from pydantic import BaseModel, EmailStr
+from __future__ import annotations
+
+from typing import Literal, Optional
+
+from pydantic import BaseModel, EmailStr, Field
 
 
 class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
     full_name: str
+    role: Literal["student", "officer", "admin"] = "student"
 
 
 class LoginRequest(BaseModel):
@@ -16,6 +21,7 @@ class AuthResponse(BaseModel):
     token: str
     email: EmailStr
     full_name: str
+    role: str
 
 
 class ProfileUpsert(BaseModel):
@@ -46,3 +52,22 @@ class ATSScanResponse(BaseModel):
 
 class ExportResumeRequest(BaseModel):
     resume_id: int
+
+
+# ── Resume parser ─────────────────────────────────────────────────────────────
+
+class ParseResumeRequest(BaseModel):
+    resume_id: int
+
+
+class ResumeSection(BaseModel):
+    section_name: str
+    content_json: dict
+    confidence: float = Field(ge=0.0, le=1.0, default=1.0)
+
+
+class ParseResumeResponse(BaseModel):
+    resume_id: int
+    sections: list[ResumeSection]
+    ats_flags: list[str]
+    parse_warnings: list[str]

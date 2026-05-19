@@ -1,4 +1,19 @@
-export type AuthResponse = { token: string; email: string; full_name: string };
+export type AuthResponse = { token: string; email: string; full_name: string; role: string };
+
+export type ResumeSection = {
+  section_name: string;
+  content_json: Record<string, unknown>;
+  confidence: number;
+};
+
+export type ParseResult = {
+  resume_id: number;
+  source_format: string;
+  sections: ResumeSection[];
+  ats_flags: string[];
+  parse_warnings: string[];
+  char_count: number;
+};
 
 const API_BASE = process.env.NEXT_PUBLIC_CORE_API_URL || "http://localhost:8000";
 
@@ -26,16 +41,52 @@ async function request<T>(path: string, method = "GET", body?: unknown, token?: 
   return res.json();
 }
 
+async function uploadFile<T>(path: string, file: File, token: string): Promise<T> {
+  const form = new FormData();
+  form.append("file", file);
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    let msg = "Upload failed";
+    try {
+      const err = await res.json();
+      msg = err.detail || msg;
+    } catch {
+      // noop
+    }
+    throw new Error(msg);
+  }
+  return res.json();
+}
+
 export const api = {
-  register: (payload: { email: string; password: string; full_name: string }) =>
+  // Auth
+  register: (payload: { email: string; password: string; full_name: string; role?: string }) =>
     request<AuthResponse>("/auth/register", "POST", payload),
   login: (payload: { email: string; password: string }) =>
     request<AuthResponse>("/auth/login", "POST", payload),
+
+  // Profile
   getProfile: (token: string) => request("/profile", "GET", undefined, token),
   updateProfile: (token: string, payload: unknown) => request("/profile", "PUT", payload, token),
+
+  // Resumes
   listResumes: (token: string) =>
     request<{ resumes: Array<{ id: number; template_name: string; created_at: string }> }>(
       "/resumes",
+      "GET",
+      undefined,
+      token
+    ),
+  uploadResume: (token: string, file: File) =>
+    uploadFile<ParseResult>("/resumes/upload", file, token),
+  getResumeSections: (token: string, resumeId: number) =>
+    request<{ resume_id: number; source_format: string; sections: ResumeSection[] }>(
+      `/resumes/${resumeId}/sections`,
       "GET",
       undefined,
       token
@@ -51,6 +102,8 @@ export const api = {
       undefined,
       token
     ),
+
+  // ATS
   scan: (token: string, payload: { jd_text: string }) =>
     request("/ats/scan", "POST", payload, token),
   atsHistory: (token: string) =>
@@ -60,5 +113,7 @@ export const api = {
       undefined,
       token
     ),
+
+  // Dashboard
   dashboard: (token: string) => request("/dashboard", "GET", undefined, token),
 };

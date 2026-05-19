@@ -1,6 +1,10 @@
+from __future__ import annotations
+
+import json
+from datetime import datetime
 from pathlib import Path
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, RedirectResponse
 from sqlalchemy.orm import Session
@@ -13,6 +17,7 @@ from .models.entities import (
     CareerProfile,
     Resume,
     ResumeExportJob,
+    ResumeSection,
     User,
 )
 from .schemas.contracts import (
@@ -24,7 +29,7 @@ from .schemas.contracts import (
     ResumeGenerateRequest,
 )
 from .services.auth import create_session, hash_password, verify_password
-from .services.clients import generate_resume_content, run_ats_scan
+from .services.clients import generate_resume_content, parse_resume_file, run_ats_scan
 from .services.pdf_export import generate_download_target, infer_filename
 from .workers.tasks import generate_resume_export
 
@@ -57,7 +62,12 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     if existing:
         raise HTTPException(status_code=400, detail="Email already exists")
 
-    user = User(email=payload.email, password_hash=hash_password(payload.password), full_name=payload.full_name)
+    user = User(
+        email=payload.email,
+        password_hash=hash_password(payload.password),
+        full_name=payload.full_name,
+        role=payload.role,
+    )
     db.add(user)
     db.commit()
     db.refresh(user)
@@ -67,7 +77,7 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     db.commit()
 
     token = create_session(db, user)
-    return {"token": token, "email": user.email, "full_name": user.full_name}
+    return {"token": token, "email": user.email, "full_name": user.full_name, "role": user.role}
 
 
 @app.post("/auth/login")
@@ -77,7 +87,7 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     token = create_session(db, user)
-    return {"token": token, "email": user.email, "full_name": user.full_name}
+    return {"token": token, "email": user.email, "full_name": user.full_name, "role": user.role}
 
 
 @app.get("/profile")
@@ -142,6 +152,87 @@ def list_resumes(user=Depends(current_user), db: Session = Depends(get_db)):
             {"id": row.id, "template_name": row.template_name, "created_at": row.created_at.isoformat()}
             for row in rows
         ]
+    }
+
+
+@app.post("/resumes/upload")
+async def upload_resume(
+    file: UploadFile = File(...),
+    user: User = Depends(current_user),
+    db: Session = Depends(get_db),
+):
+    """Upload a PDF or DOCX resume, parse it into sections, and persist to DB."""
+    allowed = {
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    }
+    ct = file.content_type or ""
+    fn = (file.filename or "").lower()
+    if ct not in allowed:
+        if fn.endswith(".pdf"):
+            ct = "application/pdf"
+        elif fn.endswith(".docx"):
+            ct = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        else:
+            raise HTTPException(status_code=415, detail="Only PDF and DOCX files accepted")
+
+    content = await file.read()
+    if len(content) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=413, detail="File must be under 5 MB")
+
+    # Create resume record first
+    source_format = "pdf" if "pdf" in ct else "docx"
+    resume = Resume(
+        user_id=user.id,
+        source_format=source_format,
+        template_name="uploaded",
+    )
+    db.add(resume)
+    db.commit()
+    db.refresh(resume)
+
+    # Call resume-parser service
+    parse_result = await parse_resume_file(content, file.filename or f"resume.{source_format}", ct)
+
+    # Persist sections
+    for sec in parse_result.get("sections", []):
+        db.add(ResumeSection(
+            resume_id=resume.id,
+            section_name=sec["section_name"],
+            content_json=json.dumps(sec.get("content_json", {})),
+            confidence=sec.get("confidence", 1.0),
+            created_at=datetime.utcnow(),
+        ))
+    db.commit()
+
+    return {
+        "resume_id": resume.id,
+        "source_format": source_format,
+        "sections": parse_result.get("sections", []),
+        "ats_flags": parse_result.get("ats_flags", []),
+        "parse_warnings": parse_result.get("parse_warnings", []),
+        "char_count": parse_result.get("char_count", 0),
+    }
+
+
+@app.get("/resumes/{resume_id}/sections")
+def get_resume_sections(resume_id: int, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    """Return stored parsed sections for a resume."""
+    resume = db.query(Resume).filter(Resume.id == resume_id, Resume.user_id == user.id).first()
+    if not resume:
+        raise HTTPException(status_code=404, detail="Resume not found")
+    sections = db.query(ResumeSection).filter(ResumeSection.resume_id == resume_id).all()
+    return {
+        "resume_id": resume_id,
+        "source_format": resume.source_format,
+        "sections": [
+            {
+                "section_name": s.section_name,
+                "content_json": json.loads(s.content_json) if s.content_json else {},
+                "confidence": s.confidence,
+            }
+            for s in sections
+        ],
     }
 
 

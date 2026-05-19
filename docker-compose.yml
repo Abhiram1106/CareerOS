@@ -1,9 +1,6 @@
 version: "3.9"
 
 # CareerOS Campus AI — Intel-optimized placement-readiness operating layer.
-# Services intentionally narrow: core-api orchestrates, ats-engine scores parse-safety,
-# ai-rewriter does proof-linked rewriting. resume-parser, match-engine, intel-bench
-# are stubbed in later weeks.
 
 services:
   postgres:
@@ -26,6 +23,7 @@ services:
       REDIS_URL: redis://redis:6379/0
       ATS_ENGINE_URL: http://ats-engine:8001
       AI_REWRITER_URL: http://ai-rewriter:8003
+      RESUME_PARSER_URL: http://resume-parser:8004
       JWT_SECRET: super-secret-change-me
       AUTO_CREATE_TABLES: "false"
       EXPORTS_DIR: /tmp/careeros-exports
@@ -35,6 +33,7 @@ services:
       - redis
       - ats-engine
       - ai-rewriter
+      - resume-parser
     ports:
       - "8000:8000"
 
@@ -47,6 +46,7 @@ services:
       REDIS_URL: redis://redis:6379/0
       ATS_ENGINE_URL: http://ats-engine:8001
       AI_REWRITER_URL: http://ai-rewriter:8003
+      RESUME_PARSER_URL: http://resume-parser:8004
       JWT_SECRET: super-secret-change-me
       AUTO_CREATE_TABLES: "false"
       EXPORTS_DIR: /tmp/careeros-exports
@@ -63,6 +63,10 @@ services:
   ai-rewriter:
     build:
       context: ./services/ai-rewriter
+
+  resume-parser:
+    build:
+      context: ./services/resume-parser
 
 volumes:
   pg_data:

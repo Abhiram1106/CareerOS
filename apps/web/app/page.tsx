@@ -57,6 +57,9 @@ export default function Page() {
           onScan={workspace.onScan}
           scan={workspace.scan}
           history={workspace.history}
+          onUploadResume={workspace.onUploadResume}
+          uploading={workspace.uploading}
+          parseResult={workspace.parseResult}
         />
       ) : null}
 

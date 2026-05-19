@@ -15,6 +15,21 @@ export type Dashboard = {
 export type History = { id: number; composite_score: number; created_at: string };
 export type ResumeItem = { id: number; template_name: string; created_at: string };
 
+export type ResumeSection = {
+  section_name: string;
+  content_json: Record<string, unknown>;
+  confidence: number;
+};
+
+export type ParseResult = {
+  resume_id: number;
+  source_format: string;
+  sections: ResumeSection[];
+  ats_flags: string[];
+  parse_warnings: string[];
+  char_count: number;
+} | null;
+
 export type AuthState = { full_name: string; email: string; password: string };
 export type ProfileState = {
   city: string;

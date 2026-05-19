@@ -6,6 +6,7 @@ import {
   AuthState,
   Dashboard,
   History,
+  ParseResult,
   ProfileState,
   ResumeItem,
   Scan,
@@ -46,6 +47,8 @@ export function useCareerOSWorkspace() {
   const [resumes, setResumes] = useState<ResumeItem[]>([]);
   const [exportJobId, setExportJobId] = useState<number | null>(null);
   const [exportStatus, setExportStatus] = useState<string>("");
+  const [parseResult, setParseResult] = useState<ParseResult>(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     const saved = window.localStorage.getItem("careeros_token");
@@ -177,6 +180,22 @@ export function useCareerOSWorkspace() {
     setExportStatus(data.status);
   }
 
+  async function onUploadResume(file: File) {
+    if (!token) return setStatus("Login required");
+    setUploading(true);
+    setParseResult(null);
+    try {
+      const result = await api.uploadResume(token, file);
+      setParseResult(result);
+      setStatus(`Resume parsed — ${result.sections.length} sections found`);
+      await refreshResumes(token);
+    } catch (e) {
+      setStatus(errMsg(e, "Upload failed"));
+    } finally {
+      setUploading(false);
+    }
+  }
+
   async function downloadExport() {
     if (!token || !exportJobId) return;
     const base = process.env.NEXT_PUBLIC_CORE_API_URL || "http://localhost:8000";
@@ -198,6 +217,8 @@ export function useCareerOSWorkspace() {
 
   return {
     status,
+    uploading,
+    parseResult,
     auth,
     setAuth,
     profile,
@@ -222,5 +243,6 @@ export function useCareerOSWorkspace() {
     onExportResume,
     checkExport,
     downloadExport,
+    onUploadResume,
   };
 }
