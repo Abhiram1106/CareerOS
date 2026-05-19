@@ -65,10 +65,9 @@ docker-data/
 # Obsidian-AI engineering memory vault — fully tracked.
 # (Intentionally NOT ignored. Vault is the team's long-term memory.)
 
-# Cursor — track rules/, ignore everything else.
-.cursor/*
-!.cursor/rules/
-!.cursor/rules/**
+# Cursor — track all committed config; ignore only personal overrides.
+.cursor/AGENTS.local.md
+.cursor/.local/
 
 # Claude Code project config — track .claude/ shared parts, ignore personal.
 .claude/settings.local.json

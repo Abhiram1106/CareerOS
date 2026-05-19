@@ -1,0 +1,36 @@
+{
+  "_comment": "Cursor project settings for CareerOS Campus AI. Committed — applies to all team members.",
+  "projectRules": ".cursorrules",
+  "alwaysInclude": [
+    ".obsidian-ai-memory/02-PROJECTS/project-context.md",
+    ".obsidian-ai-memory/02-PROJECTS/active-goals.md"
+  ],
+  "indexing": {
+    "include": [
+      "apps/web/**",
+      "services/**",
+      "packages/**",
+      ".cursor/context/**",
+      ".obsidian-ai-memory/02-PROJECTS/**",
+      ".obsidian-ai-memory/03-ERRORS/**",
+      ".obsidian-ai-memory/04-DECISIONS/**",
+      ".obsidian-ai-memory/05-ARCHITECTURE/**"
+    ],
+    "exclude": [
+      "**/node_modules/**",
+      "**/__pycache__/**",
+      "**/.next/**",
+      "**/.venv/**",
+      "**/venv/**",
+      ".obsidian-ai-memory/01-SESSIONS/**",
+      ".obsidian-ai-memory/templates/**",
+      "docs/legacy/**"
+    ]
+  },
+  "contextWindow": {
+    "defaultMode": "balanced",
+    "architectureMode": "deep",
+    "debugMode": "deep",
+    "minimalMode": "minimal"
+  }
+}

@@ -1,5 +1,3 @@
-version: "3.9"
-
 # CareerOS Campus AI — Intel-optimized placement-readiness operating layer.
 
 services:
@@ -11,9 +9,19 @@ services:
       POSTGRES_PASSWORD: careeros
     volumes:
       - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U careeros -d careeros"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   redis:
     image: redis:7
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   core-api:
     build:
@@ -25,17 +33,29 @@ services:
       AI_REWRITER_URL: http://ai-rewriter:8003
       RESUME_PARSER_URL: http://resume-parser:8004
       JWT_SECRET: super-secret-change-me
-      AUTO_CREATE_TABLES: "false"
+      AUTO_CREATE_TABLES: "true"
       EXPORTS_DIR: /tmp/careeros-exports
       EXPORT_STORAGE: local
     depends_on:
-      - postgres
-      - redis
-      - ats-engine
-      - ai-rewriter
-      - resume-parser
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ats-engine:
+        condition: service_healthy
+      ai-rewriter:
+        condition: service_healthy
+      resume-parser:
+        condition: service_healthy
     ports:
       - "8000:8000"
+    volumes:
+      - export_data:/tmp/careeros-exports
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   core-worker:
     build:
@@ -48,25 +68,46 @@ services:
       AI_REWRITER_URL: http://ai-rewriter:8003
       RESUME_PARSER_URL: http://resume-parser:8004
       JWT_SECRET: super-secret-change-me
-      AUTO_CREATE_TABLES: "false"
+      AUTO_CREATE_TABLES: "true"
       EXPORTS_DIR: /tmp/careeros-exports
       EXPORT_STORAGE: local
     depends_on:
-      - redis
-      - postgres
-      - core-api
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      core-api:
+        condition: service_healthy
+    volumes:
+      - export_data:/tmp/careeros-exports
 
   ats-engine:
     build:
       context: ./services/ats-engine
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health').read()"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   ai-rewriter:
     build:
       context: ./services/ai-rewriter
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8003/health').read()"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   resume-parser:
     build:
       context: ./services/resume-parser
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8004/health').read()"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
 volumes:
   pg_data:
+  export_data:

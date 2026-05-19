@@ -1,0 +1,48 @@
+# CareerOS Campus AI — Cursor Project Rules
+# Auto-loaded by Cursor on every session.
+# Full rules: .cursor/rules/ | Memory: .obsidian-ai-memory/ | Protocol: STARTUP_PROTOCOL.md
+
+## Identity
+
+This is CareerOS Campus AI — an Intel-optimized placement-readiness operating layer
+for Indian colleges. One demo loop: PDF/DOCX resumes in → ATS-safe + JD-matched +
+proof-linked AI scoring → student fixes + officer cohort dashboard → Intel benchmarks.
+
+NOT a job board. NOT a recruiter platform. NOT a LinkedIn scraper. NOT a billing product.
+
+## Before any response
+
+1. Read `.obsidian-ai-memory/02-PROJECTS/project-context.md`
+2. Read `.obsidian-ai-memory/02-PROJECTS/active-goals.md`
+3. Read `.obsidian-ai-memory/03-ERRORS/error-memory.md`
+4. Emit startup block: [CareerOS] Loaded: {files} | Week goal: {goal} | Routing: {workflow}
+
+## Stack (canonical paths)
+
+- Web app:       `apps/web/` — Next.js 14 app router, TypeScript strict, no Tailwind
+- Core API:      `services/core-api/` — FastAPI 0.115, SQLAlchemy 2.0, Pydantic v2
+- ATS engine:    `services/ats-engine/` — rule-based parse-safety scorer
+- AI rewriter:   `services/ai-rewriter/` — proof-linked JSON-schema rewriter
+- Resume parser: `services/resume-parser/` — pdfplumber + python-docx + section extractor
+- API client:    `apps/web/lib/api.ts` — ALL web HTTP here, never fetch() inline
+- State hook:    `apps/web/hooks/useCareerOSWorkspace.ts`
+- UI primitives: `apps/web/components/ui/primitives.tsx`
+- Score formula: `packages/scoring/` (Week 2 — import, never duplicate)
+- Migrations:    `services/core-api/migrations/versions/`
+- Memory vault:  `.obsidian-ai-memory/`
+
+## Hard rules (no exceptions)
+
+- FastAPI routes stay slim — logic in `services/<svc>/app/services/`
+- SQLAlchemy 2.0: `Mapped[T]` / `mapped_column(...)` — no `Column()`
+- Pydantic v2: `.model_dump()` not `.dict()`
+- Schema change → write Alembic migration — never modify `entities.py` alone
+- No Tailwind, no shadcn, no CSS-in-JS — CSS variables in `globals.css`
+- `"use client"` only when strictly needed (hooks, browser APIs, event handlers)
+- All HTTP via `lib/api.ts` — never `fetch()` inline from components
+- No fabrication in `services/ai-rewriter` — unsupported claims go in `unsupported_claims[]`
+- PlacementReadinessScore formula in `packages/scoring/` only — never duplicate
+- No secrets in any file — not even comments
+- Verify before "done": `tsc --noEmit` (apps/web) + Python AST parse (services/*)
+- Write session digest to `.obsidian-ai-memory/01-SESSIONS/` after meaningful work
+- Commit vault separately: `git add .obsidian-ai-memory/ && git commit -m "memory: ..."`

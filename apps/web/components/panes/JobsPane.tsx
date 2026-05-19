@@ -11,7 +11,7 @@ type Props = {
 export function JobsPane({ dashboard, refreshDashboard }: Props) {
   return (
     <div className="grid pane-grid">
-      <CardSection title="Placement Readiness — Snapshot">
+      <CardSection title="Placement readiness — snapshot">
         <p className="muted">
           Officer-side cohort dashboard, batch upload, and JD manager land in Week 4.
           For now, this pane shows aggregate readiness metrics for the signed-in account.

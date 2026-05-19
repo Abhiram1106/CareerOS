@@ -5,12 +5,31 @@ type Props = {
   onChange: (pane: ActivePane) => void;
 };
 
+/** @deprecated Use WorkspaceTabs — kept for any external imports during transition */
 export function SectionNav({ activePane, onChange }: Props) {
   return (
     <div className="section-nav">
-      <button className={activePane === "account" ? "active" : ""} onClick={() => onChange("account")}>Account</button>
-      <button className={activePane === "resume" ? "active" : ""} onClick={() => onChange("resume")}>Resume & ATS</button>
-      <button className={activePane === "jobs" ? "active" : ""} onClick={() => onChange("jobs")}>Jobs</button>
+      <button
+        type="button"
+        className={activePane === "account" ? "active" : ""}
+        onClick={() => onChange("account")}
+      >
+        Account
+      </button>
+      <button
+        type="button"
+        className={activePane === "resume" ? "active" : ""}
+        onClick={() => onChange("resume")}
+      >
+        Resume & ATS
+      </button>
+      <button
+        type="button"
+        className={activePane === "jobs" ? "active" : ""}
+        onClick={() => onChange("jobs")}
+      >
+        Jobs
+      </button>
     </div>
   );
 }

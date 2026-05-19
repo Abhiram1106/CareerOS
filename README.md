@@ -72,18 +72,24 @@ variant with Omnix integration baked into `platform/`).
 
 ### Bring up the stack
 ```bash
-docker compose up --build
+pnpm install
+docker compose up -d --build
+pnpm dev
 ```
 
 Services exposed:
-- **Web app**: http://localhost:3000 (run separately — see below)
+- **Web app**: http://localhost:3000
 - **Core API docs**: http://localhost:8000/docs
 
 Other services (`ats-engine`, `ai-rewriter`) are internal-only.
 
+Stop the Docker services when you are done:
+```bash
+docker compose down
+```
+
 ### Web app (dev)
 ```bash
-cd apps/web
 pnpm install
 pnpm dev
 ```
@@ -96,6 +102,10 @@ pnpm web <cmd>  # any script in apps/web
 ```
 
 ### Database migrations
+Docker Compose is configured for local development and auto-creates the current
+schema. If you run `services/core-api` outside Docker with
+`AUTO_CREATE_TABLES=false`, run migrations manually:
+
 ```bash
 cd services/core-api
 alembic upgrade head

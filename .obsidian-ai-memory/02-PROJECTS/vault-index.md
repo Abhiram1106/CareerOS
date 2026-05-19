@@ -52,6 +52,7 @@ Last decision added: 2026-05-19 — "Omnix runtime stays at .omnix/"
 | File | Contents |
 |---|---|
 | `05-ARCHITECTURE/README.md` | System diagram, data flows (student + officer loops), DB schema map, key conventions |
+| `05-ARCHITECTURE/frontend-ux.md` | Web IA: hero, workspace tabs, component map, a11y, styling rules |
 
 ---
 
@@ -79,12 +80,13 @@ Most recent sessions (newest first):
 
 | Session file | Date | Tool | Type | Key outcome |
 |---|---|---|---|---|
+| `01-SESSIONS/2026-05-20/session-1430-cursor.md` | 2026-05-20 | cursor | feature-build + frontend | Enterprise shell, hero page, workspace tabs, `frontend-ux.md` |
 | `01-SESSIONS/2026-05-20/session-0001-claude.md` | 2026-05-20 | claude | feature-build | W1.3 migration + W1.4 role auth + W1.5 resume parser — all Week 1 tasks done |
 | `01-SESSIONS/2026-05-19/session-1800-claude.md` | 2026-05-19 | claude | docs | AI agent docs personalization + strict memory protocol |
 | `01-SESSIONS/2026-05-19/session-restructure.md` | 2026-05-19 | claude | architecture | Pivot + monorepo restructure + .claude scaffolding + memory populated |
 | `01-SESSIONS/2026-05-18/session-2015-omnix-init.md` | 2026-05-18 | omnix | onboarding | Omnix init scan |
 
-Session count: **4**
+Session count: **5**
 
 ---
 
@@ -108,4 +110,4 @@ After every session:
 
 ---
 
-_Updated: 2026-05-19 — Phase 2 + memory protocol session._
+_Updated: 2026-05-20 — enterprise frontend + frontend-ux architecture doc._

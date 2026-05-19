@@ -1,5 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 
+export type AppView = "overview" | "workspace";
 export type ActivePane = "account" | "resume" | "jobs";
 export type StateSetter<T> = Dispatch<SetStateAction<T>>;
 

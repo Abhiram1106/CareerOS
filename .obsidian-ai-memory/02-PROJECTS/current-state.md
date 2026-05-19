@@ -1,58 +1,49 @@
 # Current State
 
-_Last scanned: 2026-05-19 (post Phase 2)._
+_Last scanned: 2026-05-20 (enterprise frontend + run fixes)._
 
 ## Stack
 
 - **Languages**: TypeScript (apps/web), Python 3.10+ (services/*, packages/scoring/)
-- **Frameworks**: Next.js 14.2.15 (app router), FastAPI 0.115, SQLAlchemy 2.0 (mapped-column style), Pydantic v2, Celery 5.4
+- **Frameworks**: Next.js 14.2.35 (app router), FastAPI 0.115, SQLAlchemy 2.0, Pydantic v2, Celery 5.4
 - **Package Manager**: pnpm 9 (JS workspaces); pip per service
-- **Test Runner**: none yet — adding alongside Week 2
-- **Databases**: PostgreSQL 16 (prod), SQLite (dev fallback)
+- **Databases**: PostgreSQL 16 (Docker dev), SQLite (local fallback)
 - **Queue**: Redis 7 + Celery
-- **PDF Export**: WeasyPrint 62.3 (disabled on Windows native by default)
 
 ## Infrastructure
 
-- **Docker**: yes — `docker-compose.yml` at repo root brings up Postgres, Redis, core-api, core-worker, ats-engine, ai-rewriter
-- **Kubernetes**: no
-- **GitHub Actions**: no — first workflow lands Week 1
+- **Docker**: `docker compose up -d --build` — postgres, redis, core-api, core-worker, ats-engine, ai-rewriter, resume-parser
+- **Dev web**: `pnpm dev` from repo root → http://localhost:3000
+- **API**: http://localhost:8000 — `AUTO_CREATE_TABLES=true` in compose for local dev
 
-## AI tooling installed
+## Frontend (apps/web)
 
-- **Claude Code** — project config at `.claude/` (settings.json, CLAUDE.md, rules/, agents/, skills/, .mcp.json) + root `CLAUDE.md`
-- **Cursor** — project rules at `.cursor/rules/` (backend, frontend, project-rules, security, testing)
-- **Omnix** — runtime at `.omnix/`, memory vault at `.obsidian-ai-memory/`, committed config home at `platform/omnix/` (placeholder while Omnix tooling still expects `.omnix/`)
+- **Shell**: Sticky `AppHeader` — Overview (hero) + Workspace (student console)
+- **Hero**: Product positioning, demo loop, feature pillars, workflow steps (`components/marketing/HeroPage.tsx`)
+- **Workspace tabs**: Account | Resume & ATS | Readiness (`WorkspaceTabs`)
+- **Styling**: CSS variables in `globals.css` — no Tailwind
+- **Docs**: `.obsidian-ai-memory/05-ARCHITECTURE/frontend-ux.md`
 
-## Monorepo layout
+## Backend highlights
 
-```
-apps/web/                            (Next.js 14 — student surface; officer surface comes Week 4)
-packages/{contracts,scoring,ts-types,frontend,backend}/   (frontend + backend reserved)
-services/{core-api,ats-engine,ai-rewriter}/               (resume-parser, match-engine, intel-bench come Weeks 1-5)
-infra/{docker,environments}/         (skeleton)
-platform/{ci,scripts,build,omnix}/   (skeleton + READMEs)
-docs/{adr,architecture,pitch,benchmarks,legacy}/
-tests/                                (cross-domain e2e only — empty)
-```
+- Resume upload + parse via `services/resume-parser`
+- Role auth on core-api (student/officer/admin)
+- Alembic migration `0002_campus_ai_schema`
+- Local run fixes: `python-multipart`, `bcrypt==4.0.1`, shared `export_data` volume for PDF export
 
-## What's shipping
+## Verification (last known)
 
-- **Pivot complete**: Campus AI positioning replaces broad "AI careers platform" pitch.
-- **Restructure landed on `main`**: 4 commits (5e2b191 → c2f3432 → c327416 → 172160a → Phase 2 commit pending).
-- **Tracked file count**: 71 files (pre-pivot was 131).
-- **TypeScript**: `npx tsc --noEmit` clean.
-- **Python**: all service files AST-parse clean.
+| Check | Result |
+|---|---|
+| `tsc --noEmit` (apps/web) | pass (2026-05-20) |
+| `pnpm build` (apps/web) | pass (2026-05-20) |
+| Docker compose health | pass (prior session) |
 
 ## What's blocked
 
-- **Real pilot data**: no college partnership yet for outcome-tracking validation. Mitigation: synthetic + small hand-labeled fixture corpus for demo; outcome-lift framed as next step in pitch.
-- **OpenVINO accuracy delta**: unknown until Week 5 benchmark runs. Mitigation: fall back to FP16 if INT8 hurts match quality.
-
-## Recoverability
-
-`origin/archive/pre-campus-ai` branch preserves the pre-cut polished MVP
-(commit `c2f3432`). All deletions on `main` are recoverable from there.
+- Match engine service (Week 2)
+- Officer dashboard route group (Week 4)
+- `packages/scoring/` shared formula package (pending)
 
 ---
-_Updated: 2026-05-19 by Phase 2 session._
+_Updated: 2026-05-20 — cursor session (frontend shell + vault UX doc)._
