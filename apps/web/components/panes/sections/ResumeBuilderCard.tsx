@@ -31,27 +31,68 @@ export function ResumeBuilderCard({
   downloadExport,
 }: Props) {
   return (
-    <CardSection title="Resume Builder">
+    <CardSection
+      title="Resume Builder"
+      subtitle="Generate an ATS-safe resume from your profile, or upload a PDF/DOCX above."
+    >
       <FormField label="Template">
         <select value={template} onChange={(e) => setTemplate(e.target.value)}>
-          <option value="classic">Classic ATS</option><option value="tech">Technical</option><option value="fresher">Fresher</option>
+          <option value="classic">Classic ATS</option>
+          <option value="tech">Technical</option>
+          <option value="fresher">Fresher</option>
         </select>
       </FormField>
+
       <div className="row">
-        <button onClick={() => setProfile({ ...profile, summary: "Results-oriented engineer with strong backend and cloud foundation.", experience_bullet: "Built and shipped feature modules that improved conversion by 28%." })}>Autofill Content</button>
-        <button onClick={onGenerateResume}>Generate Resume</button>
+        <button
+          type="button"
+          className="btn-secondary btn-compact"
+          onClick={() =>
+            setProfile({
+              ...profile,
+              summary: "Results-oriented engineer with strong backend and cloud foundation.",
+              experience_bullet: "Built and shipped feature modules that improved conversion by 28%.",
+            })
+          }
+        >
+          Autofill sample content
+        </button>
+        <button type="button" onClick={onGenerateResume}>
+          Generate resume
+        </button>
       </div>
-      <h3>Preview</h3>
-      <pre>{preview}</pre>
-      {resumeText ? (<><h3>Generated Resume</h3><pre>{resumeText}</pre></>) : null}
-      <div className="row" style={{ marginTop: 10 }}>
-        <button onClick={onExportResume}>Queue PDF Export</button>
-        <button onClick={checkExport}>Check Export Status</button>
+
+      {preview && (
+        <>
+          <p className="card-subtitle muted builder-section-label">Preview</p>
+          <pre>{preview}</pre>
+        </>
+      )}
+
+      {resumeText && (
+        <>
+          <p className="card-subtitle muted builder-section-label">Generated resume</p>
+          <pre>{resumeText}</pre>
+        </>
+      )}
+
+      <div className="row builder-export-row">
+        <button type="button" className="btn-secondary btn-compact" onClick={onExportResume}>
+          Queue PDF export
+        </button>
+        <button type="button" className="btn-ghost btn-compact" onClick={checkExport}>
+          Check status
+        </button>
       </div>
+
       {exportJobId ? (
-        <p className="muted">
-          Export #{exportJobId}: {exportStatus || "queued"}{" "}
-          {exportStatus === "completed" ? <button onClick={downloadExport}>Download</button> : null}
+        <p className="muted builder-export-status">
+          Export #{exportJobId}: {exportStatus || "queued"}
+          {exportStatus === "completed" ? (
+            <button type="button" className="btn-ghost btn-sm" onClick={downloadExport}>
+              Download ↓
+            </button>
+          ) : null}
         </p>
       ) : null}
     </CardSection>

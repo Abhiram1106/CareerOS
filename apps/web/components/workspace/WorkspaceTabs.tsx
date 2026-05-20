@@ -5,26 +5,29 @@ type Props = {
   onChange: (pane: ActivePane) => void;
 };
 
-const TABS: { id: ActivePane; label: string; description: string }[] = [
+const TABS: { id: ActivePane; label: string; icon: string; description: string }[] = [
   {
     id: "account",
     label: "Account",
+    icon: "👤",
     description: "Register, sign in, and complete your placement profile.",
   },
   {
     id: "resume",
     label: "Resume & ATS",
-    description: "Upload, generate, export, and score resumes against job descriptions.",
+    icon: "📄",
+    description: "Upload your resume — sections are extracted, ATS issues flagged, and you can run a JD scan.",
   },
   {
     id: "jobs",
     label: "Readiness",
-    description: "Snapshot metrics until the officer cohort dashboard ships in Week 4.",
+    icon: "📊",
+    description: "Aggregate readiness snapshot. Full officer cohort dashboard ships in Week 4.",
   },
 ];
 
 export function WorkspaceTabs({ activePane, onChange }: Props) {
-  const active = TABS.find((tab) => tab.id === activePane) ?? TABS[0];
+  const active = TABS.find((t) => t.id === activePane) ?? TABS[0];
 
   return (
     <div className="workspace-tabs">
@@ -40,6 +43,7 @@ export function WorkspaceTabs({ activePane, onChange }: Props) {
             className={activePane === tab.id ? "workspace-tab active" : "workspace-tab"}
             onClick={() => onChange(tab.id)}
           >
+            <span aria-hidden="true">{tab.icon}</span>
             {tab.label}
           </button>
         ))}

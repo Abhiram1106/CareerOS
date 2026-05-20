@@ -6,22 +6,25 @@ type Props = {
   refreshDashboard: () => Promise<void>;
 };
 
-// Placeholder pane — slated to become the Placement Officer JD/Cohort manager
-// in Week 4. For now it surfaces the surviving readiness dashboard metrics.
+// Placeholder — becomes Placement Officer JD/Cohort manager in Week 4.
 export function JobsPane({ dashboard, refreshDashboard }: Props) {
   return (
     <div className="grid pane-grid">
-      <CardSection title="Placement readiness — snapshot">
-        <p className="muted">
-          Officer-side cohort dashboard, batch upload, and JD manager land in Week 4.
-          For now, this pane shows aggregate readiness metrics for the signed-in account.
-        </p>
-        <div className="row"><button onClick={refreshDashboard}>Refresh</button></div>
-        <div className="metric-grid" style={{ marginTop: 12 }}>
-          <MetricTile label="Best ATS" value={dashboard.best_ats_score} />
-          <MetricTile label="Resumes" value={dashboard.total_resumes} />
-          <MetricTile label="Scans" value={dashboard.scans_performed} />
-          <MetricTile label="Profile %" value={dashboard.profile_completeness} />
+      <CardSection
+        title="Placement readiness — snapshot"
+        subtitle="Officer cohort dashboard, batch upload, and JD manager land in Week 4."
+        badge="Week 4"
+        action={
+          <button type="button" className="btn-ghost btn-compact" onClick={refreshDashboard}>
+            Refresh
+          </button>
+        }
+      >
+        <div className="metric-grid">
+          <MetricTile label="Best ATS"  value={dashboard.best_ats_score}       variant="intel" />
+          <MetricTile label="Resumes"   value={dashboard.total_resumes} />
+          <MetricTile label="Scans"     value={dashboard.scans_performed} />
+          <MetricTile label="Profile %" value={dashboard.profile_completeness}  variant={dashboard.profile_completeness >= 75 ? "success" : "warn"} />
         </div>
       </CardSection>
     </div>
