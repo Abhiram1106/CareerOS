@@ -25,7 +25,7 @@ NOT: a job board, LinkedIn scraper, recruiter platform, or billing product.
 6. Read latest session digest(s) from `01-SESSIONS/` (see continuity file)
 7. Emit startup block, then work
 
-Cursor shutdown: `.cursor/MEMORY-WORKFLOW.md` | Cross-tool: `.obsidian-ai-memory/MEMORY-WRITE-PROTOCOL.md`
+Cursor shutdown: `.cursor/MEMORY-WORKFLOW.md` (code commit → memory commit → push) | Cross-tool: `MEMORY-WRITE-PROTOCOL.md`
 
 ## Non-negotiable rules
 

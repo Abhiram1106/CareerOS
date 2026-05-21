@@ -23,11 +23,15 @@ You MUST run shutdown unless the chat was read-only Q&A with no repo changes and
 1. Create or append `01-SESSIONS/YYYY-MM-DD/session-HHMM-cursor.md` (template: `templates/session-digest.md`)
 2. Overwrite `02-PROJECTS/session-continuity.md` (template: `templates/session-continuity.md`)
 3. Update `vault-index.md`, `current-state.md`, architecture docs if behaviour changed
-4. `git add .obsidian-ai-memory/` and `git commit -m "memory: YYYY-MM-DD cursor — <summary>"` unless user said not to commit
-5. Tell the user: digest path, continuity updated, commit hash or skip reason
+4. **Code commit** — if application files changed: `git add` scoped paths → `git commit -m "feat|fix: …"` (never include `.obsidian-ai-memory/`)
+5. **Memory commit** — `git add .obsidian-ai-memory/` (+ `.cursor/` workflow files if edited) → `git commit -m "memory: YYYY-MM-DD cursor — …"` unless user said not to commit
+6. **Push** — `git push origin HEAD` unless user said not to push
+7. Tell the user: digest path, continuity, code commit hash, memory commit hash, push status
 
 ## Traceability
 
 - **Continuity** = what the next chat reads first (rolling, one file)
 - **Session digest** = audit trail (per chat or appended follow-up)
-- **Git `memory:` commits** = history across machines and agents
+- **Code commits** = application repo stays current on `main`
+- **Git `memory:` commits** = vault handoff history (`git log --grep=memory:`)
+- **Push** = remote matches local after each meaningful chat

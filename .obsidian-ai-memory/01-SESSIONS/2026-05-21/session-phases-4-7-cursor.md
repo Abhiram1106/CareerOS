@@ -49,3 +49,9 @@ Complete layered architecture phases 4, 5, 6, and 7 sequentially before Week 2 p
 ## Next
 
 Week 2: JD parser, match-engine, `packages/scoring/`, scorecard UI per `active-goals.md`.
+
+## Chat follow-up — workflow + git
+
+- User requested shutdown also **commit application code** and **push**, not vault-only.
+- Updated: `.cursor/MEMORY-WORKFLOW.md`, `AGENTS.md`, `memory-session.mdc`, `.cursorrules`, `MEMORY-WRITE-PROTOCOL.md`.
+- Performed: code commit (phases 4–7) + memory commit + push.

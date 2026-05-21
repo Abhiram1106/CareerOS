@@ -85,6 +85,7 @@ Most recent sessions (newest first):
 
 | Session file | Date | Tool | Type | Key outcome |
 |---|---|---|---|---|
+| `01-SESSIONS/2026-05-21/session-phases-4-7-cursor.md` | 2026-05-21 | cursor | architecture | Phases 4–7 layered migration + shutdown code/memory/push workflow |
 | `01-SESSIONS/2026-05-21/session-1900-cursor.md` | 2026-05-21 | cursor | docs | Cursor MEMORY-WORKFLOW + session-continuity handoff |
 | `01-SESSIONS/2026-05-21/session-1800-cursor.md` | 2026-05-21 | cursor | architecture | Phase 3 profile GET/PUT migrated to layered stack |
 | `01-SESSIONS/2026-05-21/session-1700-cursor.md` | 2026-05-21 | cursor | architecture | Layered scaffold + auth domain migrated off main.py |

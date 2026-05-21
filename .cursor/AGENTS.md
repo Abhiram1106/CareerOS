@@ -25,8 +25,10 @@ Summary:
 1. Write or append session digest → `01-SESSIONS/YYYY-MM-DD/session-HHMM-cursor.md`
 2. Overwrite rolling handoff → `02-PROJECTS/session-continuity.md`
 3. Update `vault-index.md`, `current-state.md`, architecture/errors as needed
-4. `git commit` vault only: `memory: YYYY-MM-DD cursor — <summary>`
-5. End user message with a **Memory** section (paths + commit hash)
+4. **`git commit` code** (if `apps/`, `services/`, etc. changed) — one concern per commit
+5. **`git commit` vault**: `memory: YYYY-MM-DD cursor — <summary>` (never mix with code)
+6. **`git push origin HEAD`** unless user said not to push
+7. End user message with a **Memory** section (digest, code commit, vault commit, push status)
 
 This enables **chat-to-chat traceability** without relying on Cursor’s built-in transcript alone.
 

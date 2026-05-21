@@ -65,12 +65,34 @@ This file is the **fast path** for the next Cursor chat — one screen of contex
 
 Update the relevant file under `.cursor/context/` so Cursor rules stay truthful.
 
-### 5. Git commit — memory only
+### 5. Git commit — code (repo stays current)
 
-**Separate commit** from code. User may say “no commit”; otherwise **always commit vault** at shutdown.
+If this chat **created or modified application code** (`apps/`, `services/`, `packages/`, `infra/`, `docs/` when behaviour changed), commit it **before** the memory commit.
 
-```bash
-git add .obsidian-ai-memory/
+| Rule | Detail |
+|------|--------|
+| **When** | Any meaningful code/docs change in the chat |
+| **Skip** | Read-only Q&A, or user says “no commit” |
+| **One concern** | One commit per logical change (e.g. one phase, one feature) |
+| **Never mix** | Do not put `.obsidian-ai-memory/` in a code commit |
+
+```powershell
+git add <paths for this session's work only>
+git status
+git commit -m "feat: <what and why in one line>"
+```
+
+Examples:
+
+- `feat: layered phases 4–7 — resume, export, ATS, dashboard, frontend modules, satellites`
+- `fix: null-safe profile fields on ATS scan`
+
+### 6. Git commit — memory only
+
+**Always** a **separate** commit from code. User may say “no commit”; otherwise **always commit vault** (and `.cursor/` doc updates from this chat) at shutdown.
+
+```powershell
+git add .obsidian-ai-memory/ .cursor/MEMORY-WORKFLOW.md .cursor/AGENTS.md .cursor/rules/memory-session.mdc .cursorrules
 git status
 git commit -m "memory: YYYY-MM-DD cursor — <one-line summary>"
 ```
@@ -78,17 +100,29 @@ git commit -m "memory: YYYY-MM-DD cursor — <one-line summary>"
 Commit message examples:
 
 - `memory: 2026-05-21 cursor — phase 3 profile migration`
-- `memory: 2026-05-21 cursor — cursor memory workflow docs`
+- `memory: 2026-05-21 cursor — shutdown adds code commit + push`
 
-**Do not** bundle unrelated code changes in the memory commit. Code commits stay one concern each.
+**Do not** bundle application code in the memory commit.
 
-### 6. Final user message must include
+### 7. Git push (keep remote in sync)
+
+After code + memory commits, **push to `origin`** unless the user said not to push or only asked for local commits.
+
+```powershell
+git push origin HEAD
+```
+
+If push fails (auth, branch protection), report the error and leave commits local.
+
+### 8. Final user message must include
 
 ```markdown
 ## Memory
 - Digest: `01-SESSIONS/.../session-HHMM-cursor.md` (created | appended)
 - Continuity: `02-PROJECTS/session-continuity.md` updated
-- Vault commit: `<hash or "skipped per user">`
+- Code commit: `<hash or "none — read-only">` — `<message>`
+- Vault commit: `<hash or "skipped per user">` — `<message>`
+- Push: `<ok | skipped | failed — reason>`
 - Next chat should start with: (one sentence)
 ```
 
@@ -101,7 +135,10 @@ Chat N ends
   → session-continuity.md     (snapshot for Chat N+1 startup)
   → session-HHMM-cursor.md    (audit trail / full detail)
   → vault-index.md            (index of all sessions)
-  → git log --grep="memory:"  (who wrote what when)
+  → git commit (code)         (application repo current)
+  → git commit (memory:)      (vault + cursor workflow docs)
+  → git push origin HEAD      (remote in sync)
+  → git log --grep="memory:"  (handoff history)
 ```
 
 ---
@@ -115,7 +152,9 @@ Chat N ends
 - [ ] vault-index.md updated
 - [ ] current-state / architecture / errors (if needed)
 - [ ] .cursor/context updated (if needed)
-- [ ] memory commit pushed or user declined
+- [ ] code commit (if app code changed)
+- [ ] memory commit (vault + .cursor docs)
+- [ ] git push (unless user declined)
 ```
 
 ---

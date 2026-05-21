@@ -124,9 +124,11 @@ Cursor agents: follow `.cursor/MEMORY-WORKFLOW.md` in addition to this file.
 1. Update `02-PROJECTS/session-continuity.md` (Cursor — every chat).
 2. Update `02-PROJECTS/vault-index.md` "Most recent session" and counts.
 3. Check the active goal checkbox in `02-PROJECTS/active-goals.md` if a goal completed.
-4. Run `git add .obsidian-ai-memory/ && git commit -m "memory: {date} session digest + updates"`.
+4. **Code commit** (Cursor — if application code changed this chat): scoped `git add` → `git commit` with `feat:` / `fix:` message. See `.cursor/MEMORY-WORKFLOW.md`.
+5. **Memory commit**: `git add .obsidian-ai-memory/` → `git commit -m "memory: {date} cursor — …"`.
+6. **Push** (Cursor default): `git push origin HEAD` unless user declined.
 
-**The memory commit is a separate commit from the code commit.**
+**The memory commit is always separate from the code commit.**
 Use prefix `memory:` so it is easy to filter from code history.
 
 ---

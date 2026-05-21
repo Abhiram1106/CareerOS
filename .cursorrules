@@ -21,7 +21,7 @@ NOT a job board. NOT a recruiter platform. NOT a LinkedIn scraper. NOT a billing
 
 ## After every chat (before your last reply)
 
-Follow `.cursor/MEMORY-WORKFLOW.md`: session digest → update session-continuity.md → vault-index → `git commit` with `memory:` prefix unless user says no commit.
+Follow `.cursor/MEMORY-WORKFLOW.md`: digest → session-continuity.md → vault-index → **code `git commit`** (if app changed) → **`memory:` commit** (vault only) → **`git push`** unless user says no commit/push.
 
 ## Stack (canonical paths)
 
@@ -50,4 +50,4 @@ Follow `.cursor/MEMORY-WORKFLOW.md`: session digest → update session-continuit
 - PlacementReadinessScore formula in `packages/scoring/` only — never duplicate
 - No secrets in any file — not even comments
 - Verify before "done": `tsc --noEmit` (apps/web) + Python AST parse (services/*)
-- End-of-chat shutdown: digest + `session-continuity.md` + memory commit (see `.cursor/MEMORY-WORKFLOW.md`)
+- End-of-chat shutdown: digest + continuity + code commit + memory commit + push (see `.cursor/MEMORY-WORKFLOW.md`)
