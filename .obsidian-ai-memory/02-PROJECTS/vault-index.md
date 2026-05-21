@@ -21,6 +21,7 @@
 
 | File | Contents | Load when |
 |---|---|---|
+| `02-PROJECTS/bootcamp-brief.md` | **Intel AI Bootcamp context** — what the project is, why, Intel tools, demo script, judge Q&A, 5-week schedule, pitch outline | Always — this is the bootcamp submission |
 | `02-PROJECTS/project-context.md` | Stack, architecture, constraints, next steps | Always |
 | `02-PROJECTS/active-goals.md` | 5-week roadmap + current week checkboxes | Always |
 | `02-PROJECTS/current-state.md` | Snapshot: exact versions, infra state, blocked | Always |
