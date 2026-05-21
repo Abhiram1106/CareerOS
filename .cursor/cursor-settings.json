@@ -2,8 +2,11 @@
   "_comment": "Cursor project settings for CareerOS Campus AI. Committed — applies to all team members.",
   "projectRules": ".cursorrules",
   "alwaysInclude": [
+    ".obsidian-ai-memory/02-PROJECTS/session-continuity.md",
     ".obsidian-ai-memory/02-PROJECTS/project-context.md",
-    ".obsidian-ai-memory/02-PROJECTS/active-goals.md"
+    ".obsidian-ai-memory/02-PROJECTS/active-goals.md",
+    ".obsidian-ai-memory/02-PROJECTS/vault-index.md",
+    ".cursor/MEMORY-WORKFLOW.md"
   ],
   "indexing": {
     "include": [

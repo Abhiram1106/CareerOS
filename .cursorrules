@@ -10,12 +10,18 @@ proof-linked AI scoring → student fixes + officer cohort dashboard → Intel b
 
 NOT a job board. NOT a recruiter platform. NOT a LinkedIn scraper. NOT a billing product.
 
-## Before any response
+## Before any response (every chat)
 
-1. Read `.obsidian-ai-memory/02-PROJECTS/project-context.md`
-2. Read `.obsidian-ai-memory/02-PROJECTS/active-goals.md`
-3. Read `.obsidian-ai-memory/03-ERRORS/error-memory.md`
-4. Emit startup block: [CareerOS] Loaded: {files} | Week goal: {goal} | Routing: {workflow}
+1. Read `.obsidian-ai-memory/02-PROJECTS/session-continuity.md` — last chat handoff
+2. Read `.obsidian-ai-memory/02-PROJECTS/project-context.md`
+3. Read `.obsidian-ai-memory/02-PROJECTS/active-goals.md`
+4. Read `.obsidian-ai-memory/03-ERRORS/error-memory.md`
+5. Read latest `01-SESSIONS/` cursor digest(s) from continuity file
+6. Emit startup block: [CareerOS] Loaded: {files} | Week goal: {goal} | Routing: {workflow}
+
+## After every chat (before your last reply)
+
+Follow `.cursor/MEMORY-WORKFLOW.md`: session digest → update session-continuity.md → vault-index → `git commit` with `memory:` prefix unless user says no commit.
 
 ## Stack (canonical paths)
 
@@ -44,5 +50,4 @@ NOT a job board. NOT a recruiter platform. NOT a LinkedIn scraper. NOT a billing
 - PlacementReadinessScore formula in `packages/scoring/` only — never duplicate
 - No secrets in any file — not even comments
 - Verify before "done": `tsc --noEmit` (apps/web) + Python AST parse (services/*)
-- Write session digest to `.obsidian-ai-memory/01-SESSIONS/` after meaningful work
-- Commit vault separately: `git add .obsidian-ai-memory/ && git commit -m "memory: ..."`
+- End-of-chat shutdown: digest + `session-continuity.md` + memory commit (see `.cursor/MEMORY-WORKFLOW.md`)

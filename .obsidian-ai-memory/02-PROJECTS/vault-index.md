@@ -21,6 +21,7 @@
 
 | File | Contents | Load when |
 |---|---|---|
+| `02-PROJECTS/session-continuity.md` | **Rolling handoff — read first each Cursor chat** (overwrite every chat end) | Always (Cursor) |
 | `02-PROJECTS/bootcamp-brief.md` | **Intel AI Bootcamp context** — what the project is, why, Intel tools, demo script, judge Q&A, 5-week schedule, pitch outline | Always — this is the bootcamp submission |
 | `02-PROJECTS/project-context.md` | Stack, architecture, constraints, next steps | Always |
 | `02-PROJECTS/active-goals.md` | 5-week roadmap + current week checkboxes | Always |
@@ -52,8 +53,11 @@ Last decision added: 2026-05-19 — "Omnix runtime stays at .omnix/"
 
 | File | Contents |
 |---|---|
-| `05-ARCHITECTURE/README.md` | System diagram, data flows (student + officer loops), DB schema map, key conventions |
+| `05-ARCHITECTURE/README.md` | System diagram, data flows, DB schema, layered-refactor summary |
+| `05-ARCHITECTURE/layered-modules.md` | **Phase table, on-disk trees, migration rules, next-agent steps** |
 | `05-ARCHITECTURE/frontend-ux.md` | Web IA: hero, workspace tabs, component map, a11y, styling rules |
+
+Also in repo: `docs/architecture/layered-modules.md` (keep in sync with vault copy).
 
 ---
 
@@ -81,6 +85,9 @@ Most recent sessions (newest first):
 
 | Session file | Date | Tool | Type | Key outcome |
 |---|---|---|---|---|
+| `01-SESSIONS/2026-05-21/session-1900-cursor.md` | 2026-05-21 | cursor | docs | Cursor MEMORY-WORKFLOW + session-continuity handoff |
+| `01-SESSIONS/2026-05-21/session-1800-cursor.md` | 2026-05-21 | cursor | architecture | Phase 3 profile GET/PUT migrated to layered stack |
+| `01-SESSIONS/2026-05-21/session-1700-cursor.md` | 2026-05-21 | cursor | architecture | Layered scaffold + auth domain migrated off main.py |
 | `01-SESSIONS/2026-05-20/session-1600-claude.md` | 2026-05-20 | claude | project-setup | .cursor power-up (AGENTS, context/, agents/) + all pending changes pushed to origin |
 | `01-SESSIONS/2026-05-20/session-1430-cursor.md` | 2026-05-20 | cursor | feature-build + frontend | Enterprise shell, hero page, workspace tabs, `frontend-ux.md` |
 | `01-SESSIONS/2026-05-20/session-0001-claude.md` | 2026-05-20 | claude | feature-build | W1.3 migration + W1.4 role auth + W1.5 resume parser — all Week 1 tasks done |
@@ -88,7 +95,7 @@ Most recent sessions (newest first):
 | `01-SESSIONS/2026-05-19/session-restructure.md` | 2026-05-19 | claude | architecture | Pivot + monorepo restructure + .claude scaffolding + memory populated |
 | `01-SESSIONS/2026-05-18/session-2015-omnix-init.md` | 2026-05-18 | omnix | onboarding | Omnix init scan |
 
-Session count: **5**
+Session count: **8**
 
 ---
 
@@ -112,4 +119,4 @@ After every session:
 
 ---
 
-_Updated: 2026-05-20 — enterprise frontend + frontend-ux architecture doc._
+_Updated: 2026-05-21 — layered-modules architecture doc + auth migration session._

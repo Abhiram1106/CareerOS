@@ -7,14 +7,27 @@
 
 ## Adding a new FastAPI endpoint
 
+**If the domain is already migrated** (see `05-ARCHITECTURE/layered-modules.md` phase table):
+
+1. DTO → `app/modules/<domain>/dto/`
+2. Handler or query service → `mutation/` or `query/`
+3. Repo/view → `app/adapter/db/persistence/<domain>/`
+4. Controller → `app/api/controllers/<domain>_controller.py`; register in `api/router.py`
+5. Remove any duplicate route from `main.py`
+
+**If the domain is still legacy** (profile, resume, ats, dashboard as of 2026-05-21):
+
 1. Add Pydantic schema to `services/core-api/app/schemas/contracts.py`
 2. Add route handler to `services/core-api/app/main.py` (slim — validate + delegate only)
 3. Add business logic to `services/core-api/app/services/<domain>.py`
-4. If new table needed: write Alembic migration in `migrations/versions/`
-5. Add typed wrapper to `apps/web/lib/api.ts`
-6. If UI needed: add to relevant pane in `apps/web/components/panes/`
-7. Verify: `tsc --noEmit` + Python AST parse + Alembic `upgrade head` on clean DB
-8. Update `packages/contracts/openapi/` if the API surface changes
+
+**Always:**
+
+4. If new table needed: Alembic migration in `migrations/versions/`
+5. Typed wrapper in `apps/web/lib/api.ts`
+6. UI in `apps/web/components/panes/` or `apps/web/modules/<domain>/` when modular
+7. Verify: `tsc --noEmit` + Python AST parse
+8. Update `05-ARCHITECTURE/layered-modules.md` when a domain migration completes
 
 ---
 

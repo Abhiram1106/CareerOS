@@ -126,9 +126,28 @@ benchmark_runs (workload, baseline_ms, intel_ms, throughput, accuracy_delta)
 
 ---
 
+## Layered modules (core-api + web) — active refactor
+
+CareerOS is moving from a monolithic `main.py` to domain modules:
+
+- **Write:** Controller → Handler → Repo → DB  
+- **Read:** Controller ← QueryService ← View ← DB  
+
+**Vault detail:** [`layered-modules.md`](layered-modules.md) — phase table, on-disk tree, next-agent instructions.  
+**Repo copy:** `docs/architecture/layered-modules.md`
+
+| Domain | HTTP (today) | Layered stack |
+|--------|----------------|---------------|
+| auth | `/auth/register`, `/auth/login` | Migrated (Phase 2) |
+| profile | `/profile` GET/PUT | Migrated (Phase 3) |
+| resume, export, ats, dashboard | various | Legacy `main.py` — **Phase 4 next** |
+
+---
+
 ## Key conventions
 
-- **Route handlers are thin.** No logic beyond: parse input → call service → return.
+- **Route handlers are thin.** No logic beyond: parse input → call handler/query service → return.
+- **Migrated domains:** logic in `app/modules/<domain>/mutation/` (writes) and `query/` (reads); persistence in `app/adapter/db/persistence/`.
 - **All cross-service HTTP via `clients.py`.** Single place to add auth headers, timeouts, retries.
 - **Alembic migrations are the only way to change schema.** `AUTO_CREATE_TABLES=false`.
 - **Score formula imported from `packages/scoring/`.** Never inline.
@@ -137,4 +156,4 @@ benchmark_runs (workload, baseline_ms, intel_ms, throughput, accuracy_delta)
 ---
 
 _Populate this file further as the architecture evolves. Update before each weekly milestone._
-_Last updated: 2026-05-19 (Phase 2 scaffold)_
+_Last updated: 2026-05-21 — layered-modules refactor (auth migrated)._

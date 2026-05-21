@@ -133,5 +133,11 @@ Week 2:
 3. `packages/scoring/` — PlacementReadinessScore Python package
 4. Score breakdown UI in `apps/web` — 6-bar component + bucket label + missing skills list
 
+## Layered architecture (refactor in progress)
+
+- Vault: `.obsidian-ai-memory/05-ARCHITECTURE/layered-modules.md`
+- Auth routes migrated to `api/controllers` + `modules/auth` (2026-05-21)
+- Next migration: **resume + export**, then ATS/dashboard
+
 ---
-_Last updated: 2026-05-21 — bootcamp context added._
+_Last updated: 2026-05-21 — layered-modules vault + auth migration._

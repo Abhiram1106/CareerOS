@@ -1,6 +1,6 @@
 # Frontend UX — CareerOS Campus AI
 
-_Last updated: 2026-05-20 (enterprise shell + hero)._
+_Last updated: 2026-05-21 (module scaffold note + 2026-05-20 shell)._
 
 ## Product surfaces (current)
 
@@ -76,6 +76,18 @@ AppFooter
 - Workspace: `role="tablist"` / `role="tab"` / `role="tabpanel"` with `aria-selected`, `aria-controls`, `aria-describedby`.
 - All nav buttons: `type="button"`.
 - Focus: `:focus-visible` outline on interactive controls.
+
+## Module folders (scaffold — 2026-05-21)
+
+Target layout under `apps/web/` (Phase 6 — not wired yet):
+
+```text
+modules/{auth,profile,resume,ats,dashboard,officer}/
+  services/  hooks/  types/  dto/  store/
+shared/   # cross-module UI primitives (future)
+```
+
+**Rules:** all HTTP via `lib/api.ts`; no inline `fetch` in pages. See `05-ARCHITECTURE/layered-modules.md` for full phase table.
 
 ## Verification (2026-05-20)
 

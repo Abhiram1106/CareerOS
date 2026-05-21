@@ -107,11 +107,24 @@ Reference the ADR from the decision entry.
 
 ---
 
+## Rolling continuity (Cursor chat-to-chat)
+
+**File**: `02-PROJECTS/session-continuity.md`  
+**Template**: `templates/session-continuity.md`  
+**Rule**: **Overwrite** at end of every Cursor chat (not append). This is the fast handoff the next chat reads first.
+
+Session digests in `01-SESSIONS/` remain the detailed audit trail; continuity is the snapshot.
+
+Cursor agents: follow `.cursor/MEMORY-WORKFLOW.md` in addition to this file.
+
+---
+
 ## After writing — always do this
 
-1. Update `02-PROJECTS/vault-index.md` "Most recent session" and counts.
-2. Check the active goal checkbox in `02-PROJECTS/active-goals.md` if a goal completed.
-3. Run `git add .obsidian-ai-memory/ && git commit -m "memory: {date} session digest + updates"`.
+1. Update `02-PROJECTS/session-continuity.md` (Cursor — every chat).
+2. Update `02-PROJECTS/vault-index.md` "Most recent session" and counts.
+3. Check the active goal checkbox in `02-PROJECTS/active-goals.md` if a goal completed.
+4. Run `git add .obsidian-ai-memory/ && git commit -m "memory: {date} session digest + updates"`.
 
 **The memory commit is a separate commit from the code commit.**
 Use prefix `memory:` so it is easy to filter from code history.

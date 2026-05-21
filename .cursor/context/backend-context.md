@@ -12,33 +12,37 @@
 | `services/match-engine` | 8005 | `app/main.py` | TF-IDF + embeddings + skill recall (Week 2, pending) |
 | `services/intel-bench` | CLI | `run.py` | OpenVINO + sklearnex benchmark harness (Week 5) |
 
-## Core-API internal layout
+## Core-API internal layout (layered refactor — 2026-05-21)
+
+**Vault:** `.obsidian-ai-memory/05-ARCHITECTURE/layered-modules.md`  
+**Phases:** auth + profile migrated; resume/ats/dashboard still in `main.py`.
 
 ```
 services/core-api/app/
-  main.py           — all routes (slim handlers only)
-  config.py         — os.getenv() config, validated at startup
-  database.py       — SQLAlchemy engine + SessionLocal + get_db
-  db_bootstrap.py   — startup health gate
-  dependencies.py   — current_user, require_student, require_officer, require_admin
-  models/
-    entities.py     — ALL SQLAlchemy 2.0 mapped-column models
-  schemas/
-    contracts.py    — ALL Pydantic v2 request/response schemas
+  main.py              — legacy routes + include_router(api_router)
+  api/
+    router.py
+    controllers/
+      auth_controller.py   # DONE: /auth/register, /auth/login
+      profile_controller.py  # DONE: GET/PUT /profile
+  modules/
+    <domain>/mutation|query|dto|mapper|types/
+  adapter/db/persistence/<domain>/*.repo.py | *.view.py
+  models/entities.py   — ORM (split to adapter/db/entities/ later)
+  schemas/contracts.py — DTOs; auth types from modules/auth/dto/
   services/
-    auth.py         — hash_password, verify_password, create_access_token, create_session
-    clients.py      — httpx async calls to downstream services
-    pdf_export.py   — WeasyPrint resume PDF export
+    auth.py            — JWT + password crypto only (not route logic)
+    clients.py
+    pdf_export.py
   workers/
-    celery_app.py   — Celery app config
-    tasks.py        — generate_resume_export (Celery task)
-  templates/        — Jinja2 HTML for PDF export
+  templates/
 ```
 
 ## FastAPI conventions (strict)
 
-- Route handler = validate input + call service layer + return. Nothing else.
-- Business logic in `services/<svc>/app/services/`, never in route functions.
+- **Migrated domain:** controller → handler (write) or query service (read) → repo/view.
+- **Unmigrated domain:** thin route in `main.py` → delegate to `app/services/` until moved.
+- **Never** SQL or business rules in controllers.
 - `Depends(current_user)` on all protected routes.
 - `require_officer` gate on all officer-only endpoints.
 - Schema changes → write Alembic migration, never rely on `entities.py` alone.
