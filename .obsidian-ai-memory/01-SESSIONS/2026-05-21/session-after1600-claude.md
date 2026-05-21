@@ -1,4 +1,15 @@
 ---
+tags: [session, layered-architecture, handoff]
+type: session
+date: 2026-05-21
+time: ~after 16:00
+tool: claude
+links: [session-index, 01-SESSIONS/2026-05-21/session-phases-4-7-cursor]
+---
+
+← [[session-index]] · [[01-SESSIONS/2026-05-21/session-phases-4-7-cursor]]
+
+---
 date: 2026-05-21
 time: ~after 16:00 (Cursor session — phases 4–7)
 tool: Claude Code (retrospective digest of Cursor work)
@@ -68,3 +79,5 @@ Cursor completed the full layered architecture refactor across all 4 remaining p
 2. `services/match-engine/` — TF-IDF + sentence-transformers + sklearnex
 3. JD parser (job description → skills_json + eligibility_json)
 4. Score breakdown UI in `/workspace` JD Match Scan tab (wire to real API)
+
+*Related: [[session-index]] · [[MASTER_PLAN]] · [[01-SESSIONS/2026-05-21/session-phases-4-7-cursor]] · [[05-ARCHITECTURE/layered-modules]] · [[scoring-knowledge]]*

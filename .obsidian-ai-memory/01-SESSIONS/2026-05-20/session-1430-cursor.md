@@ -1,4 +1,14 @@
+---
+tags: [session, frontend, ux, hero]
+type: session
+date: 2026-05-20
+tool: cursor
+links: [session-index, MASTER_PLAN, 05-ARCHITECTURE/frontend-ux]
+---
+
 # Session Digest — CareerOS Campus AI
+
+← [[session-index]] · [[MASTER_PLAN]] · [[05-ARCHITECTURE/frontend-ux]]
 
 ---
 
@@ -107,5 +117,7 @@ None in this session.
 
 ## Cross-platform handoff note
 
-> Read `05-ARCHITECTURE/frontend-ux.md` before changing navigation or hero copy.
+> Read [[05-ARCHITECTURE/frontend-ux]] before changing navigation or hero copy.
 > Workspace logic unchanged: `useCareerOSWorkspace` + existing panes.
+
+*Related: [[session-index]] · [[MASTER_PLAN]] · [[05-ARCHITECTURE/frontend-ux]] · [[architecture-index]]*

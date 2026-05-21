@@ -1,4 +1,13 @@
+---
+tags: [errors, bugs, append-only]
+type: error-log
+updated: 2026-05-21
+links: [errors-index, 03-ERRORS/anti-patterns]
+---
+
 # Error Memory
+
+← [[errors-index]] · [[03-ERRORS/anti-patterns]]
 
 > Log fixed bugs and how. Check this before diagnosing anything.
 
@@ -20,6 +29,8 @@ that point is the *original* content under the new path.
 **before** `git commit`. Verified by `git show HEAD -- <path>` showing the
 intended diff.
 
-**Prevention**: see `anti-patterns.md` → "rename then edit then commit".
+**Prevention**: see [[03-ERRORS/anti-patterns#Don't commit after `git mv` + edit without re-staging]].
 
 ---
+
+*Related: [[errors-index]] · [[03-ERRORS/anti-patterns]] · [[07-LESSONS/debugging-lessons]] · [[06-WORKFLOWS/README#Fixing a bug]]*

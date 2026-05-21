@@ -1,7 +1,16 @@
+---
+tags: [errors, prevention, rules]
+type: error-log
+updated: 2026-05-21
+links: [errors-index, 03-ERRORS/error-memory]
+---
+
 # Anti-patterns
 
+← [[errors-index]] · [[03-ERRORS/error-memory]]
+
 > Prevention rules promoted from recurring errors. Each entry references the
-> incident in `error-memory.md`.
+> incident in [[03-ERRORS/error-memory]].
 
 ---
 
@@ -14,7 +23,7 @@ captures only the move with the original content, silently losing the edits.
 
 **Verify** with `git show HEAD -- <edited-path>` before declaring done.
 
-**Source**: `error-memory.md` → 2026-05-19 incident during Phase 1 restructure.
+**Source**: [[03-ERRORS/error-memory#2026-05-19 — `git mv` + post-rename Edit lost in single commit]]
 
 ---
 
@@ -68,3 +77,7 @@ verify with `git status --ignored` before each new file type.
 
 **Source**: Phase 1 surfaced committed `*.db` and PDF exports from the
 pre-pivot MVP. Removed and gitignored.
+
+---
+
+*Related: [[errors-index]] · [[03-ERRORS/error-memory]] · [[07-LESSONS/debugging-lessons]] · [[_INDEX]]*

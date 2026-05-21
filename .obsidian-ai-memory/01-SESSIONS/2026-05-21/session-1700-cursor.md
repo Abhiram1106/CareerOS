@@ -1,4 +1,14 @@
+---
+tags: [session, layered-architecture, auth]
+type: session
+date: 2026-05-21
+tool: cursor
+links: [session-index, 05-ARCHITECTURE/layered-modules]
+---
+
 # Session digest — 2026-05-21 17:00 — cursor
+
+← [[session-index]] · [[05-ARCHITECTURE/layered-modules]]
 
 ## Goal
 Phase 2 layered architecture: migrate `auth` domain off monolithic `main.py`.
@@ -29,3 +39,5 @@ Phase 2 layered architecture: migrate `auth` domain off monolithic `main.py`.
 
 ## Open risks
 - None for auth parity; response shape unchanged (`model_dump()` same fields)
+
+*Related: [[session-index]] · [[MASTER_PLAN]] · [[05-ARCHITECTURE/layered-modules]] · [[api-index]] · [[01-SESSIONS/2026-05-21/session-1800-cursor]]*

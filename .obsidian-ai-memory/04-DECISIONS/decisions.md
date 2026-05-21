@@ -1,10 +1,23 @@
+---
+tags: [decisions, adr, architecture]
+type: decision-log
+updated: 2026-05-21
+links: [_INDEX, architecture-index, 04-DECISIONS/decisions]
+---
+
 # Decisions
+
+← [[_INDEX]] · [[architecture-index]]
 
 > Non-trivial choices with rationale. Append-only — supersedes recorded
 > by date and `**Status: superseded by ...**` note. Full ADRs live in
 > `docs/adr/`; this is the quick-lookup index.
 
+**Graph anchors:** Decision 1 · Decision 2 · Decision 3 · Decision 4 · Decision 5 (headings below)
+
 ---
+
+## Decision 1 — Pivot to Campus AI
 
 ## 2026-05-19 — Pivot to Campus AI
 
@@ -30,6 +43,8 @@ alerts, application tracker, LinkedIn import. Recoverable via
 
 ---
 
+## Decision 2 — Hybrid small-team monorepo structure
+
 ## 2026-05-19 — Hybrid small-team monorepo structure
 
 **Decision**: Use the small-team variant from
@@ -50,6 +65,8 @@ packages. Bazel deferred indefinitely.
 
 ---
 
+## Decision 3 — Work on `main` only, no feature branches
+
 ## 2026-05-19 — Work on `main` only, no feature branches
 
 **Decision**: Per user direction, all restructure + feature work happens
@@ -68,6 +85,8 @@ based per research §"Google's published guidance".
 
 ---
 
+## Decision 4 — Score formula source of truth: `packages/scoring/`
+
 ## 2026-05-19 — Score formula source of truth: `packages/scoring/`
 
 **Decision**: The PlacementReadinessScore formula (6 components, JD_Match
@@ -82,6 +101,8 @@ of measurable claims.
 **Status**: Decided; implementation lands Week 2.
 
 ---
+
+## Decision 5 — Omnix runtime stays at `.omnix/`, committed config target is `platform/omnix/`
 
 ## 2026-05-19 — Omnix runtime stays at `.omnix/`, committed config target is `platform/omnix/`
 
@@ -98,3 +119,5 @@ future migration is straightforward.
 **Status**: Active.
 
 ---
+
+*Related: [[_INDEX]] · [[architecture-index]] · [[scoring-knowledge]] · [[04-DECISIONS/decisions]] · [[MASTER_PLAN]]*

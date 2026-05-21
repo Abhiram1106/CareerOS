@@ -1,4 +1,13 @@
+---
+tags: [bootcamp, intel, demo, pitch]
+type: project
+updated: 2026-05-21
+links: [_INDEX, MASTER_PLAN, intel-index, scoring-knowledge]
+---
+
 # Intel AI Bootcamp — CareerOS Campus AI Project Brief
+
+← [[_INDEX]] · [[MASTER_PLAN]] · [[intel-index]] · [[scoring-knowledge]]
 
 > This document is the single source of truth for the bootcamp context.
 > Read this before every session involving pitch, demo, scoring, or Intel integration.
@@ -254,3 +263,5 @@ JD_Match =
 
 ---
 *Last updated: 2026-05-21*
+
+*Related: [[_INDEX]] · [[MASTER_PLAN]] · [[intel-index]] · [[scoring-knowledge]] · [[02-PROJECTS/project-context]] · [[architecture-index]]*

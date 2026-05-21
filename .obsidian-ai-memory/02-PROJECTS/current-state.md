@@ -1,6 +1,17 @@
+---
+tags: [project, snapshot, verification]
+type: project
+updated: 2026-05-21
+links: [_INDEX, architecture-index, session-index]
+---
+
 # Current State
 
+← [[_INDEX]] · [[architecture-index]]
+
 _Last scanned: 2026-05-21 (layered architecture Phase 1–2)._
+
+> **Graph pass note:** Phases 4–7 complete per [[01-SESSIONS/2026-05-21/session-phases-4-7-cursor]] — snapshot body below may predate that; trust session digest + [[05-ARCHITECTURE/layered-modules]] for latest phase table.
 
 ## Stack
 
@@ -18,7 +29,7 @@ _Last scanned: 2026-05-21 (layered architecture Phase 1–2)._
 
 ## Architecture refactor (in progress)
 
-**Standard:** layered domain modules — see `.obsidian-ai-memory/05-ARCHITECTURE/layered-modules.md`
+**Standard:** layered domain modules — see [[05-ARCHITECTURE/layered-modules]]
 
 | Phase | Status |
 |-------|--------|
@@ -63,3 +74,5 @@ _Last scanned: 2026-05-21 (layered architecture Phase 1–2)._
 
 ---
 _Updated: 2026-05-21 — layered architecture scaffold + auth migration; vault synced._
+
+*Related: [[_INDEX]] · [[architecture-index]] · [[05-ARCHITECTURE/layered-modules]] · [[api-index]] · [[02-PROJECTS/active-goals]] · [[session-index]] · [[01-SESSIONS/2026-05-21/session-phases-4-7-cursor]]*

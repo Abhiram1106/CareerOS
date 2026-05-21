@@ -1,4 +1,14 @@
+---
+tags: [session, week1, alembic, auth, resume-parser]
+type: session
+date: 2026-05-20
+tool: claude
+links: [session-index, MASTER_PLAN, api-index]
+---
+
 # Session — Week 1 implementation: Alembic migration + role auth + resume parser
+
+← [[session-index]] · [[MASTER_PLAN]] · [[api-index]]
 
 Date: 2026-05-20 ~00:01 IST | Tool: claude | Type: feature-build
 Week goal: W1.3 Alembic delta migration + W1.4 role auth + W1.5 resume upload + parser
@@ -102,4 +112,6 @@ git add -A && git commit
 
 1. **Week 2 — JD parser**: Build `/jd/parse` endpoint in core-api that extracts `required_skills`, `nice_to_have_skills`, `eligibility` (cgpa, branches, backlogs) from pasted JD text using a skill taxonomy dictionary + regex rules.
 2. **Week 2 — Match engine service**: Scaffold `services/match-engine/` — TF-IDF cosine (sklearnex) + sentence-transformer embedding cosine + skill recall + eligibility rule score → returns the 4-component JD_Match breakdown.
-3. **Week 2 — Score breakdown UI**: `apps/web` — add a JD paste input in the Resume pane, trigger match-engine via core-api, render the 6-bar PlacementReadinessScore breakdown with bucket label and missing-skills list.
+3. **Week 2 — Score breakdown UI**: `apps/web` — add a JD paste input in the Resume pane, trigger match-engine via core-api, render the 6-bar [[scoring-knowledge|PlacementReadinessScore]] breakdown with bucket label and missing-skills list.
+
+*Related: [[session-index]] · [[MASTER_PLAN]] · [[api-index]] · [[02-PROJECTS/active-goals]] · [[01-SESSIONS/2026-05-20/session-1430-cursor]]*

@@ -1,4 +1,14 @@
+---
+tags: [session, omnix, onboarding]
+type: session
+date: 2026-05-18
+tool: omnix
+links: [session-index, MASTER_PLAN, _INDEX]
+---
+
 # Session Digest
+
+← [[session-index]] · [[MASTER_PLAN]]
 
 - Date: 2026-05-18 2015
 - Tool: omnix-init
@@ -30,3 +40,5 @@ none
 - Open Questions:
 none
 - Next Recommended Step: Run `omnix scan` to verify stack detection, then open your AI tool.
+
+*Related: [[session-index]] · [[MASTER_PLAN]] · [[_INDEX]] · [[02-PROJECTS/project-context]]*

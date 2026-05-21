@@ -1,4 +1,13 @@
+---
+tags: [architecture, refactor, core-api]
+type: architecture
+updated: 2026-05-21
+links: [architecture-index, api-index, session-index]
+---
+
 # Layered modular architecture — CareerOS
+
+← [[architecture-index]] · [[api-index]] · [[session-index]]
 
 > **Load this for any refactor, new endpoint, or “where does this code go?” question.**
 > Repo mirror (same content, kept in sync): `docs/architecture/layered-modules.md`
@@ -129,13 +138,15 @@ shared/                    # SCAFFOLD — target for cross-module UI
 6. Remove duplicate route from `main.py`
 7. `apps/web/lib/api.ts` wrapper + verify AST + tsc
 
-**Unmigrated domain:** still use `main.py` + `schemas/contracts.py` until that domain’s phase completes (see workflow in `06-WORKFLOWS/README.md`).
+**Unmigrated domain:** still use `main.py` + `schemas/contracts.py` until that domain’s phase completes (see workflow in [[06-WORKFLOWS/README]]).
 
 ---
 
 ## For the next agent
 
-1. Read this file + `02-PROJECTS/current-state.md`
-2. Continue **Phase 4 — resume + export** (see latest session in `01-SESSIONS/2026-05-21/`)
+1. Read this file + [[02-PROJECTS/current-state]]
+2. Phases 4–7 complete — see [[01-SESSIONS/2026-05-21/session-phases-4-7-cursor]]; Week 2: [[02-PROJECTS/active-goals]]
 3. Follow `.cursor/rules/backend.mdc` and `.cursor/context/backend-context.md`
-4. Do not duplicate PlacementReadinessScore outside `packages/scoring/`
+4. Do not duplicate PlacementReadinessScore outside `packages/scoring/` — [[scoring-knowledge]]
+
+*Related: [[architecture-index]] · [[api-index]] · [[06-WORKFLOWS/README]] · [[session-index]] · [[01-SESSIONS/2026-05-21/session-phases-4-7-cursor]]*

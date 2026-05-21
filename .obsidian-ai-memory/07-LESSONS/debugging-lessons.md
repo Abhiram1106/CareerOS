@@ -1,4 +1,13 @@
+---
+tags: [lessons, debugging, git]
+type: lesson-log
+updated: 2026-05-21
+links: [errors-index, 03-ERRORS/error-memory]
+---
+
 # Debugging Lessons — CareerOS Campus AI
+
+← [[errors-index]] · [[03-ERRORS/error-memory]]
 
 > Hard-won lessons from debugging sessions. Loaded by AI tools during
 > error diagnosis tasks (deep mode). Append new lessons as they are learned.
@@ -74,3 +83,5 @@ distinguish between runtime cache (ignore) and team-shared config (track).
 
 _Append new lessons here after every debugging session that reveals a non-obvious root cause._
 _Last updated: 2026-05-19_
+
+*Related: [[errors-index]] · [[03-ERRORS/error-memory]] · [[03-ERRORS/anti-patterns]] · [[06-WORKFLOWS/README#Fixing a bug]]*

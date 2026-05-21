@@ -1,4 +1,14 @@
+---
+tags: [session, docs, memory-protocol]
+type: session
+date: 2026-05-19
+tool: claude
+links: [session-index, MASTER_PLAN, MEMORY-WRITE-PROTOCOL]
+---
+
 # Session — AI agent docs personalization + strict memory protocol
+
+← [[session-index]] · [[MASTER_PLAN]]
 
 Date: 2026-05-19 ~18:00 IST | Tool: claude | Type: docs + architecture
 Week goal: Phase 2 complete — monorepo scaffold, .claude, Omnix memory populated
@@ -93,3 +103,5 @@ git add -A && git commit  # ×3 commits this session
 1. Write Alembic delta migration: add `colleges`, `departments`, `resume_sections`, `resume_evidence`, `job_descriptions`, `scorecards`, `recommendations`, `batches`, `batch_resumes`, `events_audit`, `benchmark_runs` tables to `services/core-api/migrations/versions/`
 2. Add `role` claim to JWT token in `services/core-api/app/services/auth.py` + gate routes by `student`/`officer`/`admin` in `services/core-api/app/dependencies.py`
 3. Scaffold `services/resume-parser/` with `pdfplumber` + `python-docx` parser, Indian-fresher section extractor, and a fixture corpus of 5 sample resumes in `services/resume-parser/tests/fixtures/`
+
+*Related: [[session-index]] · [[MASTER_PLAN]] · [[MEMORY-WRITE-PROTOCOL]] · [[01-SESSIONS/2026-05-19/session-restructure]] · [[architecture-index]]*

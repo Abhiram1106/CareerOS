@@ -1,4 +1,14 @@
+---
+tags: [session, pivot, monorepo]
+type: session
+date: 2026-05-19
+tool: claude
+links: [session-index, MASTER_PLAN, architecture-index]
+---
+
 # Session — Pivot, restructure, monorepo scaffold
+
+← [[session-index]] · [[MASTER_PLAN]] · [[architecture-index]]
 
 **Date**: 2026-05-19
 **Tool**: Claude Code (Opus 4.7)
@@ -149,3 +159,5 @@ Week 1 step 3:
 - **Commits this session on `main`**: 2 so far (c327416, 172160a); Phase 2 commit pending
 - **Lines net**: −6452 +960 across Phase 1
 - **Verification**: `tsc --noEmit` clean; all Python AST-parses clean
+
+*Related: [[session-index]] · [[MASTER_PLAN]] · [[04-DECISIONS/decisions#Decision 1 — Pivot to Campus AI]] · [[05-ARCHITECTURE/layered-modules]] · [[01-SESSIONS/2026-05-19/session-1800-claude]]*

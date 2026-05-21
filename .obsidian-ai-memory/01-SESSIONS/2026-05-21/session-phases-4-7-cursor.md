@@ -1,4 +1,14 @@
+---
+tags: [session, layered-architecture, phases-4-7]
+type: session
+date: 2026-05-21
+tool: cursor
+links: [session-index, 05-ARCHITECTURE/layered-modules, api-index]
+---
+
 # Session digest — 2026-05-21 — Phases 4–7 layered migration
+
+← [[session-index]] · [[05-ARCHITECTURE/layered-modules]] · [[api-index]]
 
 **Tool:** cursor  
 **Duration:** meaningful (multi-phase refactor)
@@ -55,3 +65,5 @@ Week 2: JD parser, match-engine, `packages/scoring/`, scorecard UI per `active-g
 - User requested shutdown also **commit application code** and **push**, not vault-only.
 - Updated: `.cursor/MEMORY-WORKFLOW.md`, `AGENTS.md`, `memory-session.mdc`, `.cursorrules`, `MEMORY-WRITE-PROTOCOL.md`.
 - Performed: code commit (phases 4–7) + memory commit + push.
+
+*Related: [[session-index]] · [[MASTER_PLAN]] · [[05-ARCHITECTURE/layered-modules]] · [[api-index]] · [[architecture-index]] · [[01-SESSIONS/2026-05-21/session-after1600-claude]]*

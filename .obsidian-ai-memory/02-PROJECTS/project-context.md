@@ -1,4 +1,13 @@
+---
+tags: [project, context, bootcamp]
+type: project
+updated: 2026-05-21
+links: [_INDEX, MASTER_PLAN, scoring-knowledge, architecture-index]
+---
+
 # Project Context
+
+← [[_INDEX]] · [[MASTER_PLAN]] · [[02-PROJECTS/bootcamp-brief]]
 
 - **Project Name**: CareerOS Campus AI
 - **Submission context**: Intel AI Bootcamp — final project. Scored on problem clarity, demo impact, Intel relevance, technical depth, social impact, and pitch quality. Target: 9+/10.
@@ -120,8 +129,7 @@ Buckets: 0–49 🔴 High Risk | 50–69 🟡 Borderline | 70–84 🟢 Ready | 
 
 ## Known errors + anti-patterns
 
-See `.obsidian-ai-memory/03-ERRORS/error-memory.md`
-See `.obsidian-ai-memory/03-ERRORS/anti-patterns.md`
+See [[03-ERRORS/error-memory]] and [[03-ERRORS/anti-patterns]] — hub: [[errors-index]]
 
 ---
 
@@ -135,9 +143,11 @@ Week 2:
 
 ## Layered architecture (refactor in progress)
 
-- Vault: `.obsidian-ai-memory/05-ARCHITECTURE/layered-modules.md`
+- Vault: [[05-ARCHITECTURE/layered-modules]]
 - Auth routes migrated to `api/controllers` + `modules/auth` (2026-05-21)
 - Next migration: **resume + export**, then ATS/dashboard
 
 ---
 _Last updated: 2026-05-21 — layered-modules vault + auth migration._
+
+*Related: [[_INDEX]] · [[MASTER_PLAN]] · [[architecture-index]] · [[scoring-knowledge]] · [[api-index]] · [[02-PROJECTS/active-goals]] · [[02-PROJECTS/current-state]] · [[session-index]]*

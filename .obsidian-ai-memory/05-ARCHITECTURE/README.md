@@ -1,4 +1,13 @@
+---
+tags: [architecture, system-design]
+type: architecture
+updated: 2026-05-21
+links: [architecture-index, _INDEX, scoring-knowledge]
+---
+
 # Architecture Notes — CareerOS Campus AI
+
+← [[architecture-index]] · [[_INDEX]]
 
 > Loaded by AI tools during architecture-type tasks (deep mode).
 > More detailed than ADRs — captures how components actually fit together
@@ -150,10 +159,12 @@ CareerOS is moving from a monolithic `main.py` to domain modules:
 - **Migrated domains:** logic in `app/modules/<domain>/mutation/` (writes) and `query/` (reads); persistence in `app/adapter/db/persistence/`.
 - **All cross-service HTTP via `clients.py`.** Single place to add auth headers, timeouts, retries.
 - **Alembic migrations are the only way to change schema.** `AUTO_CREATE_TABLES=false`.
-- **Score formula imported from `packages/scoring/`.** Never inline.
+- **Score formula imported from `packages/scoring/`.** Never inline — [[scoring-knowledge]] · [[04-DECISIONS/decisions#Decision 4 — Score formula source of truth: `packages/scoring/`]]
 - **`packages/contracts/schemas/*.json`** are the cross-language ground truth. Python mirrors them in Pydantic; TypeScript imports generated types from `packages/ts-types/`.
 
 ---
 
 _Populate this file further as the architecture evolves. Update before each weekly milestone._
 _Last updated: 2026-05-21 — layered-modules refactor (auth migrated)._
+
+*Related: [[architecture-index]] · [[05-ARCHITECTURE/layered-modules]] · [[05-ARCHITECTURE/frontend-ux]] · [[api-index]] · [[scoring-knowledge]] · [[intel-index]]*

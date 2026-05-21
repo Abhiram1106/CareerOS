@@ -1,5 +1,13 @@
+---
+tags: [vault, index, legacy-lookup]
+type: hub
+updated: 2026-05-21
+links: [_INDEX, session-index]
+---
+
 # Vault Index — CareerOS Campus AI
 
+> **Prefer graph hubs:** [[_INDEX]] · [[session-index]] · [[architecture-index]] · [[api-index]]  
 > Quick-lookup map of the entire `.obsidian-ai-memory/` vault.
 > AI tools read this first (priority 3 in MEMORY-READ-PROTOCOL.md) to
 > decide which other files to load without reading the whole vault.
@@ -121,3 +129,5 @@ After every session:
 ---
 
 _Updated: 2026-05-21 — layered-modules architecture doc + auth migration session._
+
+*Related: [[_INDEX]] · [[session-index]] · [[architecture-index]] · [[MEMORY-READ-PROTOCOL]] · [[02-PROJECTS/session-continuity]]*

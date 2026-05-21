@@ -1,4 +1,13 @@
+---
+tags: [project, goals, week-plan]
+type: project
+updated: 2026-05-21
+links: [MASTER_PLAN, _INDEX, scoring-knowledge]
+---
+
 # Active Goals
+
+← [[MASTER_PLAN]] · [[_INDEX]]
 
 > Sorted by week of the 5-week plan
 > (`C:\Users\ADMIN\.claude\plans\brutal-upgrade-direction-make-humble-parnas.md`).
@@ -16,7 +25,7 @@
 - [ ] JD parser + skill taxonomy + eligibility extractor.
 - [ ] `services/match-engine`: TF-IDF cosine + sentence-transformer embedding cosine + skill recall + eligibility rule score.
 - [ ] Narrow `services/ats-engine` to the ATS-Parse-Safety penalty model only (drop the 5-component composite).
-- [ ] `packages/scoring/` — Python lib implementing the full PlacementReadinessScore formula.
+- [ ] `packages/scoring/` — Python lib implementing the full [[scoring-knowledge|PlacementReadinessScore]] formula.
 - [ ] `apps/web` score breakdown UI (six bars + bucket label + missing skills list).
 
 ## Week 3 — AI rewriter + export
@@ -41,3 +50,5 @@
 
 ---
 _Updated: 2026-05-19 — Phase 2 complete; Week 1 step 3 next._
+
+*Related: [[MASTER_PLAN]] · [[_INDEX]] · [[02-PROJECTS/project-context]] · [[02-PROJECTS/current-state]] · [[scoring-knowledge]] · [[intel-index]] · [[session-index]]*

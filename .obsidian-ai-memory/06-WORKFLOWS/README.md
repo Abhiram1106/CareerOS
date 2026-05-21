@@ -1,4 +1,13 @@
+---
+tags: [workflows, procedures, dev]
+type: workflow
+updated: 2026-05-21
+links: [_INDEX, api-index, errors-index]
+---
+
 # Workflows — CareerOS Campus AI
+
+← [[_INDEX]] · [[api-index]] · [[errors-index]]
 
 > Repeatable step-by-step procedures for common development tasks.
 > AI tools read this for task-type routing. Humans read this for onboarding.
@@ -7,7 +16,7 @@
 
 ## Adding a new FastAPI endpoint
 
-**If the domain is already migrated** (see `05-ARCHITECTURE/layered-modules.md` phase table):
+**If the domain is already migrated** (see [[05-ARCHITECTURE/layered-modules]] phase table):
 
 1. DTO → `app/modules/<domain>/dto/`
 2. Handler or query service → `mutation/` or `query/`
@@ -89,11 +98,13 @@ Rules:
 1. Create file: `.obsidian-ai-memory/01-SESSIONS/YYYY-MM-DD/session-HHMM-<tool>.md`
 2. Copy `templates/session-digest.md`
 3. Fill every field (write "none" or "N/A" explicitly — never leave blank)
-4. Update `02-PROJECTS/vault-index.md` "Most recent session"
-5. Check `02-PROJECTS/active-goals.md` — mark any completed goals `[x]`
+4. Update [[02-PROJECTS/vault-index]] "Most recent session" · link from [[session-index]]
+5. Check [[02-PROJECTS/active-goals]] — mark any completed goals `[x]`
 6. Run: `git add .obsidian-ai-memory/ && git commit -m "memory: YYYY-MM-DD session digest"`
 
 ---
 
 _Add new workflows here whenever a repeatable task is identified._
 _Last updated: 2026-05-19_
+
+*Related: [[_INDEX]] · [[api-index]] · [[errors-index]] · [[05-ARCHITECTURE/layered-modules]] · [[intel-index]] · [[MEMORY-WRITE-PROTOCOL]]*

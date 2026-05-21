@@ -1,4 +1,14 @@
+---
+tags: [session, memory-workflow, cursor]
+type: session
+date: 2026-05-21
+tool: cursor
+links: [session-index, MEMORY-WORKFLOW, 02-PROJECTS/session-continuity]
+---
+
 # Session — 2026-05-21 19:00 — cursor
+
+← [[session-index]] · [[02-PROJECTS/session-continuity]]
 
 | Field | Value |
 |-------|-------|
@@ -33,4 +43,6 @@
 
 ## Cross-platform handoff
 
-Next Cursor chat: read `02-PROJECTS/session-continuity.md` before `project-context.md`.
+Next Cursor chat: read [[02-PROJECTS/session-continuity]] before [[02-PROJECTS/project-context]].
+
+*Related: [[session-index]] · [[MASTER_PLAN]] · [[MEMORY-WORKFLOW]] · [[02-PROJECTS/session-continuity]] · [[01-SESSIONS/2026-05-21/session-phases-4-7-cursor]]*

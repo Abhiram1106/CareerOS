@@ -1,4 +1,14 @@
+---
+tags: [session, cursor, tooling]
+type: session
+date: 2026-05-20
+tool: claude
+links: [session-index, MASTER_PLAN]
+---
+
 # Session — .cursor power-up + cursor session digest review + push to origin
+
+← [[session-index]] · [[MASTER_PLAN]]
 
 Date: 2026-05-20 ~16:00 IST | Tool: claude | Type: project-setup + docs
 Week goal: Week 1 complete; prep for Week 2 match-engine
@@ -95,4 +105,6 @@ None.
 
 1. **Week 2 — JD parser**: `/jd/parse` endpoint extracting `required_skills`, `nice_to_have_skills`, `eligibility` from pasted JD text
 2. **Week 2 — `services/match-engine/`**: TF-IDF + sentence-transformer embeddings + skill recall + eligibility rule → 4-component JD_Match score
-3. **Week 2 — Score breakdown UI**: 6-bar PlacementReadinessScore in Resume pane with bucket label and missing-skills list
+3. **Week 2 — Score breakdown UI**: 6-bar [[scoring-knowledge|PlacementReadinessScore]] in Resume pane with bucket label and missing-skills list
+
+*Related: [[session-index]] · [[MASTER_PLAN]] · [[01-SESSIONS/2026-05-20/session-1430-cursor]] · [[MEMORY-WRITE-PROTOCOL]]*

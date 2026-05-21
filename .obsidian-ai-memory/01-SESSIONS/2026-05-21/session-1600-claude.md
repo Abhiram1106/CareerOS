@@ -1,10 +1,15 @@
 ---
+tags: [session, auth, stitch, frontend]
+type: session
 date: 2026-05-21
 time: ~16:00
-tool: Claude Code
+tool: claude
 commit: e105857
 branch: main
+links: [session-index, MASTER_PLAN, 05-ARCHITECTURE/frontend-ux]
 ---
+
+← [[session-index]] · [[MASTER_PLAN]]
 
 ## Summary
 
@@ -47,3 +52,5 @@ Integrated all 10 Stitch HTML design files into the Next.js app as fully authent
 - **Week 3**: `services/ai-rewriter/` — proof-linked JSON schema rewriter, before/after UI
 - **Week 4**: Officer batch management routes, cohort upload, Alembic migrations for batches/JDs
 - **Week 5**: `services/intel-bench/run.py` — real measurements, replace placeholder benchmark table in /lab
+
+*Related: [[session-index]] · [[MASTER_PLAN]] · [[05-ARCHITECTURE/frontend-ux]] · [[api-index]] · [[01-SESSIONS/2026-05-21/session-1700-cursor]]*

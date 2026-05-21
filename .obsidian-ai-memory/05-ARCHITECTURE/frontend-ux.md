@@ -1,4 +1,13 @@
+---
+tags: [architecture, frontend, ux]
+type: architecture
+updated: 2026-05-21
+links: [architecture-index, 05-ARCHITECTURE/layered-modules]
+---
+
 # Frontend UX — CareerOS Campus AI
+
+← [[architecture-index]] · [[05-ARCHITECTURE/layered-modules]]
 
 _Last updated: 2026-05-21 (module scaffold note + 2026-05-20 shell)._
 
@@ -87,7 +96,7 @@ modules/{auth,profile,resume,ats,dashboard,officer}/
 shared/   # cross-module UI primitives (future)
 ```
 
-**Rules:** all HTTP via `lib/api.ts`; no inline `fetch` in pages. See `05-ARCHITECTURE/layered-modules.md` for full phase table.
+**Rules:** all HTTP via `lib/api.ts`; no inline `fetch` in pages. See [[05-ARCHITECTURE/layered-modules]] for full phase table.
 
 ## Verification (2026-05-20)
 
@@ -99,3 +108,5 @@ shared/   # cross-module UI primitives (future)
 - Route groups `(student)/` and `(officer)/` with dedicated URLs
 - Officer cohort heatmap pane (Week 4)
 - Dark theme toggle (needs ADR if requested)
+
+*Related: [[architecture-index]] · [[05-ARCHITECTURE/layered-modules]] · [[05-ARCHITECTURE/README]] · [[api-index]] · [[session-index]] · [[01-SESSIONS/2026-05-20/session-1430-cursor]]*

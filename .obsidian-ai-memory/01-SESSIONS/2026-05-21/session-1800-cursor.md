@@ -1,4 +1,14 @@
+---
+tags: [session, layered-architecture, profile]
+type: session
+date: 2026-05-21
+tool: cursor
+links: [session-index, api-index]
+---
+
 # Session — 2026-05-21 18:00 — cursor
+
+← [[session-index]] · [[api-index]]
 
 ## Goal
 Phase 3: migrate **profile** (`GET/PUT /profile`) to layered architecture with strict SoC.
@@ -25,3 +35,5 @@ Phase 3: migrate **profile** (`GET/PUT /profile`) to layered architecture with s
 
 ## Next
 - Phase 4: resume + export (largest; still in `main.py`)
+
+*Related: [[session-index]] · [[MASTER_PLAN]] · [[05-ARCHITECTURE/layered-modules]] · [[api-index]] · [[01-SESSIONS/2026-05-21/session-phases-4-7-cursor]]*
