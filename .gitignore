@@ -64,6 +64,10 @@ docker-data/
 
 # Obsidian-AI engineering memory vault — fully tracked.
 # (Intentionally NOT ignored. Vault is the team's long-term memory.)
+# Obsidian app UI state — not meaningful to track.
+.obsidian-ai-memory/.obsidian/workspace.json
+.obsidian-ai-memory/.obsidian/graph.json
+.obsidian-ai-memory/.obsidian/cache
 
 # Cursor — track all committed config; ignore only personal overrides.
 .cursor/AGENTS.local.md
