@@ -102,6 +102,23 @@ export const api = {
       undefined,
       token
     ),
+  downloadExport: async (token: string, job_id: number): Promise<Blob> => {
+    const res = await fetch(`${API_BASE}/resumes/export/${job_id}/download`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      let msg = "Export download failed";
+      try {
+        const err = await res.json();
+        msg = err.detail || msg;
+      } catch {
+        // noop
+      }
+      throw new Error(msg);
+    }
+    return res.blob();
+  },
 
   // ATS
   scan: (token: string, payload: { jd_text: string }) =>

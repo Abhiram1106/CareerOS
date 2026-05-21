@@ -4,9 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { storeAuth, DEMO_USERS, type UserRole } from "../../../lib/auth";
-import type { AuthResponse } from "../../../lib/api";
+import { login as loginRequest } from "../../../modules/auth/services/authService";
 
-const API = process.env.NEXT_PUBLIC_CORE_API_URL ?? "http://localhost:8000";
 const DEMO = process.env.NEXT_PUBLIC_DEMO === "true";
 
 export default function LoginPage() {
@@ -32,23 +31,11 @@ export default function LoginPage() {
         return;
       }
 
-      const res = await fetch(`${API}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setError((data as { detail?: string }).detail ?? "Invalid email or password.");
-        return;
-      }
-
-      const data = (await res.json()) as AuthResponse;
+      const data = await loginRequest({ email, password });
       storeAuth({ token: data.token, email: data.email, full_name: data.full_name, role: (data.role ?? role) as UserRole });
       router.replace(data.role === "officer" ? "/officer" : "/workspace");
-    } catch {
-      setError("Cannot reach the server. Please try again.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Cannot reach the server. Please try again.");
     } finally {
       setLoading(false);
     }

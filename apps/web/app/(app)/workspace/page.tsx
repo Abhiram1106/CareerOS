@@ -2,8 +2,7 @@
 
 import { useRef, useState } from "react";
 import { getStoredAuth } from "../../../lib/auth";
-
-const API = process.env.NEXT_PUBLIC_CORE_API_URL ?? "http://localhost:8000";
+import { uploadResume } from "../../../modules/resume/services/resumeService";
 const DEMO = process.env.NEXT_PUBLIC_DEMO === "true";
 
 type Section = { section_name: string; content_json: Record<string, unknown>; confidence: number };
@@ -70,15 +69,7 @@ export default function WorkspacePage() {
         setTab("readiness");
         return;
       }
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch(`${API}/resumes/upload`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${auth.token}` },
-        body: fd,
-      });
-      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail ?? "Upload failed");
-      setParseResult(await res.json() as ParseResult);
+      setParseResult(await uploadResume(auth.token, file));
       setTab("readiness");
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Upload failed");

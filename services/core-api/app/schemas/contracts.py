@@ -1,60 +1,34 @@
+"""Backward-compatible API contracts — re-export from domain DTOs."""
+
 from __future__ import annotations
 
-from typing import Literal, Optional
+from ..modules.ats.dto.ats_dto import ATSScanRequest, ATSScanResponse
+from ..modules.auth.dto.auth_dto import AuthResponse, LoginRequest, RegisterRequest
+from ..modules.export.dto.export_dto import ExportResumeRequest
+from ..modules.profile.dto.profile_dto import ProfileResponse, ProfileUpdateResponse, ProfileUpsert
+from ..modules.resume.dto.resume_dto import ResumeGenerateRequest
 
-from pydantic import BaseModel, EmailStr, Field
-
-
-class RegisterRequest(BaseModel):
-    email: EmailStr
-    password: str
-    full_name: str
-    role: Literal["student", "officer", "admin"] = "student"
-
-
-class LoginRequest(BaseModel):
-    email: EmailStr
-    password: str
-
-
-class AuthResponse(BaseModel):
-    token: str
-    email: EmailStr
-    full_name: str
-    role: str
-
-
-class ProfileUpsert(BaseModel):
-    city: str
-    professional_status: str
-    target_role: str
-    skills_csv: str
-    summary: str
-    experience_bullet: str
+__all__ = [
+    "RegisterRequest",
+    "LoginRequest",
+    "AuthResponse",
+    "ProfileUpsert",
+    "ProfileResponse",
+    "ProfileUpdateResponse",
+    "ResumeGenerateRequest",
+    "ATSScanRequest",
+    "ATSScanResponse",
+    "ExportResumeRequest",
+    "ParseResumeRequest",
+    "ResumeSection",
+    "ParseResumeResponse",
+]
 
 
-class ResumeGenerateRequest(BaseModel):
-    template_name: str = "classic"
+# ── Resume parser (legacy satellite contracts) ──────────────────────────────
 
+from pydantic import BaseModel, Field
 
-class ATSScanRequest(BaseModel):
-    jd_text: str
-
-
-class ATSScanResponse(BaseModel):
-    composite: float
-    keyword: float
-    format: float
-    quality: float
-    complete: float
-    contact: float
-
-
-class ExportResumeRequest(BaseModel):
-    resume_id: int
-
-
-# ── Resume parser ─────────────────────────────────────────────────────────────
 
 class ParseResumeRequest(BaseModel):
     resume_id: int

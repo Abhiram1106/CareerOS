@@ -198,21 +198,17 @@ export function useCareerOSWorkspace() {
 
   async function downloadExport() {
     if (!token || !exportJobId) return;
-    const base = process.env.NEXT_PUBLIC_CORE_API_URL || "http://localhost:8000";
-    const res = await fetch(`${base}/resumes/export/${exportJobId}/download`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) {
+    try {
+      const blob = await api.downloadExport(token, exportJobId);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `resume_export_${exportJobId}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch {
       setStatus("Export download failed");
-      return;
     }
-    const blob = await res.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `resume_export_${exportJobId}.pdf`;
-    a.click();
-    window.URL.revokeObjectURL(url);
   }
 
   return {

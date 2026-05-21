@@ -4,7 +4,7 @@
 > Repo mirror (same content, kept in sync): `docs/architecture/layered-modules.md`
 > Entry pointer: `services/core-api/LAYERED_ARCHITECTURE.md`
 
-_Last updated: 2026-05-21 — Phases 1–3 done (scaffold, auth, profile)._
+_Last updated: 2026-05-21 — Phases 1–7 done (full core-api migration + frontend modules + satellite scaffold)._
 
 ---
 
@@ -33,12 +33,12 @@ _Last updated: 2026-05-21 — Phases 1–3 done (scaffold, auth, profile)._
 | 1 Scaffold | **Done** | Folders under `app/modules/`, `app/api/`, `app/adapter/db/`; `apps/web/modules/`, `shared/` |
 | 2 Auth | **Done** | `POST /auth/register`, `POST /auth/login` |
 | 3 Profile | **Done** | `GET/PUT /profile` |
-| 4 Resume + export | **Next** | Largest |
-| 5 ATS + dashboard | Pending | Read-heavy |
-| 6 Frontend modules | Pending | `lib/api.ts` only; no inline `fetch` |
-| 7 Satellite services | Pending | ats-engine, resume-parser, ai-rewriter |
+| 4 Resume + export | **Done** | `/resumes/*`, `/resumes/export/*` |
+| 5 ATS + dashboard | **Done** | `POST /ats/scan`, `GET /ats/scans`, `GET /dashboard` |
+| 6 Frontend modules | **Done** | `apps/web/modules/auth`, `modules/resume` → `lib/api.ts` |
+| 7 Satellite services | **Done** | ats-engine, resume-parser, ai-rewriter controllers |
 
-**Rule:** Do not remove legacy routes from `main.py` until the domain is wired through `api/router.py`.
+**Rule:** `main.py` is health + startup only; all routes on `api/router.py`.
 
 ---
 
@@ -69,13 +69,16 @@ DTOs: `modules/auth/dto/auth_dto.py`, `modules/profile/dto/profile_dto.py` (re-e
 ## Backend tree on disk (`services/core-api/app/`)
 
 ```text
-main.py                    # LEGACY routes + app.include_router(api_router)
+main.py                    # health + startup; api_router only
 api/
-  router.py                # mounts domain routers
+  router.py                # mounts all domain routers
   controllers/
     auth_controller.py     # DONE
     profile_controller.py  # DONE
-    (resume, export, ats, dashboard — pending)
+    resume_controller.py   # DONE
+    export_controller.py   # DONE
+    ats_controller.py      # DONE
+    dashboard_controller.py # DONE
 
 modules/
   auth/     mutation/ query/ dto/ mapper/ types/   # DONE

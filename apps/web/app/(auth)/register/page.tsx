@@ -4,8 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { storeAuth, type UserRole } from "../../../lib/auth";
-
-const API = process.env.NEXT_PUBLIC_CORE_API_URL ?? "http://localhost:8000";
+import { register as registerRequest } from "../../../modules/auth/services/authService";
 
 const YEARS = ["2024", "2025", "2026", "2027", "2028"];
 
@@ -26,29 +25,16 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API}/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          full_name: fullName,
-          email,
-          password,
-          role,
-          ...(role === "student" ? { batch_year: batchYear } : { department }),
-        }),
+      const data = await registerRequest({
+        full_name: fullName,
+        email,
+        password,
+        role,
       });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setError((data as { detail?: string }).detail ?? "Registration failed. Please try again.");
-        return;
-      }
-
-      const data = await res.json() as { token: string; email: string; full_name: string; role: string };
       storeAuth({ token: data.token, email: data.email, full_name: data.full_name, role: data.role as UserRole });
       router.replace(role === "officer" ? "/officer" : "/workspace");
-    } catch {
-      setError("Cannot reach the server. Please try again.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Cannot reach the server. Please try again.");
     } finally {
       setLoading(false);
     }
