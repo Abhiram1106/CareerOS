@@ -15,20 +15,18 @@
 ## What this is
 
 CareerOS Campus AI is **not** a resume builder, job board, or LinkedIn scraper.
-It is a campus placement workflow system — the difference is the placement officer.
+It is the system a college's Training & Placement Office uses before campus drives.
 
 | Without CareerOS | With CareerOS |
 |---|---|
 | Officer discovers bad resumes after companies reject students | Officer sees cohort readiness before the drive |
 | Students submit Canva templates that ATS systems cannot parse | ATS parse-safety flagged on upload |
-| Generic AI rewrites that invent experience | Proof-linked rewrites — unsupported claims are flagged, never inserted |
+| Generic AI rewrites that invent experience | Proof-linked rewrites — unsupported claims flagged, never inserted |
 | No aggregate skill-gap data | Department-level missing-skills heatmap |
-
-The full research case is in `deep-research-report.md`. The product architecture is in `docs/adr/`.
 
 ---
 
-## The demo loop (3 minutes)
+## The 3-minute demo
 
 ```
 1. Placement officer pastes a company JD (e.g. TCS Ninja, Accenture ASE)
@@ -37,48 +35,45 @@ The full research case is in `deep-research-report.md`. The product architecture
 4. Opens one low-scoring student — ATS risks highlighted, score breakdown shown
 5. Clicks "Rewrite with verified evidence" — one unsupported claim refused, others improved
 6. Score lifts 48 → 73
-7. Intel panel: p50/p95 latency + throughput for baseline vs OpenVINO/sklearnex path
+7. Intel panel: p50/p95 latency + throughput — baseline vs OpenVINO/sklearnex
 ```
 
 ---
 
-## Monorepo layout
+## Repo layout
 
 ```
 CareerOS/
 ├── apps/
-│   └── web/                        # Next.js 14 — student surface + (future) officer surface
+│   └── web/                   # Next.js 14 — student + officer surfaces
 ├── packages/
-│   ├── contracts/                  # JSON Schema: Resume, JD, Scorecard, Rewrite
-│   ├── scoring/                    # Python: PlacementReadinessScore formula (Week 2)
-│   ├── ts-types/                   # TypeScript types generated from contracts/schemas
-│   ├── frontend/                   # (reserved) shared React components
-│   └── backend/                    # (reserved) shared Python utils
+│   ├── contracts/             # JSON Schema: Resume, JD, Scorecard, Rewrite
+│   ├── scoring/               # PlacementReadinessScore formula (Week 2)
+│   └── ts-types/              # TS types generated from contracts/schemas
 ├── services/
-│   ├── core-api/                   # FastAPI orchestrator — auth, resume, ATS, scoring
-│   ├── ats-engine/                 # Rule-based ATS parse-safety scorer (port 8001)
-│   ├── ai-rewriter/                # Proof-linked rewriter — JSON schema output (port 8003)
-│   ├── resume-parser/              # pdfplumber + python-docx + section extractor (port 8004)
-│   ├── match-engine/               # TF-IDF + embeddings + sklearnex (Week 2, port 8005)
-│   └── intel-bench/                # OpenVINO + sklearnex benchmark harness (Week 5)
-├── infra/                          # Docker, environment overrides
-├── platform/                       # CI, scripts, build presets, Omnix config
+│   ├── core-api/              # FastAPI orchestrator — auth, resume, ATS, scoring
+│   ├── ats-engine/            # Rule-based ATS parse-safety scorer (port 8001)
+│   ├── ai-rewriter/           # Proof-linked rewriter — JSON schema output (port 8003)
+│   ├── resume-parser/         # pdfplumber + python-docx + section extractor (port 8004)
+│   ├── match-engine/          # TF-IDF + embeddings + sklearnex (Week 2)
+│   └── intel-bench/           # OpenVINO + sklearnex benchmark harness (Week 5)
+├── infra/                     # Docker and environment config
+├── platform/
+│   └── omnix/                 # Omnix runtime configuration
 ├── docs/
-│   ├── adr/                        # Architecture Decision Records (ADR 0001, 0002)
-│   ├── architecture/               # System diagrams, data flows
-│   ├── pitch/                      # 6-slide deck + 3-min demo script (Week 5)
-│   └── benchmarks/                 # Intel measurement methodology + raw runs
-├── tests/                          # Cross-domain e2e only
-├── .claude/                        # Claude Code project config
-├── .cursor/                        # Cursor project config (agents, context, rules)
-└── .obsidian-ai-memory/            # Omnix engineering memory vault (sessions, errors, decisions)
+│   ├── adr/                   # Architecture Decision Records
+│   └── research/              # Competitive landscape + monorepo structure research
+├── tests/                     # Cross-domain e2e only
+├── .claude/                   # Claude Code project config (rules, agents, MCP)
+├── .cursor/                   # Cursor project config (agents, context, rules)
+└── .obsidian-ai-memory/       # Engineering memory vault (sessions, errors, decisions)
 ```
 
 ---
 
 ## PlacementReadinessScore formula
 
-The scoring formula lives in `packages/scoring/` only — never duplicated in service code.
+Lives in `packages/scoring/` only — never duplicated in service code.
 
 ```
 PlacementReadinessScore =
@@ -104,11 +99,11 @@ Buckets: `0–49` high-risk · `50–69` borderline · `70–84` ready · `85–
 
 | Week | Deliverable | Status |
 |---|---|---|
-| **1** | Alembic migration + role auth + resume upload + PDF/DOCX parser | ✅ Done |
-| **2** | JD parser + `services/match-engine` (TF-IDF + embeddings) + score breakdown UI | 🔨 Next |
-| **3** | `services/ai-rewriter` retarget — proof-linked JSON schema + before/after diff UI | Planned |
-| **4** | Officer dashboard route group — cohort heatmap, batch upload, review queue | Planned |
-| **5** | `services/intel-bench` — OpenVINO + sklearnex benchmarks + pitch deck + demo script | Planned |
+| **1** | Alembic schema + role auth + resume parser + enterprise frontend | ✅ Done |
+| **2** | JD parser + match-engine (TF-IDF + embeddings + sklearnex) + score UI | 🔨 Next |
+| **3** | AI rewriter (proof-linked, no fabrication) + before/after UI + PDF export | Planned |
+| **4** | Officer dashboard — cohort heatmap, batch upload, review queue | Planned |
+| **5** | Intel benchmark panel + pitch deck + 3-min demo script | Planned |
 
 ---
 
@@ -126,40 +121,27 @@ Buckets: `0–49` high-risk · `50–69` borderline · `70–84` ready · `85–
 ### Run the full stack
 
 ```bash
-# 1. Install JS dependencies
-pnpm install
-
-# 2. Start all backend services + databases
-docker compose up -d --build
-
-# 3. Start the Next.js dev server
-pnpm dev
+pnpm install                    # install JS deps
+docker compose up -d --build    # start all backend services + databases
+pnpm dev                        # start Next.js dev server
 ```
 
 | URL | Service |
 |---|---|
-| http://localhost:3000 | Web app (student workspace + hero) |
-| http://localhost:8000/docs | Core API — FastAPI interactive docs |
-| http://localhost:8001/docs | ATS Engine |
-| http://localhost:8004/docs | Resume Parser |
-
-Stop services:
-```bash
-docker compose down
-```
-
-### Run only the web app (no Docker)
+| `http://localhost:3000` | Web app |
+| `http://localhost:8000/docs` | Core API — FastAPI docs |
+| `http://localhost:8001/docs` | ATS Engine |
+| `http://localhost:8004/docs` | Resume Parser |
 
 ```bash
-pnpm install
-pnpm dev
+docker compose down             # stop all services
 ```
-The app still works — auth and upload endpoints require the backend, but the hero page and UI are fully browsable.
 
-### Database migrations
+### Database migrations (manual)
 
-Docker Compose uses `AUTO_CREATE_TABLES=true` for local dev convenience.
-For production or manual migration:
+Docker Compose uses `AUTO_CREATE_TABLES=true` for local dev.
+For a clean production-style migration:
+
 ```bash
 cd services/core-api
 alembic upgrade head
@@ -167,27 +149,21 @@ alembic upgrade head
 
 ---
 
-## Development conventions
+## Key conventions
 
-All conventions are enforced by `.claude/rules/` and `.cursor/rules/`.
-See `AGENTS.md` for the Omnix startup protocol every AI tool follows.
+- All HTTP via `apps/web/lib/api.ts` — never `fetch()` inline in components
+- FastAPI route handlers stay slim — logic in `services/<svc>/app/services/`
+- SQLAlchemy 2.0 mapped-column — `Mapped[T]` / `mapped_column(...)`, no `Column()`
+- Schema change = Alembic migration file — never `entities.py` alone
+- No Tailwind — CSS variables in `apps/web/app/globals.css`
+- No fabrication — `services/ai-rewriter` flags unsupported claims, never invents them
+- Score formula lives in `packages/scoring/` — never inlined in service code
 
-Key rules:
-- **All HTTP in `apps/web/lib/api.ts`** — never `fetch()` inline from components
-- **FastAPI route handlers stay slim** — logic in `services/<svc>/app/services/`
-- **SQLAlchemy 2.0** — `Mapped[T]` / `mapped_column(...)`, no `Column()`
-- **Schema change = Alembic migration** — never rely on `entities.py` alone
-- **No Tailwind** — CSS variables in `apps/web/app/globals.css`
-- **No fabrication** — `services/ai-rewriter` flags unsupported claims, never invents them
-- **Score formula once** — `packages/scoring/`, never inline
+### AI tool handoff
 
-### AI-tool cross-platform handoff
-
-This repo uses Omnix for engineering memory. Any AI tool (Claude Code, Cursor, Copilot)
-reads `.obsidian-ai-memory/` at session start and writes a digest after meaningful work:
+Every AI tool reads `.obsidian-ai-memory/` at session start. After meaningful work:
 
 ```bash
-# After a meaningful session:
 git add .obsidian-ai-memory/
 git commit -m "memory: YYYY-MM-DD session digest"
 git push
@@ -197,25 +173,22 @@ git push
 
 ## Intel integration
 
-| Workload | Baseline | Intel path | Target |
+| Workload | Baseline | Intel path | Conservative target |
 |---|---|---|---|
 | Embedding inference | PyTorch CPU | OpenVINO FP16 | 1.5×–4× throughput |
-| TF-IDF + cosine similarity | stock sklearn | sklearnex patch | 1.5×–8× speedup |
+| TF-IDF + cosine | stock sklearn | sklearnex | 1.5×–8× speedup |
 | KMeans cohort clustering | stock sklearn | sklearnex | 2×–8× speedup |
-| Full score pipeline | mixed | selectively accelerated | 20–80% improvement |
 
-Benchmarks are real measurements at three dataset sizes (500 / 5 000 / 20 000 resumes).
-No vendor headline numbers. Accuracy delta is measured before committing any quantisation.
+Benchmarks run at three sizes: 500 / 5 000 / 20 000 resumes.
+Real measured numbers only — no vendor headline claims.
 
 ---
 
-## Research and decisions
+## Docs
 
-- `deep-research-report.md` — competitive landscape, scoring formula, MVP plan, guardrails
-- `deep-research-report (1).md` — monorepo structure evidence (hybrid variant selected)
-- `docs/adr/0001-pivot-to-campus-ai.md` — why we repositioned
-- `docs/adr/0002-monorepo-structure.md` — why this repo layout
-- `C:\Users\ADMIN\.claude\plans\brutal-upgrade-direction-make-humble-parnas.md` — full plan
+- `docs/adr/` — Architecture Decision Records (why we pivoted, why this repo layout)
+- `docs/research/` — Competitive landscape analysis + monorepo structure evidence
+- `.obsidian-ai-memory/02-PROJECTS/bootcamp-brief.md` — Full Intel bootcamp context, demo script, judge Q&A
 
 ---
 

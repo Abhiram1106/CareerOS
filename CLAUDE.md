@@ -1,37 +1,31 @@
 # CLAUDE.md — CareerOS Campus AI
 
-> Claude Code auto-loads this file on every session. It defers to `AGENTS.md`
-> for the Omnix startup protocol and to `.claude/CLAUDE.md` for project
-> Claude-specific config.
+> Claude Code auto-loads this file every session.
+> Full protocol and rules → `AGENTS.md` (read first) and `.claude/CLAUDE.md`.
 
 @AGENTS.md
 
 ## Project at a glance
 
-- **Name**: CareerOS Campus AI
+- **Name**: CareerOS Campus AI — Intel AI Bootcamp submission
 - **Positioning**: Intel-optimized placement-readiness operating layer for Indian colleges
-- **Stack**: Next.js 14 (`apps/web`) · FastAPI (`services/core-api`, `services/ats-engine`, `services/ai-rewriter`) · PostgreSQL · Redis · Celery · WeasyPrint
-- **Monorepo layout**: `apps/` · `packages/` · `services/` · `infra/` · `platform/` · `docs/` · `tests/`
-- **Plan**: `C:\Users\ADMIN\.claude\plans\brutal-upgrade-direction-make-humble-parnas.md`
+- **Stack**: Next.js 14 (`apps/web`) · FastAPI (`services/`) · PostgreSQL · Redis · Celery · WeasyPrint
+- **Layout**: `apps/` · `packages/` · `services/` · `infra/` · `platform/` · `docs/` · `tests/`
 - **ADRs**: `docs/adr/`
+- **Research**: `docs/research/`
+- **Bootcamp brief**: `.obsidian-ai-memory/02-PROJECTS/bootcamp-brief.md`
 
-## Project Claude config
+## Claude Code config
 
-See `.claude/CLAUDE.md` for Claude Code-specific instructions, modular rules
-(`code-style.md`, `frontend/react.md`), and the project MCP config.
-
-## Memory retrieval mode
-
-`balanced` by default. Switch to `deep` for architecture changes, `debugging`
-for error investigation, `minimal` for one-liner answers.
+Rules and path quick-nav → `.claude/CLAUDE.md`
 
 ## Completion gate
 
 Don't say "done" until:
 
-- [ ] Changed files are correct and match intent
-- [ ] Tests/typecheck ran (state result or reason skipped)
-- [ ] Docs updated if behavior changed
+- [ ] Changed files correct and match intent
+- [ ] `tsc --noEmit` clean (state result or reason skipped)
+- [ ] Python AST-parse clean on all touched services
 - [ ] Session digest written (skip only for read-only sessions)
 - [ ] Error memory updated if a bug was fixed
 - [ ] No secrets in any written file
