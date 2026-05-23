@@ -114,7 +114,10 @@ git commit -m "memory: YYYY-MM-DD session digest"
 | placement readiness score / scoring formula | feature-build | backend + data-science |
 | proof-linked rewrite / AI rewriter / guardrails | feature-build | backend + security + reviewer |
 | alembic / migration / schema / new table | feature-build + database | database + backend |
-| JWT / role / RBAC / auth gate | feature-build + security | security + backend |
+| JWT / role / RBAC / auth gate / IDOR / OpenAPI / TLS / encryption | feature-build + security | security + backend |
+| security architecture / CIA / threat model / Kirito roadmap | feature-build + security | security + architect + backend |
+| chatbot / assistant / RAG / LLM integration | feature-build + security | backend + security + data-science |
+| TensorFlow / embedding index / retrieval | feature-build + intel | data-science + backend |
 | ATS parse safety / heuristics / penalty | feature-build | backend + reviewer |
 | pane / component / UI / animation | feature-build + frontend | frontend + reviewer |
 | tsc error / type error | bug-fix | frontend + reviewer |
