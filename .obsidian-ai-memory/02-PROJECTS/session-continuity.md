@@ -50,10 +50,10 @@
 
 | Commit | Message | Scope |
 |--------|---------|--------|
-| (pending) | `docs: Kirito security-first roadmap and enterprise README` | AGENTS, README, docs/adr, docs/security, packages/contracts/openapi |
-| (pending) | `memory: 2026-05-23 cursor — Kirito security roadmap` | `.obsidian-ai-memory/` |
+| `f904652` | `docs: Kirito security-first roadmap and enterprise README` | AGENTS, README, docs/adr, docs/security, packages/contracts/openapi |
+| `9c60493` | `memory: 2026-05-23 cursor — Kirito security roadmap` | `.obsidian-ai-memory/` |
 
-Push: pending → `origin/main`
+Push: done → `origin/main` (2026-05-23)
 
 ---
 
