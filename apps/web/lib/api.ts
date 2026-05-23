@@ -36,6 +36,51 @@ export type ScorecardResult = {
   semantic_method?: string;
 };
 
+export type RewriteSection = {
+  section: string;
+  original: string;
+  rewrite: string;
+  evidence_ids: string[];
+  confidence: number;
+};
+
+export type RewriteResult = {
+  scorecard_id: number;
+  top_issues: Array<{ type: string; message: string; severity: string }>;
+  section_rewrites: RewriteSection[];
+  unsupported_claims: Array<{ claim: string; reason: string }>;
+  requires_confirmation: Array<{ field: string; suggested_change: string }>;
+};
+
+export type JobSearchItem = {
+  id: number;
+  source: string;
+  external_id: string;
+  title: string;
+  company: string;
+  location: string;
+  skills_required: string[];
+  raw_jd_text: string;
+};
+
+export type JobsSearchResult = {
+  source: string;
+  total: number;
+  page: number;
+  page_size: number;
+  results: JobSearchItem[];
+};
+
+export type AgentRunResult = {
+  run_id: number;
+  status: string;
+  current_step: string;
+  scorecard_id?: number | null;
+  job_id?: number | null;
+  export_job_id?: number | null;
+  summary: Record<string, unknown>;
+};
+
 const API_BASE = process.env.NEXT_PUBLIC_CORE_API_URL || "http://localhost:8000";
 
 async function request<T>(path: string, method = "GET", body?: unknown, token?: string): Promise<T> {
@@ -163,6 +208,24 @@ export const api = {
     }
   ) =>
     request<ScorecardResult>("/scorecards/score", "POST", payload, token),
+
+  runRewrite: (token: string, scorecard_id: number) =>
+    request<RewriteResult>("/recommendations/rewrite", "POST", { scorecard_id }, token),
+  getRecommendations: (token: string, scorecard_id: number) =>
+    request<RewriteResult>(`/recommendations/${scorecard_id}`, "GET", undefined, token),
+  searchJobs: (token: string, q: string, loc = "", page = 1) =>
+    request<JobsSearchResult>(
+      `/jobs/search?q=${encodeURIComponent(q)}&loc=${encodeURIComponent(loc)}&page=${page}`,
+      "GET",
+      undefined,
+      token
+    ),
+  runAgent: (
+    token: string,
+    payload: { resume_id: number; job_id?: number; jd_text?: string; job_query?: string; location?: string; ats_flags?: string[] }
+  ) => request<AgentRunResult>("/agent/run", "POST", payload, token),
+  getAgentRun: (token: string, runId: number) =>
+    request<AgentRunResult>(`/agent/runs/${runId}`, "GET", undefined, token),
 
   // ATS parse-safety (flags from resume-parser; scoring formula in packages/scoring)
   atsParseSafety: (token: string, payload: { resume_id: number; ats_flags: string[] }) =>

@@ -1,0 +1,167 @@
+[
+  {
+    "source": "seed",
+    "external_id": "seed-001",
+    "title": "Software Engineer Intern",
+    "company": "TCS",
+    "location": "Bengaluru",
+    "salary": "Not disclosed",
+    "skills_required": ["Java", "SQL", "OOP", "Git"],
+    "raw_jd_text": "Build backend APIs in Java, write SQL queries, participate in code reviews, and use Git workflows.",
+    "apply_url": "https://example.com/jobs/seed-001"
+  },
+  {
+    "source": "seed",
+    "external_id": "seed-002",
+    "title": "Graduate Engineer Trainee",
+    "company": "Infosys",
+    "location": "Hyderabad",
+    "salary": "Not disclosed",
+    "skills_required": ["Python", "REST", "SQL", "Linux"],
+    "raw_jd_text": "Develop REST services in Python, maintain Linux services, and optimize SQL-heavy workflows.",
+    "apply_url": "https://example.com/jobs/seed-002"
+  },
+  {
+    "source": "seed",
+    "external_id": "seed-003",
+    "title": "Associate Software Engineer",
+    "company": "Wipro",
+    "location": "Pune",
+    "salary": "Not disclosed",
+    "skills_required": ["JavaScript", "TypeScript", "React", "Node.js"],
+    "raw_jd_text": "Build React interfaces and Node.js APIs using TypeScript. Collaborate on sprint delivery.",
+    "apply_url": "https://example.com/jobs/seed-003"
+  },
+  {
+    "source": "seed",
+    "external_id": "seed-004",
+    "title": "SDE-1",
+    "company": "Flipkart",
+    "location": "Bengaluru",
+    "salary": "Not disclosed",
+    "skills_required": ["Java", "Microservices", "SQL", "DSA"],
+    "raw_jd_text": "Design Java microservices, optimize SQL queries, and solve algorithmic problems at scale.",
+    "apply_url": "https://example.com/jobs/seed-004"
+  },
+  {
+    "source": "seed",
+    "external_id": "seed-005",
+    "title": "Data Analyst",
+    "company": "Cognizant",
+    "location": "Chennai",
+    "salary": "Not disclosed",
+    "skills_required": ["Python", "Pandas", "SQL", "Excel"],
+    "raw_jd_text": "Analyze placement data using Python and SQL. Create dashboards and weekly reporting packs.",
+    "apply_url": "https://example.com/jobs/seed-005"
+  },
+  {
+    "source": "seed",
+    "external_id": "seed-006",
+    "title": "Backend Engineer",
+    "company": "Razorpay",
+    "location": "Bengaluru",
+    "salary": "Not disclosed",
+    "skills_required": ["Go", "PostgreSQL", "Redis", "REST"],
+    "raw_jd_text": "Build payment APIs in Go, manage PostgreSQL and Redis, and improve service reliability.",
+    "apply_url": "https://example.com/jobs/seed-006"
+  },
+  {
+    "source": "seed",
+    "external_id": "seed-007",
+    "title": "Full Stack Developer",
+    "company": "Zoho",
+    "location": "Chennai",
+    "salary": "Not disclosed",
+    "skills_required": ["Java", "JavaScript", "MySQL", "HTML", "CSS"],
+    "raw_jd_text": "Develop full-stack modules with Java and JavaScript, and own features from design to deploy.",
+    "apply_url": "https://example.com/jobs/seed-007"
+  },
+  {
+    "source": "seed",
+    "external_id": "seed-008",
+    "title": "DevOps Associate",
+    "company": "HCLTech",
+    "location": "Noida",
+    "salary": "Not disclosed",
+    "skills_required": ["Docker", "Kubernetes", "Linux", "CI/CD"],
+    "raw_jd_text": "Support CI/CD pipelines, container deployments, Linux automation, and observability workflows.",
+    "apply_url": "https://example.com/jobs/seed-008"
+  },
+  {
+    "source": "seed",
+    "external_id": "seed-009",
+    "title": "AI Engineer - Fresher",
+    "company": "Fractal",
+    "location": "Mumbai",
+    "salary": "Not disclosed",
+    "skills_required": ["Python", "Machine Learning", "NLP", "scikit-learn"],
+    "raw_jd_text": "Implement ML models in Python, tune NLP pipelines, and evaluate model performance on benchmarks.",
+    "apply_url": "https://example.com/jobs/seed-009"
+  },
+  {
+    "source": "seed",
+    "external_id": "seed-010",
+    "title": "Software Developer",
+    "company": "Capgemini",
+    "location": "Kolkata",
+    "salary": "Not disclosed",
+    "skills_required": ["C++", "Data Structures", "OOP", "Git"],
+    "raw_jd_text": "Develop C++ modules, write unit tests, and participate in code reviews using Git-based workflows.",
+    "apply_url": "https://example.com/jobs/seed-010"
+  },
+  {
+    "source": "seed",
+    "external_id": "seed-011",
+    "title": "Application Engineer",
+    "company": "Accenture",
+    "location": "Hyderabad",
+    "salary": "Not disclosed",
+    "skills_required": ["Java", "Spring Boot", "SQL", "REST"],
+    "raw_jd_text": "Create enterprise APIs with Spring Boot, optimize SQL data access, and deliver agile user stories.",
+    "apply_url": "https://example.com/jobs/seed-011"
+  },
+  {
+    "source": "seed",
+    "external_id": "seed-012",
+    "title": "Cloud Engineer",
+    "company": "Tech Mahindra",
+    "location": "Pune",
+    "salary": "Not disclosed",
+    "skills_required": ["AWS", "Python", "Linux", "Terraform"],
+    "raw_jd_text": "Manage cloud workloads on AWS, write Python automations, and maintain IaC templates.",
+    "apply_url": "https://example.com/jobs/seed-012"
+  },
+  {
+    "source": "seed",
+    "external_id": "seed-013",
+    "title": "QA Automation Engineer",
+    "company": "LTIMindtree",
+    "location": "Bengaluru",
+    "salary": "Not disclosed",
+    "skills_required": ["Selenium", "Python", "API Testing", "CI/CD"],
+    "raw_jd_text": "Automate web and API tests using Selenium and Python. Integrate suites into CI/CD pipelines.",
+    "apply_url": "https://example.com/jobs/seed-013"
+  },
+  {
+    "source": "seed",
+    "external_id": "seed-014",
+    "title": "Frontend Engineer",
+    "company": "Paytm",
+    "location": "Noida",
+    "salary": "Not disclosed",
+    "skills_required": ["React", "TypeScript", "Redux", "Jest"],
+    "raw_jd_text": "Build production React components in TypeScript and write test coverage using Jest.",
+    "apply_url": "https://example.com/jobs/seed-014"
+  },
+  {
+    "source": "seed",
+    "external_id": "seed-015",
+    "title": "Platform Engineer",
+    "company": "PhonePe",
+    "location": "Bengaluru",
+    "salary": "Not disclosed",
+    "skills_required": ["Java", "Kafka", "PostgreSQL", "Monitoring"],
+    "raw_jd_text": "Work on platform APIs, event-driven flows with Kafka, and production monitoring improvements.",
+    "apply_url": "https://example.com/jobs/seed-015"
+  }
+]

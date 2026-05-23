@@ -1,5 +1,11 @@
 "use client";
 
+import { useMemo, useState } from "react";
+
+import { AgentProgress } from "../../../components/workspace/AgentProgress";
+import { BuilderWizard } from "../../../components/workspace/BuilderWizard";
+import { JobCard } from "../../../components/workspace/JobCard";
+import { RewriteDiffPanel } from "../../../components/workspace/RewriteDiffPanel";
 import { ScoreBreakdown } from "../../../components/workspace/ScoreBreakdown";
 import { ResumeDropzone } from "../../../components/workspace/ResumeDropzone";
 import { usePlacementWorkspace, type WorkspaceTab } from "../../../hooks/usePlacementWorkspace";
@@ -9,6 +15,9 @@ const TABS: ReadonlyArray<[WorkspaceTab, string]> = [
   ["resume", "Document Intelligence"],
   ["scan", "JD Match Scan"],
   ["readiness", "Readiness Snapshot"],
+  ["rewrite", "Proof-Linked Rewrite"],
+  ["jobs", "Jobs Feed"],
+  ["builder", "Builder Wizard"],
 ];
 
 function ScoreBarsInline({
@@ -70,6 +79,37 @@ function SkillLists({ matched, missing }: { matched: string[]; missing: string[]
 
 export default function WorkspacePage() {
   const ws = usePlacementWorkspace();
+  const [jobsQuery, setJobsQuery] = useState("software engineer");
+  const [jobsLoc, setJobsLoc] = useState("India");
+  const wizardSteps = useMemo(
+    () => [
+      {
+        id: "resume",
+        title: "1. Document Intelligence",
+        description: "Upload and parse your resume sections.",
+        done: !!ws.parseResult,
+      },
+      {
+        id: "scan",
+        title: "2. JD Match Scan",
+        description: "Generate scorecard and weighted readiness output.",
+        done: !!ws.lastScorecardId,
+      },
+      {
+        id: "readiness",
+        title: "3. Readiness Snapshot",
+        description: "Inspect readiness bars, bucket, and missing skills.",
+        done: !!ws.lastScorecardId,
+      },
+      {
+        id: "rewrite",
+        title: "4. Proof-Linked Rewrite",
+        description: "Generate evidence-linked rewrites and export-ready output.",
+        done: ws.agentRun?.status === "completed" || !!ws.rewriteBundle,
+      },
+    ],
+    [ws.parseResult, ws.lastScorecardId, ws.agentRun?.status, ws.rewriteBundle]
+  );
 
   return (
     <div className="page-canvas">
@@ -89,7 +129,6 @@ export default function WorkspacePage() {
             key={t}
             type="button"
             role="tab"
-            aria-selected={ws.tab === t}
             className={`workspace-tab${ws.tab === t ? " workspace-tab--active" : ""}`}
             onClick={() => ws.setTab(t)}
           >
@@ -194,7 +233,7 @@ export default function WorkspacePage() {
                   disabled={!ws.canExport}
                   onClick={() => void ws.queueExport()}
                 >
-                  Queue PDF
+                  Queue ATS-safe PDF
                 </button>
                 <button
                   type="button"
@@ -317,6 +356,13 @@ export default function WorkspacePage() {
                       </button>
                     </div>
                   )}
+                  {ws.hasScore && ws.canRewrite ? (
+                    <div className="intel-panel-cta" style={{ marginTop: 16 }}>
+                      <button type="button" className="btn-primary" onClick={() => void ws.runProofRewrite()}>
+                        Generate proof-linked rewrite
+                      </button>
+                    </div>
+                  ) : null}
                 </div>
               </div>
 
@@ -348,6 +394,137 @@ export default function WorkspacePage() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {ws.tab === "rewrite" && (
+        <div className="content-card">
+          <div className="content-card-header">
+            <h2 className="content-card-title">Proof-Linked Rewrite</h2>
+            {ws.lastScorecardId ? (
+              <span className="chip chip-mono">Scorecard #{ws.lastScorecardId}</span>
+            ) : null}
+          </div>
+          <div className="content-card-body">
+            {!ws.lastScorecardId ? (
+              <div className="scan-empty-state">
+                <p>Complete JD Match Scan first to unlock proof-linked rewrites.</p>
+                <button type="button" className="btn-primary" onClick={() => ws.setTab("scan")}>
+                  Go to JD Match Scan
+                </button>
+              </div>
+            ) : (
+              <RewriteDiffPanel
+                bundle={
+                  ws.rewriteBundle
+                    ? {
+                        top_issues: ws.rewriteBundle.top_issues,
+                        section_rewrites: ws.rewriteBundle.section_rewrites,
+                        unsupported_claims: ws.rewriteBundle.unsupported_claims,
+                        requires_confirmation: ws.rewriteBundle.requires_confirmation,
+                      }
+                    : null
+                }
+                loading={ws.rewriting}
+                error={ws.rewriteError}
+                canRun={ws.canRewrite}
+                source="manual"
+                onRunRewrite={() => void ws.runProofRewrite()}
+              />
+            )}
+          </div>
+        </div>
+      )}
+
+      {ws.tab === "jobs" && (
+        <div className="readiness-stack">
+          <div className="content-card">
+            <div className="content-card-header">
+              <h2 className="content-card-title">Real-time Jobs Search</h2>
+            </div>
+            <div className="content-card-body">
+              <div className="scan-grid">
+                <input
+                  className="auth-input"
+                  value={jobsQuery}
+                  onChange={(e) => setJobsQuery(e.target.value)}
+                  placeholder="Role keyword"
+                />
+                <input
+                  className="auth-input"
+                  value={jobsLoc}
+                  onChange={(e) => setJobsLoc(e.target.value)}
+                  placeholder="Location"
+                />
+              </div>
+              <button
+                type="button"
+                className="btn-primary"
+                disabled={ws.jobsLoading}
+                onClick={() => void ws.searchJobs(jobsQuery, jobsLoc, 1)}
+              >
+                {ws.jobsLoading ? "Searching..." : "Search jobs"}
+              </button>
+              {ws.jobsError ? (
+                <p className="workspace-error" role="alert">
+                  {ws.jobsError}
+                </p>
+              ) : null}
+            </div>
+          </div>
+          {ws.jobs.map((job) => (
+            <JobCard
+              key={job.id}
+              job={job}
+              busy={false}
+              onRunAgent={(jobId) => void ws.runAgent({ job_id: jobId })}
+            />
+          ))}
+        </div>
+      )}
+
+      {ws.tab === "builder" && (
+        <div className="readiness-stack">
+          <BuilderWizard steps={wizardSteps} />
+          <div className="content-card">
+            <div className="content-card-header">
+              <h2 className="content-card-title">Auto Mode</h2>
+            </div>
+            <div className="content-card-body">
+              <p className="scan-intro">
+                Auto mode runs parse-safety, JD match, scoring, proof-linked rewrite, and PDF export in one flow.
+              </p>
+              <button
+                type="button"
+                className="btn-primary"
+                disabled={!ws.canRunAgent}
+                onClick={() => void ws.runAgent({ job_query: jobsQuery, location: jobsLoc })}
+              >
+                Run deterministic agent
+              </button>
+              {ws.agentError ? (
+                <p className="workspace-error" role="alert">
+                  {ws.agentError}
+                </p>
+              ) : null}
+            </div>
+          </div>
+          <AgentProgress run={ws.agentRun} polling={ws.agentPolling} onRefresh={() => void ws.refreshAgentRun()} />
+          {ws.rewriteBundle ? (
+            <RewriteDiffPanel
+              bundle={{
+                top_issues: ws.rewriteBundle.top_issues,
+                section_rewrites: ws.rewriteBundle.section_rewrites,
+                unsupported_claims: ws.rewriteBundle.unsupported_claims,
+                requires_confirmation: ws.rewriteBundle.requires_confirmation,
+              }}
+              loading={ws.rewriting}
+              error={ws.rewriteError}
+              canRun={ws.canRewrite}
+              source="agent"
+              onRunRewrite={() => void ws.runProofRewrite()}
+            />
+          ) : null}
         </div>
       )}
     </div>

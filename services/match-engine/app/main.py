@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
+from .intel_patch import patch_sklearn_if_available
+
+patch_sklearn_if_available()
+
 from .jd_parser import parse_jd
 from .matcher import compute_match
 

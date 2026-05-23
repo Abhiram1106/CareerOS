@@ -157,6 +157,21 @@ class JobDescription(Base):
     scorecards = relationship("Scorecard", back_populates="jd")
 
 
+class Job(Base):
+    __tablename__ = "jobs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    source: Mapped[str] = mapped_column(String(40), nullable=False, default="seed")
+    external_id: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    company: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    location: Mapped[str] = mapped_column(String(255), nullable=False, default="")
+    skills_required: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
+    raw_jd_text: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    fetched_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    expires_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
 class Scorecard(Base):
     __tablename__ = "scorecards"
 
@@ -176,6 +191,21 @@ class Scorecard(Base):
 
     jd = relationship("JobDescription", back_populates="scorecards")
     recommendations = relationship("Recommendation", back_populates="scorecard", cascade="all, delete-orphan")
+
+
+class AgentRun(Base):
+    __tablename__ = "agent_runs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    student_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    resume_id: Mapped[int] = mapped_column(ForeignKey("resumes.id"), nullable=False, index=True)
+    job_id: Mapped[Optional[int]] = mapped_column(ForeignKey("jobs.id"), nullable=True, index=True)
+    scorecard_id: Mapped[Optional[int]] = mapped_column(ForeignKey("scorecards.id"), nullable=True, index=True)
+    current_step: Mapped[str] = mapped_column(String(40), nullable=False, default="INIT")
+    summary_json: Mapped[str] = mapped_column(Text, nullable=False, default="{}")
+    status: Mapped[str] = mapped_column(String(30), nullable=False, default="running")
+    started_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    finished_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
 
 class Recommendation(Base):

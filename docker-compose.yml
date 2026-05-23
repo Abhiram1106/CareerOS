@@ -34,6 +34,7 @@ services:
       AI_REWRITER_URL: http://ai-rewriter:8003
       RESUME_PARSER_URL: http://resume-parser:8004
       MATCH_ENGINE_URL: http://match-engine:8005
+      JOBS_FEED_URL: http://jobs-feed:8006
       JWT_SECRET: super-secret-change-me
       AUTO_CREATE_TABLES: "true"
       EXPORTS_DIR: /tmp/careeros-exports
@@ -50,6 +51,8 @@ services:
       resume-parser:
         condition: service_healthy
       match-engine:
+        condition: service_healthy
+      jobs-feed:
         condition: service_healthy
     ports:
       - "8000:8000"
@@ -73,6 +76,7 @@ services:
       AI_REWRITER_URL: http://ai-rewriter:8003
       RESUME_PARSER_URL: http://resume-parser:8004
       MATCH_ENGINE_URL: http://match-engine:8005
+      JOBS_FEED_URL: http://jobs-feed:8006
       JWT_SECRET: super-secret-change-me
       AUTO_CREATE_TABLES: "true"
       EXPORTS_DIR: /tmp/careeros-exports
@@ -122,6 +126,25 @@ services:
       - "8005:8005"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8005/health').read()"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  jobs-feed:
+    build:
+      context: ./services/jobs-feed
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      JOBS_SEED_PATH: /app/infra/seed/jobs.seed.json
+    volumes:
+      - ./infra/seed:/app/infra/seed:ro
+    ports:
+      - "8006:8006"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8006/health').read()"]
       interval: 5s
       timeout: 5s
       retries: 20

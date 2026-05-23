@@ -1,0 +1,21 @@
+{
+  "dataset": {
+    "resumes": 50,
+    "jds": 50
+  },
+  "stock": {
+    "mode": "stock",
+    "pairs": 2500,
+    "p50_latency_ms": 20.878,
+    "p95_latency_ms": 29.978,
+    "throughput_rph": 163465.5
+  },
+  "intel": {
+    "mode": "intel",
+    "pairs": 2500,
+    "p50_latency_ms": 18.381,
+    "p95_latency_ms": 25.968,
+    "throughput_rph": 202625.7
+  },
+  "p50_speedup": 1.136
+}

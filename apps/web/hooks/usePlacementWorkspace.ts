@@ -1,7 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { api, type ParseResult, type ScorecardResult } from "../lib/api";
+import {
+  api,
+  type AgentRunResult,
+  type JobSearchItem,
+  type ParseResult,
+  type RewriteResult,
+  type ScorecardResult,
+} from "../lib/api";
 import { getStoredAuth } from "../lib/auth";
 import { toErrorMessage } from "../lib/errors";
 import {
@@ -11,7 +18,7 @@ import {
   type TemplateName,
 } from "../lib/placement";
 
-export type WorkspaceTab = "resume" | "scan" | "readiness";
+export type WorkspaceTab = "resume" | "scan" | "readiness" | "rewrite" | "jobs" | "builder";
 
 type BarScores = Record<ScoreComponentKey, number> | null;
 
@@ -35,6 +42,17 @@ export function usePlacementWorkspace() {
   const [lastScorecardId, setLastScorecardId] = useState<number | null>(null);
   const [semanticMethod, setSemanticMethod] = useState<string | null>(null);
 
+  const [rewriteBundle, setRewriteBundle] = useState<RewriteResult | null>(null);
+  const [rewriting, setRewriting] = useState(false);
+  const [rewriteError, setRewriteError] = useState<string | null>(null);
+
+  const [jobs, setJobs] = useState<JobSearchItem[]>([]);
+  const [jobsLoading, setJobsLoading] = useState(false);
+  const [jobsError, setJobsError] = useState<string | null>(null);
+  const [agentRun, setAgentRun] = useState<AgentRunResult | null>(null);
+  const [agentPolling, setAgentPolling] = useState(false);
+  const [agentError, setAgentError] = useState<string | null>(null);
+
   const [template, setTemplate] = useState<TemplateName>("classic");
   const [resumePreview, setResumePreview] = useState("");
   const [generating, setGenerating] = useState(false);
@@ -48,6 +66,8 @@ export function usePlacementWorkspace() {
   const canUpload = Boolean(token);
   const canGenerate = Boolean(token && profileReady);
   const canExport = Boolean(token && parseResult?.resume_id);
+  const canRewrite = Boolean(token && lastScorecardId);
+  const canRunAgent = Boolean(token && parseResult?.resume_id);
 
   const hydrateProfile = useCallback(async () => {
     if (!token) return;
@@ -85,6 +105,10 @@ export function usePlacementWorkspace() {
     setLastScorecardId(null);
     setSemanticMethod(null);
     setScanError(null);
+    setRewriteBundle(null);
+    setRewriteError(null);
+    setAgentRun(null);
+    setAgentError(null);
   }, []);
 
   const applyScorecard = useCallback((res: ScorecardResult) => {
@@ -138,6 +162,76 @@ export function usePlacementWorkspace() {
       setScanning(false);
     }
   }, [token, parseResult, jdText, applyScorecard, resetScore]);
+
+  const runProofRewrite = useCallback(async () => {
+    if (!token || !lastScorecardId) return;
+    setRewriting(true);
+    setRewriteError(null);
+    try {
+      const res = await api.runRewrite(token, lastScorecardId);
+      setRewriteBundle(res);
+      setTab("rewrite");
+    } catch (err) {
+      setRewriteError(toErrorMessage(err, "Rewrite failed"));
+    } finally {
+      setRewriting(false);
+    }
+  }, [token, lastScorecardId]);
+
+  const searchJobs = useCallback(
+    async (query: string, location = "", page = 1) => {
+      if (!token) {
+        setJobsError("Sign in to search jobs.");
+        return;
+      }
+      setJobsLoading(true);
+      setJobsError(null);
+      try {
+        const res = await api.searchJobs(token, query, location, page);
+        setJobs(res.results);
+      } catch (err) {
+        setJobsError(toErrorMessage(err, "Job search failed"));
+        setJobs([]);
+      } finally {
+        setJobsLoading(false);
+      }
+    },
+    [token]
+  );
+
+  const runAgent = useCallback(
+    async (payload: { job_id?: number; jd_text?: string; job_query?: string; location?: string }) => {
+      if (!token || !parseResult?.resume_id) {
+        setAgentError("Upload a resume first.");
+        return;
+      }
+      setAgentError(null);
+      try {
+        const res = await api.runAgent(token, {
+          resume_id: parseResult.resume_id,
+          ats_flags: parseResult.ats_flags,
+          ...payload,
+        });
+        setAgentRun(res);
+      } catch (err) {
+        setAgentError(toErrorMessage(err, "Agent run failed"));
+      }
+    },
+    [token, parseResult]
+  );
+
+  const refreshAgentRun = useCallback(async () => {
+    if (!token || !agentRun?.run_id) return;
+    setAgentPolling(true);
+    try {
+      const latest = await api.getAgentRun(token, agentRun.run_id);
+      setAgentRun(latest);
+    } catch (err) {
+      setAgentError(toErrorMessage(err, "Agent status refresh failed"));
+    } finally {
+      setAgentPolling(false);
+    }
+  }, [token, agentRun?.run_id]);
 
   const replaceResume = useCallback(() => {
     setParseResult(null);
@@ -241,5 +335,20 @@ export function usePlacementWorkspace() {
     refreshExportStatus,
     downloadExport,
     actionError,
+    rewriteBundle,
+    rewriting,
+    rewriteError,
+    canRewrite,
+    runProofRewrite,
+    jobs,
+    jobsLoading,
+    jobsError,
+    searchJobs,
+    agentRun,
+    agentPolling,
+    agentError,
+    canRunAgent,
+    runAgent,
+    refreshAgentRun,
   };
 }

@@ -3,7 +3,13 @@ from __future__ import annotations
 import httpx
 from fastapi import HTTPException
 
-from ..config import AI_REWRITER_URL, ATS_ENGINE_URL, MATCH_ENGINE_URL, RESUME_PARSER_URL
+from ..config import (
+    AI_REWRITER_URL,
+    ATS_ENGINE_URL,
+    JOBS_FEED_URL,
+    MATCH_ENGINE_URL,
+    RESUME_PARSER_URL,
+)
 
 
 async def generate_resume_content(profile: dict) -> dict:
@@ -11,6 +17,16 @@ async def generate_resume_content(profile: dict) -> dict:
         resp = await client.post(f"{AI_REWRITER_URL}/generate/resume", json=profile)
         resp.raise_for_status()
         return resp.json()
+
+
+async def proof_linked_rewrite(payload: dict) -> dict:
+    async with httpx.AsyncClient(timeout=30) as client:
+        try:
+            resp = await client.post(f"{AI_REWRITER_URL}/rewrite", json=payload)
+            resp.raise_for_status()
+            return resp.json()
+        except httpx.RequestError as exc:
+            raise HTTPException(status_code=503, detail="AI rewriter unavailable") from exc
 
 
 async def run_ats_parse_safety(ats_flags: list[str]) -> dict:
@@ -61,3 +77,24 @@ async def match_resume_to_jd(payload: dict) -> dict:
             return resp.json()
         except httpx.RequestError as exc:
             raise HTTPException(status_code=503, detail="Match engine unavailable") from exc
+
+
+async def jobs_feed_search(query: str, location: str, page: int = 1) -> dict:
+    params = {"q": query, "loc": location, "page": page}
+    async with httpx.AsyncClient(timeout=20) as client:
+        try:
+            resp = await client.get(f"{JOBS_FEED_URL}/jobs/search", params=params)
+            resp.raise_for_status()
+            return resp.json()
+        except httpx.RequestError as exc:
+            raise HTTPException(status_code=503, detail="Jobs feed unavailable") from exc
+
+
+async def jobs_feed_get(external_id: str) -> dict:
+    async with httpx.AsyncClient(timeout=20) as client:
+        try:
+            resp = await client.get(f"{JOBS_FEED_URL}/jobs/{external_id}")
+            resp.raise_for_status()
+            return resp.json()
+        except httpx.RequestError as exc:
+            raise HTTPException(status_code=503, detail="Jobs feed unavailable") from exc

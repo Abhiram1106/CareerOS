@@ -1,8 +1,7 @@
 # CareerOS Campus AI
 
-> **Intel-optimized placement-readiness operating layer for Indian colleges.**
-> Resumes in → ATS-safe + JD-matched + proof-linked scoring out →
-> student fixes + officer cohort dashboard → measured Intel benchmarks.
+> **Student-first, Intel-optimized placement-readiness loop for Indian colleges.**
+> Resume + JD/job in -> ATS-safe + JD-matched + proof-linked output -> deterministic agent-driven fixes + export.
 
 [![Week 1 — Live](https://img.shields.io/badge/Week%201-Live-16a34a?style=flat-square)](.)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-0071c5?style=flat-square)](apps/web)
@@ -14,28 +13,28 @@
 
 ## What this is
 
-CareerOS Campus AI is **not** a resume builder, job board, or LinkedIn scraper.
-It is the system a college's Training & Placement Office uses before campus drives.
+CareerOS Campus AI is **not** a job board, LinkedIn scraper, or recruiter marketplace.
+It is a student-first placement-readiness workflow that still preserves college/TPO scalability.
 
 | Without CareerOS | With CareerOS |
 |---|---|
-| Officer discovers bad resumes after companies reject students | Officer sees cohort readiness before the drive |
+| Student has no clear fix path from resume to job | Student gets one deterministic flow from job search to export |
 | Students submit Canva templates that ATS systems cannot parse | ATS parse-safety flagged on upload |
 | Generic AI rewrites that invent experience | Proof-linked rewrites — unsupported claims flagged, never inserted |
 | No aggregate skill-gap data | Department-level missing-skills heatmap |
 
 ---
 
-## The 3-minute demo
+## The 3-minute demo (student-first)
 
 ```
-1. Placement officer pastes a company JD (e.g. TCS Ninja, Accenture ASE)
-2. Uploads 20 student resumes as a batch
-3. Dashboard: readiness buckets, department breakdown, top missing skills
-4. Opens one low-scoring student — ATS risks highlighted, score breakdown shown
-5. Clicks "Rewrite with verified evidence" — one unsupported claim refused, others improved
-6. Score lifts 48 → 73
-7. Intel panel: p50/p95 latency + throughput — baseline vs OpenVINO/sklearnex
+1. Student uploads resume (or uses existing parsed resume)
+2. Student searches jobs in Jobs Feed
+3. Clicks "Run deterministic agent"
+4. Agent executes: ATS parse-safety -> JD match -> scorecard -> proof-linked rewrite -> PDF queue
+5. Unsupported claims are shown and refused (never inserted)
+6. Export job is created and downloadable when complete
+7. Intel benchmark card shows measured sklearnex uplift
 ```
 
 ---
@@ -51,11 +50,12 @@ CareerOS/
 │   ├── scoring/               # PlacementReadinessScore formula (Week 2)
 │   └── ts-types/              # TS types generated from contracts/schemas
 ├── services/
-│   ├── core-api/              # FastAPI orchestrator — auth, resume, ATS, scoring
+│   ├── core-api/              # FastAPI orchestrator — auth, resume, ATS, scoring, agent
 │   ├── ats-engine/            # Rule-based ATS parse-safety scorer (port 8001)
 │   ├── ai-rewriter/           # Proof-linked rewriter — JSON schema output (port 8003)
 │   ├── resume-parser/         # pdfplumber + python-docx + section extractor (port 8004)
 │   ├── match-engine/          # TF-IDF + embeddings + sklearnex (Week 2)
+│   ├── jobs-feed/             # Real-time jobs API adapter + Redis cache + seed fallback (port 8006)
 │   └── intel-bench/           # OpenVINO + sklearnex benchmark harness (Week 5)
 ├── infra/                     # Docker and environment config
 ├── platform/
@@ -132,6 +132,7 @@ pnpm dev                        # start Next.js dev server
 | `http://localhost:8000/docs` | Core API — FastAPI docs |
 | `http://localhost:8001/docs` | ATS Engine |
 | `http://localhost:8004/docs` | Resume Parser |
+| `http://localhost:8006/docs` | Jobs Feed |
 
 ```bash
 docker compose down             # stop all services
@@ -170,6 +171,12 @@ git push
 ```
 
 ---
+
+## Deterministic agent flow
+
+- `POST /agent/run` -> runs ATS + match + score + rewrite + export queue
+- `GET /agent/runs/{id}` -> step-wise status (`INIT -> ... -> DONE`)
+- All steps persist in `agent_runs.summary_json` for recovery and audit
 
 ## Intel integration
 

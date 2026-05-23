@@ -16,6 +16,7 @@ from typing import Any
 import pytest
 
 from app.models.entities import Resume, ResumeSection, User
+from app.services.auth import create_session
 
 
 JD_TEXT = (
@@ -77,16 +78,17 @@ async def _async(value):
     return value
 
 
-def _register_and_login(client, role: str = "student") -> str:
-    payload = {
-        "email": f"{role}@example.com",
-        "password": "Hunter2!",
-        "full_name": f"{role.title()} User",
-        "role": role,
-    }
-    res = client.post("/auth/register", json=payload)
-    assert res.status_code == 200, res.text
-    return res.json()["token"]
+def _seed_user_token(db_session, role: str = "student") -> str:
+    user = User(
+        email=f"{role}@example.com",
+        password_hash="test-hash",
+        full_name=f"{role.title()} User",
+        role=role,
+    )
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+    return create_session(db_session, user)
 
 
 def _seed_resume(db_session, email: str) -> int:
@@ -133,7 +135,7 @@ def _seed_resume(db_session, email: str) -> int:
 
 def test_golden_path_register_seed_score(client, db_session, patch_clients):
     """Full flow: register student → seed resume → score → assert response contract."""
-    token = _register_and_login(client, role="student")
+    token = _seed_user_token(db_session, role="student")
     resume_id = _seed_resume(db_session, "student@example.com")
 
     headers = {"Authorization": f"Bearer {token}"}
@@ -170,8 +172,8 @@ def test_golden_path_register_seed_score(client, db_session, patch_clients):
 
 def test_scorecards_rejects_officer(client, db_session, patch_clients):
     """RBAC: an officer must NOT be able to call the student scoring route."""
-    officer_token = _register_and_login(client, role="officer")
-    student_token = _register_and_login(client, role="student")
+    officer_token = _seed_user_token(db_session, role="officer")
+    student_token = _seed_user_token(db_session, role="student")
     resume_id = _seed_resume(db_session, "student@example.com")
 
     res = client.post(

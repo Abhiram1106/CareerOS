@@ -34,7 +34,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const isOfficer = user?.role === "officer";
+  const officerSurfaceEnabled = process.env.NEXT_PUBLIC_ENABLE_OFFICER_SURFACE === "true";
+  const isOfficer = user?.role === "officer" && officerSurfaceEnabled;
   const initials = user?.full_name?.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase() ?? "??";
 
   const navLinks = isOfficer
