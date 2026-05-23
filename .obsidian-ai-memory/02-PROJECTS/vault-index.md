@@ -32,7 +32,8 @@ links: [_INDEX, session-index]
 | `02-PROJECTS/session-continuity.md` | **Rolling handoff — read first each Cursor chat** (overwrite every chat end) | Always (Cursor) |
 | `02-PROJECTS/bootcamp-brief.md` | **Intel AI Bootcamp context** — what the project is, why, Intel tools, demo script, judge Q&A, 5-week schedule, pitch outline | Always — this is the bootcamp submission |
 | `02-PROJECTS/project-context.md` | Stack, architecture, constraints, next steps | Always |
-| `02-PROJECTS/active-goals.md` | 5-week roadmap + current week checkboxes | Always |
+| `02-PROJECTS/active-goals.md` | Phases 4–7 (Kirito security-first roadmap) + checkboxes | Always |
+| `05-ARCHITECTURE/security-architecture.md` | **CIA, auth, OpenAPI, Phases 4–7 security gates** | Auth, officer, assistant, infra tasks |
 | `02-PROJECTS/current-state.md` | Snapshot: exact versions, infra state, blocked | Always |
 
 ---
@@ -52,8 +53,8 @@ links: [_INDEX, session-index]
 |---|---|
 | `04-DECISIONS/decisions.md` | 5 active decisions with rationale. Also see `docs/adr/` |
 
-Current decision count: **5**
-Last decision added: 2026-05-19 — "Omnix runtime stays at .omnix/"
+Current decision count: **6**
+Last decision added: 2026-05-23 — "Security-first future phases (Kirito)"
 
 ---
 
@@ -62,6 +63,7 @@ Last decision added: 2026-05-19 — "Omnix runtime stays at .omnix/"
 | File | Contents |
 |---|---|
 | `05-ARCHITECTURE/README.md` | System diagram, data flows, DB schema, layered-refactor summary |
+| `05-ARCHITECTURE/security-architecture.md` | Kirito: CIA, auth, OpenAPI, encryption, Phases 4–7 gates |
 | `05-ARCHITECTURE/layered-modules.md` | **Phase table, on-disk trees, migration rules, next-agent steps** |
 | `05-ARCHITECTURE/frontend-ux.md` | Web IA: hero, workspace tabs, component map, a11y, styling rules |
 

@@ -110,6 +110,25 @@ Buckets: 0–49 🔴 High Risk | 50–69 🟡 Borderline | 70–84 🟢 Ready | 
 
 ---
 
+## Security architecture (Kirito roadmap — all future phases)
+
+**Agents must read:** [[05-ARCHITECTURE/security-architecture]] before auth, officer, assistant, or infra work.
+
+| Domain | Requirement |
+|--------|-------------|
+| **CIA** | Every phase maps features to confidentiality, integrity, availability controls |
+| **AuthN** | JWT Bearer + `session_tokens`; bcrypt/argon2 passwords; prod TLS |
+| **AuthZ** | `require_student` / `require_officer` / `require_admin` + resource ownership (Phase 4+) |
+| **API** | Pydantic v2 validation; OpenAPI/Swagger (`/docs` + committed export under `packages/contracts/openapi/`) |
+| **Crypto & network** | TLS termination, private service network, secrets outside git |
+| **DI** | FastAPI `Depends()` factories for handlers/DB (maintainability + tests) |
+| **Phase 6 assistant** | RAG over docs + user-owned context; LLM keys server-side; optional TensorFlow retrieval; Surf-like tooling dev-only |
+| **Phase 7** | OAuth/OIDC, mTLS, field encryption, DPDP pack |
+
+Repo ADR: `docs/adr/0007-security-first-future-phases.md` · Threat model: `docs/security/threat-model.md`
+
+---
+
 ## Known risks
 
 - PDF parsing fragility on Indian fresher Canva templates, two-column layouts, scanned resumes.
@@ -133,21 +152,17 @@ See [[03-ERRORS/error-memory]] and [[03-ERRORS/anti-patterns]] — hub: [[errors
 
 ---
 
-## Next steps
+## Next steps (Kirito roadmap)
 
-Week 2:
-1. JD parser + skill taxonomy + eligibility extractor (`/jd/parse` endpoint)
-2. `services/match-engine/` — TF-IDF + embeddings + recall + eligibility → JD_Match sub-score
-3. `packages/scoring/` — PlacementReadinessScore Python package
-4. Score breakdown UI in `apps/web` — 6-bar component + bucket label + missing skills list
+**Phase 4 (current):** Officer dashboard + **security hardening gate** — IDOR tests, OpenAPI export, rate limits, audit log, threat model. See [[02-PROJECTS/active-goals]].
 
-## Layered architecture (refactor in progress)
+**Phase 5:** Intel lab UI + CI security audits + production compose profile.
 
-- Vault: [[05-ARCHITECTURE/layered-modules]]
-- Auth routes migrated to `api/controllers` + `modules/auth` (2026-05-21)
-- Next migration: **resume + export**, then ATS/dashboard
+**Phase 6:** Campus assistant — scoped chatbot, RAG, optional external LLM (Claude/DeepSeek/etc.), optional TensorFlow embeddings for retrieval.
+
+**Phase 7:** Enterprise SSO, encryption, compliance.
 
 ---
-_Last updated: 2026-05-21 — layered-modules vault + auth migration._
+_Last updated: 2026-05-23 — security-first future phases (Kirito roadmap)._
 
 *Related: [[_INDEX]] · [[MASTER_PLAN]] · [[architecture-index]] · [[scoring-knowledge]] · [[api-index]] · [[02-PROJECTS/active-goals]] · [[02-PROJECTS/current-state]] · [[session-index]]*

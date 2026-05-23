@@ -1,156 +1,125 @@
 ---
-tags: [hub, mission, roadmap, bootcamp, moc]
+tags: [hub, mission, roadmap, bootcamp, moc, security]
 type: hub
 created: 2026-05-21
-updated: 2026-05-21
-links: [_INDEX, scoring-knowledge, intel-index, architecture-index, session-index]
+updated: 2026-05-23
+links: [_INDEX, scoring-knowledge, intel-index, architecture-index, session-index, security-architecture]
 ---
 
-# 🎯 MASTER_PLAN — CareerOS Campus AI
+# MASTER_PLAN — CareerOS Campus AI
 
-> **Mission:** Ship a 9+/10 Intel AI Bootcamp submission in 5 weeks.  
-> Single sharp positioning: *"The placement-readiness operating layer for Indian colleges."*
+> **Mission:** Production-grade placement-readiness platform for Indian colleges — Intel-accelerated, security-first, demoable end-to-end.  
+> **Positioning:** *The placement-readiness operating layer for Indian colleges.*
 
-← [[_INDEX]] | [[architecture-index]] → | [[scoring-knowledge]] →
+← [[_INDEX]] | [[architecture-index]] | [[05-ARCHITECTURE/security-architecture]] | [[scoring-knowledge]]
 
 ---
 
-## 🏆 The Problem We Solve
+## Kirito roadmap (security-first future phases)
 
-> 42.6% of Indian graduates are not employable (Mercer Mettl 2025).  
-> Every college has a TPO. None have a system. We build the system.
+All work from **Phase 4 onward** follows [[05-ARCHITECTURE/security-architecture]]:
+
+- **Confidentiality** — TLS, RBAC, ownership checks, secrets hygiene  
+- **Integrity** — Pydantic validation, audit logs, proof-linked outputs  
+- **Availability** — health checks, queues, rate limits, scale-out path  
+
+Repo ADR: `docs/adr/0007-security-first-future-phases.md` · Goals: [[02-PROJECTS/active-goals]]
+
+---
+
+## The problem we solve
 
 | Pain | Today | CareerOS |
 |------|-------|----------|
-| Resume review | WhatsApp + Excel | Batch upload → AI parse → scored |
-| Company matching | Manual | JD paste → hybrid TF-IDF + embeddings |
-| Cohort intel | Zero visibility | Dept heatmaps, skill gaps, readiness % |
-| AI trust | Black boxes | Proof-linked rewrites, evidence IDs |
-| Compute story | Generic cloud | Intel OpenVINO + sklearnex, measured |
+| Resume review | WhatsApp + Excel | Parse → score → proof-linked rewrite → export |
+| Company matching | Manual JD comparison | Structured JD match + readiness formula |
+| Cohort intel | No visibility | Officer heatmaps (Phase 4) |
+| AI trust | Black boxes | Evidence IDs; unsupported claims refused |
+| Compute | Generic cloud | sklearnex + OpenVINO (measured) |
 
-**Not:** a job board · a LinkedIn scraper · a resume builder · a recruiter marketplace.
+**Not:** job board · LinkedIn scraper · recruiter marketplace · unsafe AI resume spam.
 
 ---
 
-## 📅 5-Week Roadmap
+## Roadmap status (2026-05-23)
 
 ```
-Week 1 ✅  Foundation
-Week 2 🔨  Intelligence (CURRENT)
-Week 3 ⏳  Rewriter
-Week 4 ⏳  Officer Surface
-Week 5 ⏳  Intel Bench + Pitch
+Phase 0–3 ✅  Foundation, scoring, rewriter, student-first agent
+Phase 4  🔨  Officer dashboard + security hardening (CURRENT)
+Phase 5  ⏳  Intel lab UI + production CI/security gates
+Phase 6  ⏳  Campus assistant (RAG + optional LLM)
+Phase 7  ⏳  Enterprise SSO, encryption, compliance
 ```
 
-### Week 1 ✅ Foundation (done)
+### Completed highlights
 
-- [x] Phase 1: Archive NEXUS/billing/job-board legacy
-- [x] Phase 2: Monorepo scaffold (`apps/`, `services/`, `packages/`)
-- [x] W1.3: Alembic migration — 11 new tables (colleges, departments, scorecards, batches, etc.)
-- [x] W1.4: Role-based auth — JWT + `require_student` / `require_officer` / `require_admin`
-- [x] W1.5: Resume parser service — pdfplumber + python-docx + spaCy section extractor
-- [x] Layered architecture — Phases 1–7 complete (main.py = health only)
-- [x] Frontend auth — login/register split-panel, demo mode, RBAC routing
+- Monorepo, Alembic, JWT + RBAC, resume parser, match-engine, scoring package  
+- Proof-linked rewriter, recommendations, PDF export  
+- Jobs feed, deterministic agent, Builder/Jobs UI  
+- sklearnex benchmark (documented), enterprise README, ADR 0006  
 
-→ See [[session-index]] for full trail. Architecture at [[05-ARCHITECTURE/layered-modules]].
+→ Detail: [[02-PROJECTS/active-goals]] · Sessions: [[session-index]]
 
-### Week 2 🔨 Intelligence (in progress)
+### Phase 4 — Officer + security (next)
 
-- [ ] JD parser → `job_descriptions` table → `skills_json` + `eligibility_json`
-- [ ] `services/match-engine/` — TF-IDF cosine + embedding cosine + sklearnex
-- [ ] `packages/scoring/` — [[scoring-knowledge|PlacementReadinessScore]] formula (single source)
-- [ ] Score breakdown UI → `/workspace` JD Match Scan tab wired to real API
-- [ ] Alembic migration for `scorecards` + `job_descriptions` population
+Product: officer routes, batch analytics, review queue.  
+**Security gate:** IDOR tests, OpenAPI export, rate limits, audit log, threat model — see [[05-ARCHITECTURE/security-architecture#8. Future phases — security gates per phase]].
 
-→ See [[02-PROJECTS/active-goals]] for checkboxes. Formula at [[scoring-knowledge]].
+### Phase 5 — Intel + production posture
 
-### Week 3 ⏳ AI Rewriter
+Product: intel-bench service, `/lab/intel`, pitch deck.  
+Security: CI audits, prod secrets, no default JWT.
 
-- [ ] `services/ai-rewriter/` — proof-linked JSON schema rewriter
-- [ ] Evidence IDs — every suggestion must have `evidence_ids[]` from resume JSON
-- [ ] `unsupported_claims[]` — refused, never in `section_rewrites[]`
-- [ ] Before/after diff UI in workspace
-- [ ] WeasyPrint ATS-safe PDF export
+### Phase 6 — Assistant
 
-→ Proof-linked design at [[api-index#Rewriter Contract]].
+Product: onboarding + guidance chatbot.  
+Tech: RAG over docs; optional external LLM (server-side keys); optional TensorFlow retrieval; Surf-like tooling **dev-only** unless hardened.
 
-### Week 4 ⏳ Officer Surface
+### Phase 7 — Enterprise
 
-- [ ] `apps/web/app/(officer)/` route group
-- [ ] Batch upload — multiple resumes vs one JD
-- [ ] Department readiness heatmap
-- [ ] Proof-linked review queue (approve / return with tag)
-- [ ] Readiness PDF report export
-
-→ Officer UI at [[05-ARCHITECTURE/frontend-ux#Officer Surface]].
-
-### Week 5 ⏳ Intel Bench + Pitch
-
-- [ ] `services/intel-bench/run.py` — real measurements (NOT vendor claims)
-- [ ] `/lab/intel` panel — p50/p95 latency table, throughput chart
-- [ ] 6-slide pitch deck
-- [ ] 3-minute demo script rehearsed
-- [ ] `benchmark_runs` table populated with real numbers
-
-→ Full Intel story at [[intel-index]]. Demo script at [[02-PROJECTS/bootcamp-brief]].
+OAuth/OIDC, mTLS, DPDP pack, WAF.
 
 ---
 
-## 🎬 3-Minute Demo Script
+## Architecture (summary)
 
-> **Scene 1 — Officer dashboard** (start here, not login)  
-> "Today we have an Accenture ASE drive. I paste the JD."
+```
+apps/web → core-api (:8000) → microservices (parser, ATS, match, rewriter, jobs-feed)
+                          → PostgreSQL + Redis/Celery
+```
 
-> **Scene 2 — Batch upload**  
-> "20 CSE resumes uploaded in one click."
-
-> **Scene 3 — Intel processing** (show spinner with Intel badge)  
-> "Intel-accelerated TF-IDF + embedding pipeline scores each resume."
-
-> **Scene 4 — Dashboard result**  
-> `20 scanned · 6 ready · 9 borderline · 5 high-risk · top gap: SQL · avg: 62%`
-
-> **Scene 5 — Student fix**  
-> Score: 48 → High Risk. ATS issue detected. Click "Rewrite."  
-> One unsupported claim REFUSED. Two bullets improved. Score: 48 → 73.
-
-> **Scene 6 — Intel panel**  
-> Baseline vs OpenVINO+sklearnex. p50 latency table. accuracy_delta < 0.5%.
-
-→ Details at [[02-PROJECTS/bootcamp-brief]] · Intel numbers at [[intel-index#Benchmark Targets]].
+Full diagrams: [[05-ARCHITECTURE/README]] · Security flows: [[05-ARCHITECTURE/security-architecture]]
 
 ---
 
-## 📊 Scoring Target: 9+/10
+## 3-minute demo (student-first)
 
-| Judge Criterion | Why We Score High |
-|----------------|------------------|
-| Problem severity | 42.6% unemployability, 8.47L engineers/year |
-| Demo potential | Upload → score → rewrite → dashboard → benchmark |
-| Intel relevance | CPU-bound NLP workloads, real measured speedups |
-| Technical depth | 6-service monorepo, Alembic, Pydantic v2, Celery |
-| Social impact | Directly fixes TPO workflow at India's 4.33cr enrolments |
-| Business potential | B2B SaaS to TPO offices, institutional sticky buyer |
-| Pitch clarity | One sharp positioning, not "AI resume builder" |
+1. Upload resume → Jobs search → Run agent  
+2. Show score breakdown + rewrite diff (`unsupported_claims`)  
+3. Export PDF → Intel benchmark numbers (measured)  
+
+→ [[docs/pitch/demo-script]] (repo)
 
 ---
 
-## 🚫 What This Is NOT
+## Bootcamp scoring narrative
 
-- ~~Not a job board~~ → See [[04-DECISIONS/decisions#Decision 1 — Pivot]]
-- ~~Not a LinkedIn scraper~~ → API terms restrict this
-- ~~Not a recruiter marketplace~~ → NEXUS ATS archived
-- ~~Not a billing product~~ → Cut in Week 1 restructure
-- ~~Not a mobile app~~ → Web-only MVP
-
----
-
-## 👥 Three Personas
-
-**Priya** (student, CSE final year) → uses `/workspace` → uploads resume → sees score → applies rewrite  
-**Mr. Ramesh** (TPO) → uses `/officer` → batch upload → cohort dashboard → approves rewrites  
-**Dr. Mehta** (college admin) → monthly report → placement PDF → department comparison
+| Criterion | Angle |
+|-----------|--------|
+| Problem | Employability gap + ATS + TPO manual ops |
+| Intel | sklearnex on match path; OpenVINO planned with accuracy gate |
+| Technical depth | Multi-service, Alembic, agent state machine, RBAC |
+| Security | CIA roadmap, OpenAPI, production-oriented Phase 4–7 |
+| Social impact | Indian campus placement at scale |
 
 ---
 
-*Related: [[_INDEX]] · [[scoring-knowledge]] · [[intel-index]] · [[architecture-index]] · [[session-index]] · [[02-PROJECTS/bootcamp-brief]] · [[02-PROJECTS/active-goals]]*
+## Personas
+
+**Priya** (student) → `/workspace`, Jobs, Builder, agent  
+**Mr. Ramesh** (TPO) → `/officer` (Phase 4, flag-gated)  
+**Dr. Mehta** (admin) → cohort reports
+
+---
+
+*Related: [[_INDEX]] · [[05-ARCHITECTURE/security-architecture]] · [[02-PROJECTS/active-goals]] · [[intel-index]] · [[02-PROJECTS/bootcamp-brief]]*

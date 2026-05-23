@@ -45,6 +45,7 @@ links: [_INDEX, MASTER_PLAN, api-index, scoring-knowledge, intel-index]
 
 ### Core Design
 - [[05-ARCHITECTURE/README]] — System diagram, data flows, scoring formula, key tables
+- [[05-ARCHITECTURE/security-architecture]] — **Kirito roadmap:** CIA, auth/authz, OpenAPI, encryption, Phases 4–7 gates
 - [[05-ARCHITECTURE/layered-modules]] — 7-phase refactor map (all phases complete)
 - [[05-ARCHITECTURE/frontend-ux]] — UI surfaces, components, CSS token system
 

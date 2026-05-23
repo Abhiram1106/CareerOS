@@ -1,75 +1,136 @@
 ---
-tags: [project, goals, week-plan]
+tags: [project, goals, week-plan, security, kirito]
 type: project
 updated: 2026-05-23
-links: [MASTER_PLAN, _INDEX, scoring-knowledge]
+links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 ---
 
 # Active Goals
 
-← [[MASTER_PLAN]] · [[_INDEX]]
+← [[MASTER_PLAN]] · [[05-ARCHITECTURE/security-architecture]] · [[_INDEX]]
 
-> Sorted by week of the 5-week plan
-> (`C:\Users\ADMIN\.claude\plans\brutal-upgrade-direction-make-humble-parnas.md`).
-
-## Week 1 (complete)
-
-- [x] **Phase 1**: archive branch + cut billing/nexus/job-intel/legacy
-- [x] **Phase 2**: monorepo skeleton (apps/packages/services/infra/platform/docs/tests) + .claude/ + CODEOWNERS + README + Omnix memory populated
-- [x] **W1.3 — Real Alembic delta migration**: add colleges, departments, resume_sections, resume_evidence, job_descriptions, scorecards, recommendations, batches, batch_resumes, events_audit, benchmark_runs.
-- [x] **W1.4 — Role-based auth**: add `role` claim to JWT; gate routes by `student` / `officer` / `admin`.
-- [x] **W1.5 — Resume upload + parser**: build `services/resume-parser` with pdfplumber + python-docx + section extractor; wire `/resumes/upload` endpoint in core-api; render extracted sections in `apps/web`.
-
-## Week 2 (complete — 2026-05-21)
-
-- [x] JD parser + skill taxonomy + eligibility extractor (`match-engine` + `POST /jd/parse`).
-- [x] `services/match-engine`: TF-IDF + char n-gram cosine (embedding proxy) + skill recall + eligibility rule score; sklearnex patch first.
-- [x] Narrow `services/ats-engine` to the ATS-Parse-Safety penalty model only (`POST /parse-safety`; core-api `POST /ats/parse-safety`; legacy composite `/scan` removed).
-- [x] `packages/scoring/` — Python lib implementing the full [[scoring-knowledge|PlacementReadinessScore]] formula.
-- [x] `POST /scorecards/score` in core-api + docker `match-engine` service.
-- [x] `apps/web` workspace score breakdown (six bars + bucket + missing/matched skills via `/scorecards/score`).
-
-## Audit hardening (complete — 2026-05-23)
-
-- [x] **P0 RBAC**: `require_student` / `require_officer` on all role-specific routes.
-- [x] **P0 Honest labels**: `semantic_method: "embedding_proxy_tfidf"` on match results + UI tooltip.
-- [x] **P0 Tests**: golden-path API integration test (`tests/test_scoring_golden_path.py`) + hardened formula unit tests.
-- [x] **P1 Persistence**: `ats_flags` and `college_id` (request → user fallback) stored on scorecards.
-- [x] **P1 Cleanup**: deleted orphaned legacy UI stack (panes/AppHeader/SiteNav/SectionNav/WorkspaceTabs/AppFooter/useCareerOSWorkspace).
-
-## Week 3 — AI rewriter + export
-
-- [x] `services/ai-rewriter` retargeted: `POST /rewrite` proof-linked JSON-schema (`unsupported_claims[]`, evidence_ids, no fabrication).
-- [x] `core-api`: `POST /recommendations/rewrite` + `GET /recommendations/{scorecard_id}` → `recommendations` table.
-- [x] Before/after diff UI in `apps/web` (Proof-Linked Rewrite tab + `RewriteDiffPanel`).
-- [x] ATS-safe PDF export: existing Celery/WeasyPrint path (`POST /resumes/export`); template label + UI copy hardened.
-
-## Week 4 — Officer dashboard
-
-- [ ] `apps/web/(officer)/` route group: dashboard, batches, jds, review.
-- [ ] Batch upload, dept heatmap, review queue, skill-gap chart, company-fit columns.
-- [ ] Readiness PDF report export.
-
-## Student-first pivot (complete — 2026-05-23)
-
-- [x] `services/jobs-feed`: search API, Adzuna adapter, Redis cache, seed fallback.
-- [x] Alembic `0003_jobs_and_agent_runs` + deterministic agent (`POST /agent/run`, `GET /agent/runs/{id}`).
-- [x] Workspace Jobs tab + Builder wizard + `AgentProgress` polling.
-- [x] sklearnex bench harness + measured results in `docs/benchmarks/`.
-- [x] ADR 0006, README student-first positioning, `docs/pitch/demo-script.md`.
-- [x] Officer surface feature-flagged (`ENABLE_OFFICER_SURFACE`).
-
-## Week 5 — Intel benchmark + pitch
-
-- [x] sklearnex measurements (match-engine bench + `docs/benchmarks/match-engine-sklearnex.md`).
-- [x] 3-minute demo script (`docs/pitch/demo-script.md`).
-- [x] Top-level README polish (student-first).
-- [ ] `services/intel-bench` harness: OpenVINO + sklearnex full panel.
-- [ ] `apps/web/lab/intel` panel rendering measured p50/p95/throughput/accuracy-delta.
-- [ ] 6-slide pitch deck in `docs/pitch/`.
-- [ ] Screen captures.
+> **Kirito roadmap:** All remaining phases prioritize **CIA** (confidentiality, integrity, availability), cryptography, secure networking, and production-grade auth/API design. Full checklist: [[05-ARCHITECTURE/security-architecture]] · Repo ADR: `docs/adr/0007-security-first-future-phases.md`.
 
 ---
-_Updated: 2026-05-23 — Student-first pivot complete; Week 4 officer dashboard + Week 5 intel lab UI next._
 
-*Related: [[MASTER_PLAN]] · [[_INDEX]] · [[02-PROJECTS/project-context]] · [[02-PROJECTS/current-state]] · [[scoring-knowledge]] · [[intel-index]] · [[session-index]]*
+## Completed foundation (Weeks 1–3 + pivot)
+
+### Week 1
+- [x] Monorepo scaffold, Alembic schema, JWT roles, resume parser, layered core-api
+
+### Week 2
+- [x] Match-engine, `packages/scoring`, scorecard API + UI
+
+### Audit hardening
+- [x] RBAC (`require_student` / `require_officer`), honest semantic labels, golden-path tests, persistence fixes
+
+### Week 3
+- [x] Proof-linked rewriter, recommendations API, diff UI, PDF export
+
+### Student-first pivot (2026-05-23)
+- [x] `jobs-feed`, deterministic agent, Jobs/Builder UI, sklearnex benchmark doc, ADR 0006, officer flags default-off
+
+### Week 5 (partial)
+- [x] sklearnex measured benchmark, demo script, enterprise README
+
+---
+
+## Phase 4 — Officer dashboard + security hardening (NEXT)
+
+> **Gate:** Officer routes must not ship to production until every **Security (blocking)** item is checked.
+
+### Product
+- [ ] `apps/web/(officer)/` — dashboard, batches, JDs, review queue
+- [ ] Batch upload, dept heatmap, skill-gap chart, company-fit columns
+- [ ] Readiness PDF report export for TPO
+- [ ] Enable officer surface only after review: `ENABLE_OFFICER_SURFACE=true`
+
+### Security (blocking)
+- [ ] **IDOR prevention:** resume/scorecard/agent_run/export scoped to `user_id` or officer `college_id`
+- [ ] **OpenAPI:** export `packages/contracts/openapi/core-api.openapi.json`; document all officer routes in Swagger
+- [ ] **API validation:** Pydantic `extra=forbid` on sensitive DTOs; file upload size/MIME limits
+- [ ] **Rate limiting:** auth, upload, `/agent/run` (Redis or middleware)
+- [ ] **Security headers:** HSTS, CSP, X-Content-Type-Options, frame deny
+- [ ] **Audit log:** `events_audit` for batch create, approve/return, export, officer login
+- [ ] **Session hardening:** logout revokes `session_tokens`; document prod token TTL
+- [ ] **DI cleanup:** handler factories in `dependencies.py` for testability
+- [ ] **Tests:** 401/403 matrix per role; cross-user access must fail
+- [ ] **Threat model:** `docs/security/threat-model.md` (STRIDE-lite)
+
+### Infrastructure
+- [ ] Prod compose profile: TLS termination notes, secrets via env (no defaults)
+- [ ] Internal-only ports for parser/match/rewriter (no host publish except core-api/web)
+
+---
+
+## Phase 5 — Intel lab + production posture
+
+### Product
+- [ ] `services/intel-bench` — OpenVINO + sklearnex full harness
+- [ ] `apps/web/lab/intel` — p50/p95/throughput/accuracy-delta panel
+- [ ] 6-slide pitch deck, product screenshots
+
+### Security (blocking)
+- [ ] CI dependency audit (`pip-audit`, `pnpm audit`) — fail on critical
+- [ ] `AUTO_CREATE_TABLES=false` in prod documentation; Alembic-only schema
+- [ ] Secrets scan in CI (no keys in diff)
+- [ ] Benchmark endpoints admin-only or read-only public aggregate
+
+### Availability
+- [ ] Document horizontal scale path for core-api + workers
+- [ ] Health/readiness endpoints for orchestration (K8s-ready pattern)
+
+---
+
+## Phase 6 — Campus assistant (chatbot / guidance)
+
+> Lightweight assistant for onboarding, workflow help, and score interpretation—not a general-purpose chatbot.
+
+### Product
+- [ ] In-app assistant panel (student workspace)
+- [ ] Grounded answers: product docs + user's own latest scorecard summary
+- [ ] Suggested actions: link to Builder, Jobs, rewrite tab (no autonomous writes without confirm)
+
+### Security (blocking)
+- [ ] **Auth required** — same JWT; no anonymous LLM proxy
+- [ ] **Context isolation** — never inject another user's resume/score into prompt
+- [ ] **Prompt injection defenses** — fixed system prompt; tool calls RBAC-gated
+- [ ] **LLM keys server-side only** — `LLM_PROVIDER`, `LLM_API_KEY` in env
+- [ ] **Logging redaction** — no PII in application logs
+- [ ] **Privacy notice** — third-party LLM disclosure if external API used
+
+### Technical options (explore in order)
+- [ ] **RAG pipeline:** index `docs/` + static FAQ; retrieval via embeddings (TF-IDF or small embedding model)
+- [ ] **External LLM:** Claude / DeepSeek / OpenAI-compatible API via httpx in `services/assistant/`
+- [ ] **TensorFlow (optional):** embedding or re-ranker for RAG—offline index build, no training on student PII
+- [ ] **Internal dev agents (Surf-like):** dev-only automation; not student runtime unless separately threat-modeled
+
+### API
+- [ ] `POST /assistant/chat` — Pydantic request/response, OpenAPI documented, rate limited
+
+---
+
+## Phase 7 — Enterprise hardening (post-bootcamp)
+
+- [ ] OAuth2/OIDC (college SSO)
+- [ ] Refresh token rotation + device/session management UI
+- [ ] Field-level encryption for email/phone
+- [ ] mTLS service mesh or signed internal JWT between microservices
+- [ ] DPDP compliance pack (retention, export, delete-my-data)
+- [ ] WAF / DDoS at edge
+
+---
+
+## Cross-cutting — always in scope
+
+- [ ] Swagger/OpenAPI accurate on every merged route
+- [ ] RBAC on every new endpoint
+- [ ] No secrets in git; `.env.example` placeholders only
+- [ ] PlacementReadinessScore only in `packages/scoring/`
+- [ ] No fabrication in rewriter (`unsupported_claims[]`)
+
+---
+
+_Updated: 2026-05-23 — Kirito security-first phases 4–7; Phase 4 is next._
+
+*Related: [[MASTER_PLAN]] · [[05-ARCHITECTURE/security-architecture]] · [[02-PROJECTS/project-context]] · [[intel-index]]*

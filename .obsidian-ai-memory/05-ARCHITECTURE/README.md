@@ -153,6 +153,18 @@ CareerOS is moving from a monolithic `main.py` to domain modules:
 
 ---
 
+## Security architecture (future phases)
+
+All Phase 4+ work is **security-gated**. See [[05-ARCHITECTURE/security-architecture]] for:
+
+- CIA mapping, auth/authz flows, OpenAPI standards, TLS/secrets
+- Phase 4–7 checklists (officer, intel, assistant/RAG, enterprise)
+- Agent non-negotiable rules (RBAC, IDOR tests, no secrets in git)
+
+Repo: `docs/adr/0007-security-first-future-phases.md` · `docs/security/threat-model.md`
+
+---
+
 ## Key conventions
 
 - **Route handlers are thin.** No logic beyond: parse input → call handler/query service → return.
@@ -165,6 +177,6 @@ CareerOS is moving from a monolithic `main.py` to domain modules:
 ---
 
 _Populate this file further as the architecture evolves. Update before each weekly milestone._
-_Last updated: 2026-05-21 — layered-modules refactor (auth migrated)._
+_Last updated: 2026-05-23 — security-architecture (Kirito roadmap)._
 
-*Related: [[architecture-index]] · [[05-ARCHITECTURE/layered-modules]] · [[05-ARCHITECTURE/frontend-ux]] · [[api-index]] · [[scoring-knowledge]] · [[intel-index]]*
+*Related: [[architecture-index]] · [[05-ARCHITECTURE/security-architecture]] · [[05-ARCHITECTURE/layered-modules]] · [[api-index]] · [[scoring-knowledge]]*

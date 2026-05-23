@@ -120,4 +120,28 @@ future migration is straightforward.
 
 ---
 
-*Related: [[_INDEX]] · [[architecture-index]] · [[scoring-knowledge]] · [[04-DECISIONS/decisions]] · [[MASTER_PLAN]]*
+## Decision 6 — Security-first future phases (Kirito roadmap)
+
+## 2026-05-23 — Security-first future phases (Kirito roadmap)
+
+**Decision**: All Phase 4+ delivery is **gated** on security architecture:
+CIA (confidentiality, integrity, availability), JWT + RBAC + ownership
+checks, committed OpenAPI, input validation, TLS/secrets in prod, audit
+logging, and threat-model updates. Campus assistant (Phase 6) uses RAG +
+optional external LLM with proof-linked guardrails; no fabrication in
+rewriter paths.
+
+**Rationale**: Intel bootcamp demo must read as production-oriented, not
+prototype-only. Officer dashboard and assistant expand attack surface;
+security work is parallel requirement, not a later polish pass.
+
+**Status**: Accepted. Vault: `05-ARCHITECTURE/security-architecture.md`.
+Repo: `docs/adr/0007-security-first-future-phases.md`.
+
+**Consequences**: Phase 4 officer UI blocked until IDOR tests + OpenAPI
+export + rate limits; Phase 6 assistant requires authz on retrieval;
+Surf/LLM keys never in git.
+
+---
+
+*Related: [[_INDEX]] · [[architecture-index]] · [[05-ARCHITECTURE/security-architecture]] · [[MASTER_PLAN]]*
