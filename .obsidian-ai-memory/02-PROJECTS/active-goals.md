@@ -39,9 +39,10 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge]
 
 ## Week 3 — AI rewriter + export
 
-- [ ] `services/ai-rewriter` retargeted: proof-linked JSON-schema output, system prompt from research §"Guardrails".
-- [ ] Before/after diff UI in `apps/web`.
-- [ ] ATS-safe PDF export using existing WeasyPrint task.
+- [x] `services/ai-rewriter` retargeted: `POST /rewrite` proof-linked JSON-schema (`unsupported_claims[]`, evidence_ids, no fabrication).
+- [x] `core-api`: `POST /recommendations/rewrite` + `GET /recommendations/{scorecard_id}` → `recommendations` table.
+- [x] Before/after diff UI in `apps/web` (Proof-Linked Rewrite tab + `RewriteDiffPanel`).
+- [x] ATS-safe PDF export: existing Celery/WeasyPrint path (`POST /resumes/export`); template label + UI copy hardened.
 
 ## Week 4 — Officer dashboard
 
@@ -49,15 +50,26 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge]
 - [ ] Batch upload, dept heatmap, review queue, skill-gap chart, company-fit columns.
 - [ ] Readiness PDF report export.
 
+## Student-first pivot (complete — 2026-05-23)
+
+- [x] `services/jobs-feed`: search API, Adzuna adapter, Redis cache, seed fallback.
+- [x] Alembic `0003_jobs_and_agent_runs` + deterministic agent (`POST /agent/run`, `GET /agent/runs/{id}`).
+- [x] Workspace Jobs tab + Builder wizard + `AgentProgress` polling.
+- [x] sklearnex bench harness + measured results in `docs/benchmarks/`.
+- [x] ADR 0006, README student-first positioning, `docs/pitch/demo-script.md`.
+- [x] Officer surface feature-flagged (`ENABLE_OFFICER_SURFACE`).
+
 ## Week 5 — Intel benchmark + pitch
 
-- [ ] `services/intel-bench` harness: OpenVINO + sklearnex measurements.
+- [x] sklearnex measurements (match-engine bench + `docs/benchmarks/match-engine-sklearnex.md`).
+- [x] 3-minute demo script (`docs/pitch/demo-script.md`).
+- [x] Top-level README polish (student-first).
+- [ ] `services/intel-bench` harness: OpenVINO + sklearnex full panel.
 - [ ] `apps/web/lab/intel` panel rendering measured p50/p95/throughput/accuracy-delta.
 - [ ] 6-slide pitch deck in `docs/pitch/`.
-- [ ] 3-minute demo script.
-- [ ] Top-level README polish + screen captures.
+- [ ] Screen captures.
 
 ---
-_Updated: 2026-05-23 — Week 2 + audit hardening complete; Week 3 (AI rewriter) next._
+_Updated: 2026-05-23 — Student-first pivot complete; Week 4 officer dashboard + Week 5 intel lab UI next._
 
 *Related: [[MASTER_PLAN]] · [[_INDEX]] · [[02-PROJECTS/project-context]] · [[02-PROJECTS/current-state]] · [[scoring-knowledge]] · [[intel-index]] · [[session-index]]*

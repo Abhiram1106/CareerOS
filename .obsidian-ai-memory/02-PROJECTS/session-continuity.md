@@ -1,64 +1,69 @@
-# Session Continuity — CareerOS Campus AI
+# Session continuity — CareerOS (rolling handoff)
 
-> **Overwrite this file at the end of every Cursor chat** (see `.cursor/MEMORY-WORKFLOW.md`).
-> Next chat: read this first, then `project-context.md` and `active-goals.md`.
-
-**Last updated:** 2026-05-23 (Week 2 + audit hardening complete)
+> **Overwrite this file at the end of every Cursor chat.**
+> Next chat reads this **before** other memory. Detail lives in `01-SESSIONS/`.
 
 ---
 
-## Where we left off
+## Last chat
 
-- **Week 2 demo loop:** complete end-to-end — resume upload → JD parse → match-engine → `packages/scoring` → readiness UI with six bars + bucket badge.
-- **Audit P0/P1 closed:**
-  - RBAC (`require_student` / `require_officer`) on all role-specific routes.
-  - Honest `semantic_method: "embedding_proxy_tfidf"` field + UI tooltip.
-  - `ats_flags` and `college_id` (request → user fallback) persisted on scorecards.
-  - Golden-path API test (`services/core-api/tests/test_scoring_golden_path.py`).
-  - Hardened formula tests (`packages/scoring/tests/test_formula.py`).
-- **Legacy cleanup:** deleted orphaned `components/panes/**`, `components/SectionNav.tsx`, `components/workspace/WorkspaceTabs.tsx`, `components/layout/{AppHeader,SiteNav,AppFooter}.tsx`, `hooks/useCareerOSWorkspace.ts`. Workspace screen is driven solely by `usePlacementWorkspace`.
-- **Verification:** `tsc --noEmit` (apps/web) clean; Python AST parse clean across 107 files.
-
-Latest digest: [[01-SESSIONS/2026-05-23/session-1019-cursor]]
+| Field | Value |
+|-------|-------|
+| Updated | 2026-05-23 (student-first pivot committed) |
+| Tool | cursor |
+| Session file | `01-SESSIONS/2026-05-23/session-student-first-cursor.md` |
+| User ask (latest) | Commit everything (code + Obsidian vault) |
 
 ---
 
-## Week 3 — next product work
+## Active thread (max 5 bullets)
 
-1. `services/ai-rewriter` retargeted: proof-linked JSON-schema output, `unsupported_claims[]`, system prompt from research §"Guardrails".
-2. Before/after diff UI in `apps/web` (with evidence callouts on each rewritten bullet).
-3. ATS-safe PDF export wired through existing WeasyPrint Celery task → `POST /resumes/{id}/export` in the layered structure.
-
-Checklist: [[02-PROJECTS/active-goals]] · API plan: [[api-index]] · Formula: [[scoring-knowledge]] · Architecture: [[05-ARCHITECTURE/layered-modules]]
+- Student-first flow shipped: Jobs search → deterministic agent → export queue
+- `services/jobs-feed` on :8006; core-api orchestrates parser/ATS/match/rewriter/scoring
+- Officer UI gated off by default (`ENABLE_OFFICER_SURFACE=false`)
+- sklearnex benchmark documented in `docs/benchmarks/match-engine-sklearnex.md`
+- Next: Week 4 officer dashboard OR Week 5 intel-bench UI panel + pitch deck
 
 ---
 
-## Verification (last known — 2026-05-23)
+## Codebase snapshot
 
-| Check | Status |
+| Area | State |
+|------|--------|
+| Student loop | Jobs tab + Builder wizard + `POST /agent/run` + golden-path test |
+| Week 2–3 | Scoring, proof-linked rewrite, recommendations — integrated in agent |
+| Week 4 | Officer routes exist but feature-flagged |
+| Week 5 | Demo script + sklearnex bench done; `intel-bench` service + lab UI pending |
+
+---
+
+## Verification (last run)
+
+| Check | Result |
 |-------|--------|
-| `tsc --noEmit` (apps/web) | **pass** |
-| Python AST parse (core-api, ats-engine, match-engine, scoring, tests) | **pass** (107 files) |
-| Golden-path API integration test | **green** |
-| Formula unit tests | **green** |
+| `tsc --noEmit` (apps/web) | passed |
+| Python AST (touched services) | passed |
+| `test_agent_run_golden_path.py` | passed |
 
 ---
 
-## Open risks
+## Next chat — do these first
 
-- Some routes still in `services/core-api/app/main.py` — finish layered extraction during Week 3.
-- `apps/web/modules/scorecard/services/scorecardService.ts` is a seed file with no caller yet — wire `usePlacementWorkspace` through it during Week 3 to avoid bit-rot.
-- No CI runner; all verification is local.
-
----
-
-## Do not repeat
-
-- [[03-ERRORS/error-memory]] · [[03-ERRORS/anti-patterns]] · hub: [[errors-index]]
-- Don't post tests to `/register` — auth router is mounted at `/auth` (`POST /auth/register`).
-- Don't monkeypatch async clients with sync functions; wrap return values in `async def _async(v): return v`.
-- Don't share an in-memory SQLite engine across tests — function-scope it with `StaticPool`.
+1. Read `docs/pitch/demo-script.md` if rehearsing bootcamp demo
+2. Set Adzuna keys for live jobs or rely on `infra/seed/jobs.seed.json`
+3. `alembic upgrade head` in core-api if not using `AUTO_CREATE_TABLES`
 
 ---
 
-*Related: [[_INDEX]] · [[session-index]] · [[MASTER_PLAN]] · [[02-PROJECTS/active-goals]] · [[02-PROJECTS/current-state]]*
+## Open risks / do not redo
+
+- Do not duplicate PlacementReadinessScore outside `packages/scoring/`
+- Do not commit `.env` / `.env.local` with secrets
+- Streamlit full rewrite rejected — keep FastAPI + Next.js architecture
+
+---
+
+## Recent session trail (newest first)
+
+- `01-SESSIONS/2026-05-23/session-student-first-cursor.md` — student-first pivot + commits
+- `01-SESSIONS/2026-05-23/session-1019-cursor.md` — Week 2 + audit hardening
