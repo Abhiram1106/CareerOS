@@ -1,7 +1,7 @@
 # CLAUDE.md — CareerOS Campus AI
 
 > Claude Code auto-loads this file every session.
-> Full protocol and rules → `AGENTS.md` (read first) and `.claude/CLAUDE.md`.
+> Full protocol and rules → `AGENTS.md` (read first).
 
 @AGENTS.md
 
@@ -17,7 +17,7 @@
 
 ## Claude Code config
 
-Rules and path quick-nav → `.claude/CLAUDE.md`
+Rules and path quick-nav → `AGENTS.md`
 
 ## Completion gate
 

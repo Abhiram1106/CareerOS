@@ -1,29 +1,26 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
-class ATSScanRequest(BaseModel):
-    jd_text: str
+class ATSParseSafetyRequest(BaseModel):
+    """ATS parse-safety only — flags from resume-parser (not a JD keyword scan)."""
+
+    resume_id: int
+    ats_flags: list[str] = Field(default_factory=list)
 
 
-class ATSScanResponse(BaseModel):
-    composite: float
-    keyword: float
-    format: float
-    quality: float
-    complete: float
-    contact: float
+class ATSParseSafetyResponse(BaseModel):
+    scan_id: int
+    resume_id: int
+    ats_parse_safety: float
+    penalties: dict[str, int] = Field(default_factory=dict)
+    unknown_flags: list[str] = Field(default_factory=list)
 
 
 class ATSScanHistoryItem(BaseModel):
     id: int
-    composite_score: float
-    keyword_score: float
-    format_score: float
-    quality_score: float
-    completeness_score: float
-    contact_score: float
+    ats_parse_safety: float
     created_at: str
 
 

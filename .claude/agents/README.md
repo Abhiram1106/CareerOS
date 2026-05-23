@@ -10,4 +10,4 @@ Add a project subagent when:
   CareerOS.
 
 Format: `<agent-name>.md` with YAML frontmatter (`name`, `description`,
-`tools`). Reference from `.claude/CLAUDE.md` when stable.
+`tools`). Reference from root `CLAUDE.md` / `AGENTS.md` when stable.

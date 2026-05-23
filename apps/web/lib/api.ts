@@ -15,6 +15,27 @@ export type ParseResult = {
   char_count: number;
 };
 
+export type ScorecardComponents = {
+  jd_match: number;
+  ats_safety: number;
+  evidence: number;
+  completeness: number;
+  interview: number;
+  hygiene: number;
+};
+
+export type ScorecardResult = {
+  scorecard_id: number;
+  jd_id: number;
+  overall_score: number;
+  bucket: string;
+  components: ScorecardComponents;
+  raw: Record<string, number>;
+  missing_required_skills: string[];
+  matched_skills: string[];
+  semantic_method?: string;
+};
+
 const API_BASE = process.env.NEXT_PUBLIC_CORE_API_URL || "http://localhost:8000";
 
 async function request<T>(path: string, method = "GET", body?: unknown, token?: string): Promise<T> {
@@ -120,11 +141,40 @@ export const api = {
     return res.blob();
   },
 
-  // ATS
-  scan: (token: string, payload: { jd_text: string }) =>
-    request("/ats/scan", "POST", payload, token),
+  // JD + placement scorecard (Week 2)
+  parseJd: (token: string, payload: { jd_text: string; company?: string; role?: string }) =>
+    request<{
+      jd_id: number;
+      company: string;
+      role: string;
+      required_skills: string[];
+      optional_skills: string[];
+      eligibility: Record<string, unknown>;
+    }>("/jd/parse", "POST", payload, token),
+  scoreResume: (
+    token: string,
+    payload: {
+      resume_id: number;
+      jd_text: string;
+      jd_id?: number;
+      company?: string;
+      role?: string;
+      ats_flags?: string[];
+    }
+  ) =>
+    request<ScorecardResult>("/scorecards/score", "POST", payload, token),
+
+  // ATS parse-safety (flags from resume-parser; scoring formula in packages/scoring)
+  atsParseSafety: (token: string, payload: { resume_id: number; ats_flags: string[] }) =>
+    request<{
+      scan_id: number;
+      resume_id: number;
+      ats_parse_safety: number;
+      penalties: Record<string, number>;
+      unknown_flags: string[];
+    }>("/ats/parse-safety", "POST", payload, token),
   atsHistory: (token: string) =>
-    request<{ scans: Array<{ id: number; composite_score: number; created_at: string }> }>(
+    request<{ scans: Array<{ id: number; ats_parse_safety: number; created_at: string }> }>(
       "/ats/scans",
       "GET",
       undefined,

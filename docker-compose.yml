@@ -25,13 +25,15 @@ services:
 
   core-api:
     build:
-      context: ./services/core-api
+      context: .
+      dockerfile: services/core-api/Dockerfile
     environment:
       DATABASE_URL: postgresql+psycopg2://careeros:careeros@postgres:5432/careeros
       REDIS_URL: redis://redis:6379/0
       ATS_ENGINE_URL: http://ats-engine:8001
       AI_REWRITER_URL: http://ai-rewriter:8003
       RESUME_PARSER_URL: http://resume-parser:8004
+      MATCH_ENGINE_URL: http://match-engine:8005
       JWT_SECRET: super-secret-change-me
       AUTO_CREATE_TABLES: "true"
       EXPORTS_DIR: /tmp/careeros-exports
@@ -47,6 +49,8 @@ services:
         condition: service_healthy
       resume-parser:
         condition: service_healthy
+      match-engine:
+        condition: service_healthy
     ports:
       - "8000:8000"
     volumes:
@@ -59,7 +63,8 @@ services:
 
   core-worker:
     build:
-      context: ./services/core-api
+      context: .
+      dockerfile: services/core-api/Dockerfile
     command: celery -A app.workers.celery_app.celery worker --loglevel=INFO
     environment:
       DATABASE_URL: postgresql+psycopg2://careeros:careeros@postgres:5432/careeros
@@ -67,6 +72,7 @@ services:
       ATS_ENGINE_URL: http://ats-engine:8001
       AI_REWRITER_URL: http://ai-rewriter:8003
       RESUME_PARSER_URL: http://resume-parser:8004
+      MATCH_ENGINE_URL: http://match-engine:8005
       JWT_SECRET: super-secret-change-me
       AUTO_CREATE_TABLES: "true"
       EXPORTS_DIR: /tmp/careeros-exports
@@ -83,7 +89,8 @@ services:
 
   ats-engine:
     build:
-      context: ./services/ats-engine
+      context: .
+      dockerfile: services/ats-engine/Dockerfile
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health').read()"]
       interval: 5s
@@ -104,6 +111,17 @@ services:
       context: ./services/resume-parser
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8004/health').read()"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  match-engine:
+    build:
+      context: ./services/match-engine
+    ports:
+      - "8005:8005"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8005/health').read()"]
       interval: 5s
       timeout: 5s
       retries: 20

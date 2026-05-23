@@ -1,0 +1,9 @@
+[project]
+name = "careeros-scoring"
+version = "0.1.0"
+description = "PlacementReadinessScore formula for CareerOS Campus AI"
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["careeros_scoring*"]

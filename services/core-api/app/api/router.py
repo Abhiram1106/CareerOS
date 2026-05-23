@@ -5,6 +5,8 @@ from fastapi import APIRouter
 from .controllers.ats_controller import router as ats_router
 from .controllers.auth_controller import router as auth_router
 from .controllers.dashboard_controller import router as dashboard_router
+from .controllers.jd_controller import router as jd_router
+from .controllers.scorecard_controller import router as scorecard_router
 from .controllers.export_controller import router as export_router
 from .controllers.profile_controller import router as profile_router
 from .controllers.resume_controller import router as resume_router
@@ -17,3 +19,5 @@ api_router.include_router(resume_router, tags=["resume"])
 api_router.include_router(export_router, tags=["export"])
 api_router.include_router(ats_router, tags=["ats"])
 api_router.include_router(dashboard_router, tags=["dashboard"])
+api_router.include_router(jd_router, tags=["jd"])
+api_router.include_router(scorecard_router, tags=["scorecards"])

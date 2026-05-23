@@ -5,8 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getStoredAuth, clearAuth, type AuthUser } from "../../lib/auth";
 
-const DEMO = process.env.NEXT_PUBLIC_DEMO === "true";
-
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -54,16 +52,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="app-shell">
-      {DEMO && (
-        <div className="demo-banner">
-          <span className="demo-banner-pill">Demo</span>
-          <span>Running in demo mode — all data is synthetic. No real resumes or API calls.</span>
-          <button type="button" onClick={handleSignOut} style={{ marginLeft: "auto", background: "rgba(255,255,255,0.2)", border: "none", borderRadius: 6, color: "#fff", padding: "4px 12px", cursor: "pointer", fontWeight: 700, fontSize: "0.78rem" }}>
-            Exit Demo
-          </button>
-        </div>
-      )}
-
       <nav className="app-nav" aria-label="Main navigation">
         <div className="app-nav-inner">
           <Link href="/" className="app-nav-brand" aria-label="CareerOS home">

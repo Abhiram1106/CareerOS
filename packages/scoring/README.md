@@ -27,5 +27,11 @@ Buckets: `0–49` high-risk · `50–69` borderline · `70–84` ready · `85–
 
 ## Status
 
-Skeleton. Implementation lands with Week 2 (match engine) and Week 3
-(rewriter integration).
+Implemented in `careeros_scoring/` (Week 2). Import from `packages/scoring` only;
+never duplicate weights in services or UI.
+
+```python
+from careeros_scoring import compute_placement_readiness, bucket_label
+```
+
+Tests: `packages/scoring/tests/test_formula.py`.

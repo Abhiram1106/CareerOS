@@ -9,15 +9,16 @@ class ATSRepo:
     def __init__(self, db: Session) -> None:
         self._db = db
 
-    def create_from_scan_result(self, *, user_id: int, result: dict[str, float]) -> ATSScan:
+    def create_from_parse_safety(self, *, user_id: int, ats_parse_safety: float) -> ATSScan:
+        """Persist parse-safety score; legacy columns mirror composite for history UI."""
         row = ATSScan(
             user_id=user_id,
-            composite_score=result["composite"],
-            keyword_score=result["keyword"],
-            format_score=result["format"],
-            quality_score=result["quality"],
-            completeness_score=result["complete"],
-            contact_score=result["contact"],
+            composite_score=ats_parse_safety,
+            keyword_score=0.0,
+            format_score=ats_parse_safety,
+            quality_score=0.0,
+            completeness_score=0.0,
+            contact_score=0.0,
         )
         self._db.add(row)
         self._db.commit()

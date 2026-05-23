@@ -17,12 +17,7 @@ class ATSQueryService:
             scans=[
                 ATSScanHistoryItem(
                     id=scan.id,
-                    composite_score=scan.composite_score,
-                    keyword_score=scan.keyword_score,
-                    format_score=scan.format_score,
-                    quality_score=scan.quality_score,
-                    completeness_score=scan.completeness_score,
-                    contact_score=scan.contact_score,
+                    ats_parse_safety=scan.composite_score,
                     created_at=scan.created_at.isoformat(),
                 )
                 for scan in scans
