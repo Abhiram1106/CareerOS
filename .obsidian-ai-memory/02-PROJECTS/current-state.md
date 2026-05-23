@@ -1,7 +1,7 @@
 ---
 tags: [project, snapshot, verification]
 type: project
-updated: 2026-05-21
+updated: 2026-05-23
 links: [_INDEX, architecture-index, session-index]
 ---
 
@@ -9,25 +9,25 @@ links: [_INDEX, architecture-index, session-index]
 
 ← [[_INDEX]] · [[architecture-index]]
 
-_Last scanned: 2026-05-21 (layered architecture Phase 1–2)._
+_Last scanned: 2026-05-23 (Week 2 complete + audit hardening)._
 
-> **Graph pass note:** Phases 4–7 complete per [[01-SESSIONS/2026-05-21/session-phases-4-7-cursor]] — snapshot body below may predate that; trust session digest + [[05-ARCHITECTURE/layered-modules]] for latest phase table.
+> **Latest:** Week 2 demo loop is live end-to-end (resume → JD parse → match → score → readiness UI). P0/P1 audit items closed: RBAC on student routes, honest `semantic_method` labelling, persisted `ats_flags` + `college_id`, golden-path API test, hardened formula tests, deleted legacy panes/AppHeader stack.
 
 ## Stack
 
-- **Languages**: TypeScript (apps/web), Python 3.10+ (services/*, packages/scoring/)
+- **Languages**: TypeScript strict (apps/web), Python 3.10+ (services/*, packages/scoring/)
 - **Frameworks**: Next.js 14.2.35 (app router), FastAPI 0.115, SQLAlchemy 2.0, Pydantic v2, Celery 5.4
 - **Package Manager**: pnpm 9 (JS workspaces); pip per service
-- **Databases**: PostgreSQL 16 (Docker dev), SQLite (local fallback)
+- **Databases**: PostgreSQL 16 (Docker dev), SQLite (local fallback + tests)
 - **Queue**: Redis 7 + Celery
 
 ## Infrastructure
 
-- **Docker**: `docker compose up -d --build` — postgres, redis, core-api, core-worker, ats-engine, ai-rewriter, resume-parser
+- **Docker**: `docker compose up -d --build` — postgres, redis, core-api, core-worker, ats-engine, ai-rewriter, resume-parser, **match-engine**
 - **Dev web**: `pnpm dev` from repo root → http://localhost:3000
 - **API**: http://localhost:8000 — `AUTO_CREATE_TABLES=true` in compose for local dev
 
-## Architecture refactor (in progress)
+## Architecture refactor
 
 **Standard:** layered domain modules — see [[05-ARCHITECTURE/layered-modules]]
 
@@ -36,43 +36,51 @@ _Last scanned: 2026-05-21 (layered architecture Phase 1–2)._
 | 1 Folder scaffold (core-api + apps/web/modules) | Done |
 | 2 Auth (`/auth/register`, `/auth/login`) | Done |
 | 3 Profile (`GET/PUT /profile`) | Done |
-| 4 Resume + export | **Next** |
-| 5–7 ATS, dashboard, frontend, satellites | Pending |
+| 4 Resume + export | Done |
+| 5 ATS parse-safety (engine narrowed; legacy `/scan` removed) | Done |
+| 6 JD parsing + match-engine + scorecard | Done |
+| 7 Officer dashboard, frontend full-cutover, satellites | In progress (Week 4) |
 
-**Legacy still active:** most routes in `services/core-api/app/main.py`; ORM in `models/entities.py`.
+**Legacy still active:** some routes in `services/core-api/app/main.py`; ORM in `models/entities.py`.
 
 ## Frontend (apps/web)
 
-- **Shell**: Sticky `AppHeader` — Overview (hero) + Workspace (student console)
-- **Hero / workspace tabs**: unchanged
-- **Module folders**: `apps/web/modules/{auth,profile,resume,ats,dashboard,officer}/` scaffolded (not wired yet)
+- **Shell**: `app/(app)/layout.tsx` builds nav inline (role-aware: student vs officer)
+- **Workspace**: `app/(app)/workspace/page.tsx` driven by single `usePlacementWorkspace` hook
+  - Tabs: Document Intelligence · JD Match Scan · Readiness Snapshot
+  - `ScoreBreakdown` shows six bars + bucket badge + `semantic_method` tooltip
+- **API client**: typed `apps/web/lib/api.ts` (no inline fetch in screens)
+- **Module folders**: `apps/web/modules/{auth,profile,resume,ats,dashboard,officer,scorecard}/` — `scorecard/services/scorecardService.ts` ready for migration
 - **Styling**: CSS variables in `globals.css` — no Tailwind
-- **Docs**: `05-ARCHITECTURE/frontend-ux.md`, `05-ARCHITECTURE/layered-modules.md`
+- **Cleanup (2026-05-23):** deleted orphaned `components/panes/**`, `components/SectionNav.tsx`, `components/workspace/WorkspaceTabs.tsx`, `components/layout/{AppHeader,SiteNav,AppFooter}.tsx`, `hooks/useCareerOSWorkspace.ts`
 
 ## Backend highlights
 
-- **Layered auth + profile:** `api/controllers/auth_controller.py`, `profile_controller.py` → handlers/query → repos/views
-- Resume upload + parse via `services/resume-parser` (routes still in `main.py`)
-- Role auth on core-api (student/officer/admin)
-- Alembic migration `0002_campus_ai_schema`
-- JWT/crypto helpers remain in `app/services/auth.py` (not duplicated in handlers)
+- **Layered auth + profile + resume:** controllers/handlers/query/repos/views split
+- **Match engine** (`services/match-engine`): TF-IDF + char n-gram cosine (`embedding_proxy_tfidf`) + skill recall + eligibility — `sklearnex.patch_sklearn()` called before sklearn import. Honest `semantic_method` field returned on every match.
+- **ATS engine** narrowed to `POST /parse-safety` only. Composite scoring removed.
+- **Scoring package** (`packages/scoring/`): single source of truth for `PlacementReadinessScore`. Imported by core-api `score_resume_handler`; never inlined.
+- **Scorecard repo** persists `ats_flags`, `semantic_method`, and `college_id` (from request → user fallback).
+- **RBAC**: `require_student` / `require_officer` enforced on all role-specific routes.
+- **Tests**: golden-path API integration test (`services/core-api/tests/test_scoring_golden_path.py`) + hardened formula unit tests (`packages/scoring/tests/test_formula.py`).
 
-## Verification (last known)
+## Verification (2026-05-23)
 
 | Check | Result |
 |---|---|
-| `tsc --noEmit` (apps/web) | pass (2026-05-20; re-run after frontend module moves) |
-| core-api import + `/auth/*` routes | pass (2026-05-21) |
-| Python AST parse (core-api/app) | pass (2026-05-21) |
+| `tsc --noEmit` (apps/web) | **pass** |
+| Python AST parse (core-api, ats-engine, match-engine, scoring, tests) | **pass** (107 files) |
+| Golden-path API test | green |
+| Formula tests (clamp, weights, buckets, ats penalty) | green |
 
-## What's blocked
+## What's next
 
-- Match engine service (Week 2)
-- Officer dashboard route group (Week 4)
-- `packages/scoring/` shared formula package (pending)
-- Remaining core-api domains not yet extracted from `main.py`
+- Week 3: AI rewriter retargeted (proof-linked JSON-schema, no fabrication), before/after diff UI, ATS-safe PDF export
+- Week 4: officer route group — batches, dept heatmap, review queue, skill-gap chart
+- Week 5: `services/intel-bench` + lab panel + pitch deck
+- Tech-debt: extract remaining `main.py` routes into layered modules; migrate workspace state to `modules/scorecard/hooks/`
 
 ---
-_Updated: 2026-05-21 — layered architecture scaffold + auth migration; vault synced._
+_Updated: 2026-05-23 — Week 2 complete, audit hardening landed, legacy UI stack removed._
 
-*Related: [[_INDEX]] · [[architecture-index]] · [[05-ARCHITECTURE/layered-modules]] · [[api-index]] · [[02-PROJECTS/active-goals]] · [[session-index]] · [[01-SESSIONS/2026-05-21/session-phases-4-7-cursor]]*
+*Related: [[_INDEX]] · [[architecture-index]] · [[05-ARCHITECTURE/layered-modules]] · [[api-index]] · [[02-PROJECTS/active-goals]] · [[session-index]]*

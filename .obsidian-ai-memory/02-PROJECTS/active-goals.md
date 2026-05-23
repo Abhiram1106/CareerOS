@@ -1,7 +1,7 @@
 ---
 tags: [project, goals, week-plan]
 type: project
-updated: 2026-05-21
+updated: 2026-05-23
 links: [MASTER_PLAN, _INDEX, scoring-knowledge]
 ---
 
@@ -12,7 +12,7 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge]
 > Sorted by week of the 5-week plan
 > (`C:\Users\ADMIN\.claude\plans\brutal-upgrade-direction-make-humble-parnas.md`).
 
-## In progress (Week 1)
+## Week 1 (complete)
 
 - [x] **Phase 1**: archive branch + cut billing/nexus/job-intel/legacy
 - [x] **Phase 2**: monorepo skeleton (apps/packages/services/infra/platform/docs/tests) + .claude/ + CODEOWNERS + README + Omnix memory populated
@@ -20,13 +20,22 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge]
 - [x] **W1.4 — Role-based auth**: add `role` claim to JWT; gate routes by `student` / `officer` / `admin`.
 - [x] **W1.5 — Resume upload + parser**: build `services/resume-parser` with pdfplumber + python-docx + section extractor; wire `/resumes/upload` endpoint in core-api; render extracted sections in `apps/web`.
 
-## Up next (Week 2)
+## Week 2 (complete — 2026-05-21)
 
-- [ ] JD parser + skill taxonomy + eligibility extractor.
-- [ ] `services/match-engine`: TF-IDF cosine + sentence-transformer embedding cosine + skill recall + eligibility rule score.
-- [ ] Narrow `services/ats-engine` to the ATS-Parse-Safety penalty model only (drop the 5-component composite).
-- [ ] `packages/scoring/` — Python lib implementing the full [[scoring-knowledge|PlacementReadinessScore]] formula.
-- [ ] `apps/web` score breakdown UI (six bars + bucket label + missing skills list).
+- [x] JD parser + skill taxonomy + eligibility extractor (`match-engine` + `POST /jd/parse`).
+- [x] `services/match-engine`: TF-IDF + char n-gram cosine (embedding proxy) + skill recall + eligibility rule score; sklearnex patch first.
+- [x] Narrow `services/ats-engine` to the ATS-Parse-Safety penalty model only (`POST /parse-safety`; core-api `POST /ats/parse-safety`; legacy composite `/scan` removed).
+- [x] `packages/scoring/` — Python lib implementing the full [[scoring-knowledge|PlacementReadinessScore]] formula.
+- [x] `POST /scorecards/score` in core-api + docker `match-engine` service.
+- [x] `apps/web` workspace score breakdown (six bars + bucket + missing/matched skills via `/scorecards/score`).
+
+## Audit hardening (complete — 2026-05-23)
+
+- [x] **P0 RBAC**: `require_student` / `require_officer` on all role-specific routes.
+- [x] **P0 Honest labels**: `semantic_method: "embedding_proxy_tfidf"` on match results + UI tooltip.
+- [x] **P0 Tests**: golden-path API integration test (`tests/test_scoring_golden_path.py`) + hardened formula unit tests.
+- [x] **P1 Persistence**: `ats_flags` and `college_id` (request → user fallback) stored on scorecards.
+- [x] **P1 Cleanup**: deleted orphaned legacy UI stack (panes/AppHeader/SiteNav/SectionNav/WorkspaceTabs/AppFooter/useCareerOSWorkspace).
 
 ## Week 3 — AI rewriter + export
 
@@ -49,6 +58,6 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge]
 - [ ] Top-level README polish + screen captures.
 
 ---
-_Updated: 2026-05-19 — Phase 2 complete; Week 1 step 3 next._
+_Updated: 2026-05-23 — Week 2 + audit hardening complete; Week 3 (AI rewriter) next._
 
 *Related: [[MASTER_PLAN]] · [[_INDEX]] · [[02-PROJECTS/project-context]] · [[02-PROJECTS/current-state]] · [[scoring-knowledge]] · [[intel-index]] · [[session-index]]*
