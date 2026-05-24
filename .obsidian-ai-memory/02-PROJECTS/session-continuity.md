@@ -10,17 +10,17 @@
 |-------|-------|
 | Updated | 2026-05-23 |
 | Tool | cursor |
-| Session file | `01-SESSIONS/2026-05-23/session-phase4-5-6-complete-cursor.md` |
-| User ask | Complete Phase 4 officer + Phase 5 polish + Phase 6 hardening |
+| Session file | `01-SESSIONS/2026-05-23/session-phase4-closeout-cursor.md` |
+| User ask | Go to next step |
 
 ---
 
 ## Active thread
 
-- **Phase 4 (done):** Live officer dashboard heatmap + skill gaps; batch create + multipart upload; college scoping via `officer_scope.py`.
-- **Phase 5 (done):** `docs/pitch/deck.md`, screenshot guide, `docs/deployment/production.md`, `docker-compose.prod.yml`, Gitleaks CI, `services/intel-bench/README.md` for Py 3.11/3.12 re-run.
-- **Phase 6 (done):** `guard.py`, `log_redact.py`, privacy page `/privacy/assistant`, injection test.
-- **Open:** Re-run intel-bench on machine with Python 3.11/3.12 + OpenVINO; capture pitch screenshots; company-fit columns on officer review (deferred).
+- **Shipped:** TPO cohort readiness PDF (`GET /officer/reports/readiness`), dashboard download, horizontal-scale doc, prod compose port hardening.
+- **Next (Phase 4 security gate):** Pydantic `extra=forbid` on sensitive DTOs, expand `docs/security/threat-model.md`, handler DI factories.
+- **Manual:** Intel-bench on Py 3.11/3.12, pitch PNGs per `docs/pitch/screenshots/README.md`.
+- **Later:** Phase 7 enterprise (OIDC, DPDP).
 
 ---
 
@@ -28,8 +28,8 @@
 
 | Check | Result |
 |-------|--------|
-| pytest `services/core-api/tests/` | 19 passed |
-| tsc --noEmit (apps/web) | passed |
+| pytest officer analytics | 3 passed |
+| tsc --noEmit | passed |
 
 ---
 
@@ -37,13 +37,12 @@
 
 | Commit | Scope |
 |--------|--------|
-| `eafec5e` | feat: officer heatmap/upload, assistant hardening, Phase 5 docs |
-| `b8f1adc` | memory: Phase 4-5-6 complete |
+| `04b2f16` | feat: TPO PDF report + prod docs |
 | Push | `origin/main` |
 
 ---
 
 ## Read first next chat
 
-1. `active-goals.md`
-2. `01-SESSIONS/2026-05-23/session-phase4-5-6-complete-cursor.md`
+1. `active-goals.md` — Phase 4 security blocking items
+2. `session-phase4-closeout-cursor.md`
