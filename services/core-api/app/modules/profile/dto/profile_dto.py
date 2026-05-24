@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from pydantic import BaseModel, EmailStr
 
+from ...common.dto.strict import StrictModel
 
-class ProfileUpsert(BaseModel):
+
+class ProfileUpsert(StrictModel):
     city: str
     professional_status: str
     target_role: str

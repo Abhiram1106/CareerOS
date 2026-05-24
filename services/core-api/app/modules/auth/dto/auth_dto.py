@@ -4,15 +4,17 @@ from typing import Literal
 
 from pydantic import BaseModel, EmailStr
 
+from ...common.dto.strict import StrictModel
 
-class RegisterRequest(BaseModel):
+
+class RegisterRequest(StrictModel):
     email: EmailStr
     password: str
     full_name: str
     role: Literal["student", "officer", "admin"] = "student"
 
 
-class LoginRequest(BaseModel):
+class LoginRequest(StrictModel):
     email: EmailStr
     password: str
 

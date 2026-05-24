@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
+from ...common.dto.strict import StrictModel
 
-class ATSParseSafetyRequest(BaseModel):
+
+class ATSParseSafetyRequest(StrictModel):
     """ATS parse-safety only — flags from resume-parser (not a JD keyword scan)."""
 
     resume_id: int

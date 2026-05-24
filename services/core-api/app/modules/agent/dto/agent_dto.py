@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field, model_validator
 
+from ...common.dto.strict import StrictModel
 
-class AgentRunRequest(BaseModel):
+
+class AgentRunRequest(StrictModel):
     resume_id: int
     job_id: int | None = None
     jd_text: str = ""

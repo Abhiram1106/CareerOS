@@ -5,7 +5,18 @@ from fastapi.responses import Response
 from sqlalchemy.orm import Session
 
 from ...database import get_db
-from ...dependencies import require_officer
+from ...dependencies import (
+    get_create_officer_batch_handler,
+    get_officer_batch_query_service,
+    get_officer_cohort_service,
+    get_officer_dashboard_service,
+    get_officer_heatmap_service,
+    get_officer_readiness_report_service,
+    get_officer_review_service,
+    get_officer_skill_gaps_service,
+    get_upload_officer_batch_handler,
+    require_officer,
+)
 from ...models.entities import User
 from ...modules.officer.dto.officer_dto import OfficerCreateBatchRequest
 from ...modules.officer.mutation.officer_batch_handlers import CreateOfficerBatchHandler, UploadOfficerBatchHandler
@@ -25,8 +36,9 @@ router = APIRouter(prefix="/officer", tags=["officer"])
 def officer_dashboard(
     user: User = Depends(require_officer),
     db: Session = Depends(get_db),
+    service: OfficerDashboardQueryService = Depends(get_officer_dashboard_service),
 ):
-    result = OfficerDashboardQueryService(db).get_dashboard().model_dump()
+    result = service.get_dashboard().model_dump()
     record_audit(
         db,
         actor_id=user.id,
@@ -41,8 +53,9 @@ def officer_dashboard(
 def officer_heatmap(
     user: User = Depends(require_officer),
     db: Session = Depends(get_db),
+    service: OfficerHeatmapQueryService = Depends(get_officer_heatmap_service),
 ):
-    result = OfficerHeatmapQueryService(db).get_heatmap().model_dump()
+    result = service.get_heatmap().model_dump()
     record_audit(
         db,
         actor_id=user.id,
@@ -57,8 +70,9 @@ def officer_heatmap(
 def officer_skill_gaps(
     user: User = Depends(require_officer),
     db: Session = Depends(get_db),
+    service: OfficerSkillGapsQueryService = Depends(get_officer_skill_gaps_service),
 ):
-    result = OfficerSkillGapsQueryService(db).get_skill_gaps().model_dump()
+    result = service.get_skill_gaps().model_dump()
     record_audit(
         db,
         actor_id=user.id,
@@ -73,8 +87,9 @@ def officer_skill_gaps(
 def officer_review_queue(
     user: User = Depends(require_officer),
     db: Session = Depends(get_db),
+    service: OfficerReviewQueryService = Depends(get_officer_review_service),
 ):
-    result = OfficerReviewQueryService(db).get_review_queue().model_dump()
+    result = service.get_review_queue().model_dump()
     record_audit(
         db,
         actor_id=user.id,
@@ -89,8 +104,9 @@ def officer_review_queue(
 def officer_batches(
     user: User = Depends(require_officer),
     db: Session = Depends(get_db),
+    service: OfficerBatchQueryService = Depends(get_officer_batch_query_service),
 ):
-    result = OfficerBatchQueryService(db).list_batches().model_dump()
+    result = service.list_batches().model_dump()
     record_audit(
         db,
         actor_id=user.id,
@@ -106,8 +122,9 @@ def officer_create_batch(
     payload: OfficerCreateBatchRequest,
     user: User = Depends(require_officer),
     db: Session = Depends(get_db),
+    handler: CreateOfficerBatchHandler = Depends(get_create_officer_batch_handler),
 ):
-    result = CreateOfficerBatchHandler(db).execute(user, payload).model_dump()
+    result = handler.execute(user, payload).model_dump()
     record_audit(
         db,
         actor_id=user.id,
@@ -125,8 +142,9 @@ async def officer_batch_upload(
     files: list[UploadFile] = File(...),
     user: User = Depends(require_officer),
     db: Session = Depends(get_db),
+    handler: UploadOfficerBatchHandler = Depends(get_upload_officer_batch_handler),
 ):
-    result = await UploadOfficerBatchHandler(db).execute(user, batch_id, files)
+    result = await handler.execute(user, batch_id, files)
     record_audit(
         db,
         actor_id=user.id,
@@ -142,8 +160,9 @@ async def officer_batch_upload(
 def officer_readiness_report(
     user: User = Depends(require_officer),
     db: Session = Depends(get_db),
+    service: OfficerReadinessReportService = Depends(get_officer_readiness_report_service),
 ):
-    pdf_bytes = OfficerReadinessReportService(db).generate_pdf_bytes()
+    pdf_bytes = service.generate_pdf_bytes()
     record_audit(
         db,
         actor_id=user.id,
@@ -162,8 +181,9 @@ def officer_readiness_report(
 def officer_cohort(
     user: User = Depends(require_officer),
     db: Session = Depends(get_db),
+    service: OfficerCohortQueryService = Depends(get_officer_cohort_service),
 ):
-    result = OfficerCohortQueryService(db).get_cohort().model_dump()
+    result = service.get_cohort().model_dump()
     record_audit(
         db,
         actor_id=user.id,

@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 
-from ...database import get_db
-from ...dependencies import require_student
+from ...dependencies import get_recommendation_query_service, get_run_rewrite_handler, require_student
 from ...models.entities import User
 from ...modules.recommendation.dto.recommendation_dto import RunRewriteRequest
 from ...modules.recommendation.mutation.run_rewrite_handler import RunRewriteHandler
@@ -17,15 +15,15 @@ router = APIRouter()
 async def run_rewrite(
     payload: RunRewriteRequest,
     user: User = Depends(require_student),
-    db: Session = Depends(get_db),
+    handler: RunRewriteHandler = Depends(get_run_rewrite_handler),
 ):
-    return await RunRewriteHandler(db).execute(user, payload)
+    return await handler.execute(user, payload)
 
 
 @router.get("/recommendations/{scorecard_id}")
 def list_recommendations(
     scorecard_id: int,
     user: User = Depends(require_student),
-    db: Session = Depends(get_db),
+    service: RecommendationQueryService = Depends(get_recommendation_query_service),
 ):
-    return RecommendationQueryService(db).for_scorecard(user, scorecard_id)
+    return service.for_scorecard(user, scorecard_id)

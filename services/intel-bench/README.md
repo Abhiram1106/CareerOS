@@ -12,6 +12,14 @@ Measured workloads for the bootcamp Intel panel (`GET /benchmarks`).
 
 ## Re-run on Python 3.11 or 3.12
 
+**Windows host with only Python 3.13:** start Docker Desktop, then:
+
+```powershell
+.\scripts\run-intel-bench-py312.ps1
+```
+
+Native venv:
+
 ```bash
 cd services/intel-bench
 python3.11 -m venv .venv

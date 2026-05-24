@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 
-from ...database import get_db
-from ...dependencies import require_student
+from ...dependencies import get_parse_jd_handler, require_student
 from ...models.entities import User
 from ...modules.jd.dto.jd_dto import JDParseRequest
 from ...modules.jd.mutation.parse_jd_handler import ParseJDHandler
@@ -16,6 +14,6 @@ router = APIRouter()
 async def parse_jd(
     payload: JDParseRequest,
     user: User = Depends(require_student),
-    db: Session = Depends(get_db),
+    handler: ParseJDHandler = Depends(get_parse_jd_handler),
 ):
-    return await ParseJDHandler(db).execute(user, payload)
+    return await handler.execute(user, payload)

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, Field
+
+from ...common.dto.strict import StrictModel
 
 
 class OfficerCohortKpi(BaseModel):
@@ -77,9 +79,7 @@ class OfficerSkillGapsResponse(BaseModel):
     items: list[OfficerSkillGapItem]
 
 
-class OfficerCreateBatchRequest(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
+class OfficerCreateBatchRequest(StrictModel):
     name: str = Field(min_length=1, max_length=200)
     grad_year: int = Field(ge=2020, le=2035)
     dept_id: int | None = None

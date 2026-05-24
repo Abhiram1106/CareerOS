@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
+from ...common.dto.strict import StrictModel
 
-class RunRewriteRequest(BaseModel):
+
+class RunRewriteRequest(StrictModel):
     scorecard_id: int
 
 

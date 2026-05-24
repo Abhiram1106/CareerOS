@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from ...common.dto.strict import StrictModel
 
-class AssistantChatRequest(BaseModel):
-    model_config = ConfigDict(extra="forbid")
 
+class AssistantChatRequest(StrictModel):
     message: str = Field(min_length=1, max_length=2000)
 
 

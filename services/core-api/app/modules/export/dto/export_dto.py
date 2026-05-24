@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from pydantic import BaseModel
 
+from ...common.dto.strict import StrictModel
 
-class ExportResumeRequest(BaseModel):
+
+class ExportResumeRequest(StrictModel):
     resume_id: int
 
 

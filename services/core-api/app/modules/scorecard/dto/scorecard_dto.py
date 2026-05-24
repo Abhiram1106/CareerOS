@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
+from ...common.dto.strict import StrictModel
 
-class ScorecardScoreRequest(BaseModel):
+
+class ScorecardScoreRequest(StrictModel):
     resume_id: int
     jd_text: str = Field(min_length=20)
     jd_id: int | None = None
