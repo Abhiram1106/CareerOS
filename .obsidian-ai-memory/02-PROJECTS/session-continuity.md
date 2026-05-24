@@ -33,9 +33,13 @@
 
 ---
 
-## Git
+## Git (this shutdown)
 
-Uncommitted local changes from this session — user to commit when ready.
+| Commit | Scope |
+|--------|--------|
+| `eafec5e` | feat: officer heatmap/upload, assistant hardening, Phase 5 docs |
+| `b8f1adc` | memory: Phase 4-5-6 complete |
+| Push | `origin/main` |
 
 ---
 
