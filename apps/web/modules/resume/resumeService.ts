@@ -1,4 +1,4 @@
-import { api, type ParseResult } from "../../../lib/api";
+import { api, type ParseResult } from "../../lib/api";
 
 export async function uploadResume(token: string, file: File): Promise<ParseResult> {
   return api.uploadResume(token, file);

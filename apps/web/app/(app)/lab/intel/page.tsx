@@ -5,8 +5,7 @@ import { IntelHardwareMeta } from "../../../../components/intel/IntelHardwareMet
 import { IntelIntegrationSnippet } from "../../../../components/intel/IntelIntegrationSnippet";
 import { IntelMethodologyPanel } from "../../../../components/intel/IntelMethodologyPanel";
 import { IntelScoreFormulaPanel } from "../../../../components/intel/IntelScoreFormulaPanel";
-import { OfficerStateMessage } from "../../../../components/officer/OfficerStateMessage";
-import { useIntelBenchmarkPanel } from "../../../../modules/intel/hooks/useIntelBenchmarkPanel";
+import { useIntelBenchmarkPanel } from "../../../../modules/intel/useIntelBenchmarkPanel";
 
 export default function IntelLabPage() {
   const { data, loading, error } = useIntelBenchmarkPanel();
@@ -27,7 +26,16 @@ export default function IntelLabPage() {
         </span>
       </div>
 
-      <OfficerStateMessage loading={loading} error={error} />
+      {loading && (
+        <div className="content-card">
+          <div className="content-card-body">Loading Intel benchmark panel...</div>
+        </div>
+      )}
+      {!loading && error && (
+        <div className="content-card">
+          <div className="content-card-body" style={{ color: "#8f2c2c" }}>{error}</div>
+        </div>
+      )}
 
       {!loading && !error && data && (
         <>

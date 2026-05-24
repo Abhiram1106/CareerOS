@@ -3,12 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { storeAuth, type UserRole } from "../../../lib/auth";
-import { login as loginRequest } from "../../../modules/auth/services/authService";
+import { storeAuth } from "../../../lib/auth";
+import { login as loginRequest } from "../../../modules/auth/authService";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [role, setRole] = useState<UserRole>("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
@@ -26,9 +25,9 @@ export default function LoginPage() {
         token: data.token,
         email: data.email,
         full_name: data.full_name,
-        role: (data.role ?? role) as UserRole,
+        role: "student",
       });
-      router.replace(data.role === "officer" ? "/officer/dashboard" : "/workspace");
+      router.replace("/workspace");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Cannot reach the server. Please try again.");
     } finally {
@@ -48,12 +47,12 @@ export default function LoginPage() {
             </svg>
           </div>
           <span className="auth-brand-name">
-            CareerOS <span>Campus AI</span>
+            CareerOS <span>Student AI</span>
           </span>
         </div>
 
         <div className="auth-brand-body">
-          <h2 className="auth-brand-headline">Powering the next generation of campus placements.</h2>
+          <h2 className="auth-brand-headline">Powering the next generation of student placements.</h2>
           <p className="auth-brand-sub">
             An ecosystem optimized for high-performance recruitment, bringing data-driven clarity to the academic
             landscape.
@@ -90,33 +89,6 @@ export default function LoginPage() {
 
           <h2 className="auth-heading">Welcome back</h2>
           <p className="auth-sub">Please enter your details to access your command center.</p>
-
-          <div className="auth-role-tabs" role="tablist" aria-label="Login role">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={role === "student"}
-              className={`auth-role-tab${role === "student" ? " active" : ""}`}
-              onClick={() => {
-                setRole("student");
-                setError(null);
-              }}
-            >
-              Student
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={role === "officer"}
-              className={`auth-role-tab${role === "officer" ? " active" : ""}`}
-              onClick={() => {
-                setRole("officer");
-                setError(null);
-              }}
-            >
-              Placement Officer
-            </button>
-          </div>
 
           {error && (
             <div className="auth-error" role="alert">

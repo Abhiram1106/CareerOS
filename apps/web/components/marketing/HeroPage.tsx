@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { m, useScroll, useTransform } from "motion/react";
 import {
   Zap, Shield, BarChart3, Building2, XCircle, ArrowRight,
-  Brain, Upload, FileSearch, Users, TrendingUp,
+  Brain, Upload, FileSearch, TrendingUp,
 } from "lucide-react";
 import { TextReveal } from "../ui/TextReveal";
 import { AnimatedCounter } from "../ui/AnimatedCounter";
@@ -16,7 +16,7 @@ const STEPS = [
   { step: "01", icon: Upload,      label: "Upload resume",       sub: "pdfplumber + python-docx",          status: "live"  },
   { step: "02", icon: FileSearch,  label: "JD match + score",    sub: "TF-IDF + sentence-transformers",    status: "week2" },
   { step: "03", icon: Brain,       label: "Proof-linked rewrite", sub: "Guardrailed LLM · no fabrication", status: "week3" },
-  { step: "04", icon: Users,       label: "Officer cohort view",  sub: "Batch heatmap · review queue",     status: "week4" },
+  { step: "04", icon: TrendingUp,  label: "Student progress view", sub: "Readiness trends · skill gaps",    status: "week4" },
 ] as const;
 
 const STATUS_LABEL: Record<string, string> = {
@@ -31,11 +31,11 @@ const COUNTERS = [
 ];
 
 const PILLARS = [
-  { icon: Building2,  iconClass: "icon-navy",   title: "Campus-native",         body: "Built for Indian placement cycles — TPO workflows, cohort batches, and department-level visibility from day one.",                                                                                     span: 1, dark: false },
+  { icon: Building2,  iconClass: "icon-navy",   title: "Student-native",         body: "Built for Indian placement cycles with a focused student workflow that removes institutional overhead and keeps guidance actionable.",                                                                   span: 1, dark: false },
   { icon: Shield,     iconClass: "icon-intel",  title: "ATS-first",             body: "Parse safety, format penalties, and keyword alignment checked before students chase the wrong roles.",                                                                                              span: 1, dark: false },
   { icon: Zap,        iconClass: "icon-orange", title: "Intel-measured",        body: "OpenVINO and sklearnex benchmarks on real workloads — p50 latency tracked at 500 / 5 000 / 20 000 resumes. Speedups measured, not claimed.",                                                      span: 2, dark: false },
   { icon: Brain,      iconClass: "icon-green",  title: "Governed AI",           body: "No invented internships, metrics, or certifications. Every suggestion links to source evidence in the resume.",                                                                                    span: 2, dark: true  },
-  { icon: BarChart3,  iconClass: "icon-sky",    title: "Placement intelligence", body: "Officers see who is ready, who is at risk, and what skills the entire batch is missing — before company drives.",                                                                                  span: 1, dark: false },
+  { icon: BarChart3,  iconClass: "icon-sky",    title: "Placement intelligence", body: "Students see exactly where they are strong, where they are at risk, and what skills to improve before applying.",                                                                                       span: 1, dark: false },
   { icon: TrendingUp, iconClass: "icon-purple", title: "Outcome moat",          body: "Event logging from upload → shortlist → offer builds the outcome data that makes CareerOS defensible over time.",                                                                                  span: 1, dark: false },
 ] as const;
 
@@ -43,7 +43,7 @@ const WORKFLOW_STEPS = [
   { step: "01", icon: Upload,     title: "Upload resume",         body: "PDF or DOCX in. Sections extracted with confidence scores and ATS parse-safety flags — before a single recruiter sees it.",                     status: "live"  },
   { step: "02", icon: FileSearch, title: "JD match + score",      body: "Paste any company JD. Six-component PlacementReadinessScore shows exactly where the gap is — not just a generic number.",                      status: "week2" },
   { step: "03", icon: Brain,      title: "Proof-linked rewrite",  body: "AI rewrites only what the resume can support. Unsupported claims surface in a flagged list — never silently inserted.",                        status: "week3" },
-  { step: "04", icon: Users,      title: "Officer cohort view",   body: "Placement officers get department-level heatmaps, skill-gap breakdowns, and an approval queue — before the drive.",                            status: "week4" },
+  { step: "04", icon: TrendingUp, title: "Student progress loop", body: "Track readiness improvements, update resume evidence, and re-run scorecards until your profile is job-ready.",                                     status: "week4" },
 ] as const;
 
 const containerVariants = {
@@ -95,7 +95,7 @@ export function HeroPage({ onOpenWorkspace }: Props) {
             {" "}
             <TextReveal text="operating layer" as="span" className="gradient-text" delay={0.35} />
             {" "}
-            <TextReveal text="for Indian colleges" as="span" delay={0.6} />
+            <TextReveal text="for Indian students" as="span" delay={0.6} />
           </h1>
           <m.p
             className="hero-subtitle"
@@ -103,9 +103,9 @@ export function HeroPage({ onOpenWorkspace }: Props) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9, duration: 0.55 }}
           >
-            CareerOS Campus AI turns unstructured student resumes into ATS-safe,
-            JD-matched, proof-linked readiness signals — so placement officers know
-            exactly who is ready before companies arrive.
+            CareerOS turns unstructured student resumes into ATS-safe,
+            JD-matched, proof-linked readiness signals — so you know exactly
+            what to improve before applying.
           </m.p>
         </m.div>
 
@@ -211,8 +211,8 @@ export function HeroPage({ onOpenWorkspace }: Props) {
           transition={{ duration: 0.5 }}
           className="section-intro"
         >
-          <h2 id="pillars-heading" className="section-heading">Why colleges adopt CareerOS</h2>
-          <p className="section-subheading">Four capabilities that make this a placement-office tool, not a resume builder.</p>
+          <h2 id="pillars-heading" className="section-heading">Why students adopt CareerOS</h2>
+          <p className="section-subheading">Four capabilities that make this a readiness system, not just another resume builder.</p>
         </m.div>
 
         <m.div
@@ -285,7 +285,7 @@ export function HeroPage({ onOpenWorkspace }: Props) {
           transition={{ duration: 0.5 }}
         >
           <h2 id="workflow-heading" className="section-heading">End-to-end placement readiness</h2>
-          <p className="section-subheading">One loop from raw resume to officer dashboard — all in the same platform.</p>
+          <p className="section-subheading">One loop from raw resume to application-ready confidence — all in the same platform.</p>
         </m.div>
 
         <m.ol

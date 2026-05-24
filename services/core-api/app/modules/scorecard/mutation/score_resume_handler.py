@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import json
-import sys
-from pathlib import Path
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
@@ -15,11 +13,7 @@ from ....models.entities import User
 from ....services.clients import match_resume_to_jd, parse_jd_text
 from ..dto.scorecard_dto import ScoreComponents, ScorecardScoreRequest, ScorecardScoreResponse
 
-_SCORING_ROOT = Path(__file__).resolve().parents[6] / "packages" / "scoring"
-if _SCORING_ROOT.is_dir() and str(_SCORING_ROOT) not in sys.path:
-    sys.path.insert(0, str(_SCORING_ROOT))
-
-from careeros_scoring import (  # noqa: E402
+from careeros_scoring import (
     ats_parse_safety_from_flags,
     compute_placement_readiness,
     evidence_quality_score,
@@ -28,7 +22,7 @@ from careeros_scoring import (  # noqa: E402
     profile_completeness_score,
     resume_text_from_sections,
 )
-from careeros_scoring.formula import JdMatchBreakdown  # noqa: E402
+from careeros_scoring.formula import JdMatchBreakdown
 
 
 class ScoreResumeHandler:
@@ -80,7 +74,6 @@ class ScoreResumeHandler:
             role = payload.role.strip() or parsed.get("role", "Role")
             jd_row = self._jds.create(
                 created_by=user.id,
-                college_id=payload.college_id,
                 company=company,
                 role=role,
                 raw_text=jd_text,

@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..database import Base
@@ -34,33 +34,6 @@ class SessionToken(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
-
-# ── Institutional ─────────────────────────────────────────────────────────────
-
-class College(Base):
-    __tablename__ = "colleges"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
-    state: Mapped[str] = mapped_column(String(120), nullable=False, default="")
-    college_type: Mapped[str] = mapped_column(String(80), nullable=False, default="engineering")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
-    departments = relationship("Department", back_populates="college", cascade="all, delete-orphan")
-    batches = relationship("Batch", back_populates="college", cascade="all, delete-orphan")
-
-
-class Department(Base):
-    __tablename__ = "departments"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    college_id: Mapped[int] = mapped_column(ForeignKey("colleges.id"), nullable=False, index=True)
-    name: Mapped[str] = mapped_column(String(120), nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
-    college = relationship("College", back_populates="departments")
-    batches = relationship("Batch", back_populates="department")
 
 
 # ── Profile ───────────────────────────────────────────────────────────────────
@@ -145,7 +118,6 @@ class JobDescription(Base):
     __tablename__ = "job_descriptions"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    college_id: Mapped[Optional[int]] = mapped_column(ForeignKey("colleges.id"), nullable=True, index=True)
     created_by: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
     company: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
     role: Mapped[str] = mapped_column(String(200), nullable=False)
@@ -241,38 +213,6 @@ class ATSScan(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", back_populates="scans")
-
-
-# ── Cohort / Batch ────────────────────────────────────────────────────────────
-
-class Batch(Base):
-    __tablename__ = "batches"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    college_id: Mapped[int] = mapped_column(ForeignKey("colleges.id"), nullable=False, index=True)
-    dept_id: Mapped[Optional[int]] = mapped_column(ForeignKey("departments.id"), nullable=True, index=True)
-    created_by: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-    name: Mapped[str] = mapped_column(String(200), nullable=False)
-    grad_year: Mapped[int] = mapped_column(Integer, nullable=False, default=2026)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
-    college = relationship("College", back_populates="batches")
-    department = relationship("Department", back_populates="batches")
-    batch_resumes = relationship("BatchResume", back_populates="batch", cascade="all, delete-orphan")
-
-
-class BatchResume(Base):
-    __tablename__ = "batch_resumes"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    batch_id: Mapped[int] = mapped_column(ForeignKey("batches.id"), nullable=False, index=True)
-    resume_id: Mapped[int] = mapped_column(ForeignKey("resumes.id"), nullable=False, index=True)
-    status: Mapped[str] = mapped_column(String(30), nullable=False, default="uploaded")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
-    __table_args__ = (UniqueConstraint("batch_id", "resume_id", name="uq_batch_resume"),)
-
-    batch = relationship("Batch", back_populates="batch_resumes")
 
 
 # ── Audit + Intel ─────────────────────────────────────────────────────────────

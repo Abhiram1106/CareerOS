@@ -9,7 +9,6 @@ class JDParseRequest(StrictModel):
     jd_text: str = Field(min_length=20)
     company: str = ""
     role: str = ""
-    college_id: int | None = None
 
 
 class JDParseResponse(BaseModel):

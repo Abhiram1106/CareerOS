@@ -1,19 +1,25 @@
 import os
 from pathlib import Path
 
-_REPO_ROOT = Path(__file__).resolve().parents[3]
-_DEFAULT_BENCH = _REPO_ROOT / "docs" / "benchmarks" / "benchmark_runs.json"
+def _default_benchmark_path() -> Path:
+    """Monorepo root in dev; shallow /app layout in Docker (file may be absent)."""
+    here = Path(__file__).resolve()
+    if len(here.parents) > 3:
+        return here.parents[3] / "docs" / "benchmarks" / "benchmark_runs.json"
+    return Path("docs/benchmarks/benchmark_runs.json")
+
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./careeros_dev.db")
-BENCHMARK_ARTIFACT_PATH = os.getenv("BENCHMARK_ARTIFACT_PATH", str(_DEFAULT_BENCH))
+BENCHMARK_ARTIFACT_PATH = os.getenv(
+    "BENCHMARK_ARTIFACT_PATH",
+    str(_default_benchmark_path()),
+)
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 ATS_ENGINE_URL = os.getenv("ATS_ENGINE_URL", "http://localhost:8001")
 AI_REWRITER_URL = os.getenv("AI_REWRITER_URL", "http://localhost:8003")
 RESUME_PARSER_URL = os.getenv("RESUME_PARSER_URL", "http://localhost:8004")
 MATCH_ENGINE_URL = os.getenv("MATCH_ENGINE_URL", "http://localhost:8005")
 JOBS_FEED_URL = os.getenv("JOBS_FEED_URL", "http://localhost:8006")
-ENABLE_OFFICER_SURFACE = os.getenv("ENABLE_OFFICER_SURFACE", "false").lower() == "true"
-OFFICER_DEFAULT_COLLEGE_ID = int(os.getenv("OFFICER_DEFAULT_COLLEGE_ID", "0"))
 RATE_LIMIT_ENABLED = os.getenv("RATE_LIMIT_ENABLED", "true").lower() == "true"
 RATE_LIMIT_WINDOW_SECONDS = int(os.getenv("RATE_LIMIT_WINDOW_SECONDS", "60"))
 RATE_LIMIT_MAX_REQUESTS = int(os.getenv("RATE_LIMIT_MAX_REQUESTS", "30"))

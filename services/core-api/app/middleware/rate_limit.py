@@ -36,8 +36,6 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             "/agent/run",
             "/resumes/upload",
             "/assistant/chat",
-            "/officer/batches",
-            "/officer/reports",
         ),
     ) -> None:
         super().__init__(app)

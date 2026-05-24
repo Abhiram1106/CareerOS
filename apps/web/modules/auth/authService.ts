@@ -1,11 +1,10 @@
-import { api, type AuthResponse } from "../../../lib/api";
+import { api, type AuthResponse } from "../../lib/api";
 
 export type LoginPayload = { email: string; password: string };
 export type RegisterPayload = {
   email: string;
   password: string;
   full_name: string;
-  role?: string;
 };
 
 export async function login(payload: LoginPayload): Promise<AuthResponse> {

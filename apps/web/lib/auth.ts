@@ -1,6 +1,6 @@
 "use client";
 
-export type UserRole = "student" | "officer" | "admin";
+export type UserRole = "student";
 
 export interface AuthUser {
   token: string;

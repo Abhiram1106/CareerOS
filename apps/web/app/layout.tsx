@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import { MotionProvider } from "../components/motion-provider";
 
 export const metadata: Metadata = {
-  title: "CareerOS Campus AI — Placement readiness",
+  title: "CareerOS Student AI — Placement readiness",
   description:
-    "Intel-optimized placement-readiness operating layer for Indian colleges. ATS-safe resumes, JD matching, and proof-linked scoring.",
+    "Intel-optimized placement-readiness operating layer for Indian students. ATS-safe resumes, JD matching, and proof-linked scoring.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
-import { useAssistantChat } from "../../modules/assistant/hooks/useAssistantChat";
+import { useAssistantChat } from "../../modules/assistant/useAssistantChat";
 
 const STARTERS = [
   "How do I upload my resume?",
@@ -24,7 +24,7 @@ export function AssistantPanel() {
   return (
     <div className="content-card">
       <div className="content-card-header">
-        <h2 className="content-card-title">Campus Assistant</h2>
+        <h2 className="content-card-title">Student Assistant</h2>
         <span className="chip chip-primary">Grounded · no fabrication</span>
       </div>
       <div className="content-card-body">

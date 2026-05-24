@@ -29,16 +29,9 @@ def current_user(
 
 
 def require_student(user: User = Depends(current_user)) -> User:
-    """Require role == student (or admin)."""
-    if user.role not in ("student", "admin"):
+    """Require role == student."""
+    if user.role != "student":
         raise HTTPException(status_code=403, detail="Student access required")
-    return user
-
-
-def require_officer(user: User = Depends(current_user)) -> User:
-    """Require role == officer (or admin)."""
-    if user.role not in ("officer", "admin"):
-        raise HTTPException(status_code=403, detail="Officer access required")
     return user
 
 
@@ -55,20 +48,12 @@ from .handler_dependencies import (  # noqa: E402
     get_ats_query_service,
     get_ats_scan_handler,
     get_chat_handler,
-    get_create_officer_batch_handler,
     get_dashboard_query_service,
     get_delete_resume_handler,
     get_export_query_service,
     get_generate_resume_handler,
     get_login_handler,
     get_logout_handler,
-    get_officer_batch_query_service,
-    get_officer_cohort_service,
-    get_officer_dashboard_service,
-    get_officer_heatmap_service,
-    get_officer_readiness_report_service,
-    get_officer_review_service,
-    get_officer_skill_gaps_service,
     get_parse_jd_handler,
     get_profile_query_service,
     get_queue_export_handler,
@@ -78,7 +63,6 @@ from .handler_dependencies import (  # noqa: E402
     get_run_agent_handler,
     get_run_rewrite_handler,
     get_score_resume_handler,
-    get_upload_officer_batch_handler,
     get_upload_resume_handler,
     get_upsert_profile_handler,
 )

@@ -170,16 +170,16 @@ def test_golden_path_register_seed_score(client, db_session, patch_clients):
     assert isinstance(body["missing_required_skills"], list)
 
 
-def test_scorecards_rejects_officer(client, db_session, patch_clients):
-    """RBAC: an officer must NOT be able to call the student scoring route."""
-    officer_token = _seed_user_token(db_session, role="officer")
+def test_scorecards_rejects_non_student_role(client, db_session, patch_clients):
+    """RBAC: any non-student role must NOT call the student scoring route."""
+    non_student_token = _seed_user_token(db_session, role="admin")
     student_token = _seed_user_token(db_session, role="student")
     resume_id = _seed_resume(db_session, "student@example.com")
 
     res = client.post(
         "/scorecards/score",
         json={"resume_id": resume_id, "jd_text": JD_TEXT},
-        headers={"Authorization": f"Bearer {officer_token}"},
+        headers={"Authorization": f"Bearer {non_student_token}"},
     )
     assert res.status_code == 403, res.text
 

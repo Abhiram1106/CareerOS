@@ -2,10 +2,10 @@
 
 import { useCallback, useState } from "react";
 
-import { getStoredAuth } from "../../../lib/auth";
-import { toErrorMessage } from "../../../lib/errors";
-import { sendAssistantMessage } from "../services/assistantService";
-import type { AssistantChatResult } from "../types/assistant.types";
+import { getStoredAuth } from "../../lib/auth";
+import { toErrorMessage } from "../../lib/errors";
+import { sendAssistantMessage } from "./assistantService";
+import type { AssistantChatResult } from "./types";
 
 type ChatMessage = {
   role: "user" | "assistant";

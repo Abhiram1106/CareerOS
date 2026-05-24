@@ -34,22 +34,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const officerSurfaceEnabled = process.env.NEXT_PUBLIC_ENABLE_OFFICER_SURFACE === "true";
-  const isOfficer = user?.role === "officer" && officerSurfaceEnabled;
   const initials = user?.full_name?.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase() ?? "??";
 
-  const navLinks = isOfficer
-    ? [
-        { href: "/officer/dashboard", label: "Dashboard" },
-        { href: "/officer/batches", label: "Batches" },
-        { href: "/officer/review", label: "Review Queue" },
-        { href: "/lab/intel", label: "Intel Lab" },
-      ]
-    : [
-        { href: "/", label: "Overview" },
-        { href: "/workspace", label: "Workspace" },
-        { href: "/lab/intel", label: "Intel Lab" },
-      ];
+  const navLinks = [
+    { href: "/", label: "Overview" },
+    { href: "/workspace", label: "Workspace" },
+    { href: "/lab/intel", label: "Intel Lab" },
+  ];
 
   return (
     <div className="app-shell">
@@ -57,7 +48,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="app-nav-inner">
           <Link href="/" className="app-nav-brand" aria-label="CareerOS home">
             <div className="app-nav-brand-icon">CO</div>
-            <span className="app-nav-brand-text">CareerOS Campus AI</span>
+            <span className="app-nav-brand-text">CareerOS Student AI</span>
           </Link>
 
           <div className="app-nav-links" role="navigation">
@@ -84,9 +75,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <span style={{ maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {user?.full_name}
               </span>
-              {user?.role === "officer" && (
-                <span style={{ background: "#d3e4ff", color: "#00589c", borderRadius: 9999, padding: "1px 7px", fontSize: "0.68rem", fontWeight: 700, flexShrink: 0 }}>TPO</span>
-              )}
             </div>
             <button type="button" className="app-nav-signout" onClick={handleSignOut} aria-label="Sign out">
               Sign out

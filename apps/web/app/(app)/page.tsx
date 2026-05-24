@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { getStoredAuth, type AuthUser } from "../../lib/auth";
 
 const STATS = [
   { value: "42.6%", label: "Indian graduates unemployable (Mercer Mettl 2025)" },
@@ -12,14 +10,6 @@ const STATS = [
 ];
 
 export default function OverviewPage() {
-  const [user, setUser] = useState<AuthUser | null>(null);
-
-  useEffect(() => {
-    setUser(getStoredAuth());
-  }, []);
-
-  const isOfficer = user?.role === "officer";
-
   return (
     <div className="page-canvas">
       {/* Hero section */}
@@ -38,11 +28,11 @@ export default function OverviewPage() {
           </div>
 
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2rem, 5vw, 3.2rem)", fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1.1, background: "linear-gradient(135deg, #00589c, #0071c5, #005d7f)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 16 }}>
-            The placement-readiness<br />operating layer for Indian colleges
+            The student-first<br />placement readiness workspace
           </h1>
 
           <p style={{ fontSize: "1.05rem", color: "#414752", maxWidth: 600, margin: "0 auto 36px", lineHeight: 1.65 }}>
-            Turn unstructured resumes into structured, actionable readiness signals. Empowering placement cells with deterministic AI and{" "}
+            Turn unstructured resumes into structured, actionable readiness signals. Built for students with deterministic AI and{" "}
             <strong style={{ color: "#0071c5" }}>Intel-accelerated compute</strong>.
           </p>
 
@@ -55,7 +45,7 @@ export default function OverviewPage() {
             <span style={{ textDecoration: "line-through" }}>Not a resume builder</span>
           </div>
 
-          {/* RBAC CTA cards */}
+          {/* Student CTA */}
           <div style={{ display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap", maxWidth: 860, margin: "0 auto" }}>
             {/* Student card */}
             <div className="rbac-card" style={{ flex: "1 1 340px", maxWidth: 400, textAlign: "left" }}>
@@ -77,30 +67,6 @@ export default function OverviewPage() {
                 Open student workspace
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </Link>
-            </div>
-
-            {/* Officer card */}
-            <div className="rbac-card" style={{ flex: "1 1 340px", maxWidth: 400, textAlign: "left" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-                <div style={{ width: 44, height: 44, borderRadius: 10, background: "rgba(0,93,127,0.1)", display: "grid", placeItems: "center", color: "#005d7f", flexShrink: 0 }}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.05rem", fontWeight: 700, color: "#191c1e", margin: 0 }}>For Placement Officers</h3>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.68rem", color: "#717783", textTransform: "uppercase", letterSpacing: "0.06em" }}>Mr. Ramesh's dashboard</span>
-                </div>
-              </div>
-              <p style={{ fontSize: "0.88rem", color: "#414752", lineHeight: 1.6, marginBottom: 20 }}>
-                Monitor batch readiness, view department heatmaps, enforce AI guardrails, and track top skill gaps before every drive.
-              </p>
-              <Link href="/officer/dashboard" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", padding: "13px", borderRadius: 10, background: "transparent", color: "#005d7f", fontWeight: 600, fontSize: "0.9rem", textDecoration: "none", border: "2px solid #005d7f", transition: "background 0.15s, color 0.15s" }}>
-                Officer command center
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                 </svg>
               </Link>
             </div>
@@ -144,7 +110,7 @@ export default function OverviewPage() {
                   { week: "W1", focus: "Foundation — auth, resume upload, pdfplumber parser, UI shell", done: true },
                   { week: "W2", focus: "JD parser · match-engine (TF-IDF + embeddings + sklearnex) · score UI", done: false },
                   { week: "W3", focus: "AI rewriter with proof-linked JSON guardrails · PDF export", done: false },
-                  { week: "W4", focus: "Officer dashboard · batch upload · dept heatmap · review queue", done: false },
+                  { week: "W4", focus: "Student workspace polish · jobs feed UX · readiness clarity", done: false },
                   { week: "W5", focus: "Intel bench harness (OpenVINO + sklearnex) · /lab panel · pitch deck", done: false },
                 ].map(row => (
                   <tr key={row.week}>

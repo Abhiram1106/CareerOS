@@ -88,7 +88,6 @@ class AgentStateMachine:
             company=company,
             role=role,
             ats_flags=payload.ats_flags,
-            college_id=None,
         )
         score_result = await ScoreResumeHandler(self._db).execute(user, score_payload)
         scorecard_id = int(score_result["scorecard_id"])

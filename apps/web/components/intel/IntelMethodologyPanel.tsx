@@ -1,6 +1,6 @@
 "use client";
 
-import type { BenchmarkPanelResult } from "../../modules/intel/types/intel.types";
+import type { BenchmarkPanelResult } from "../../modules/intel/types";
 
 type IntelMethodologyPanelProps = {
   methodology: BenchmarkPanelResult["methodology"];

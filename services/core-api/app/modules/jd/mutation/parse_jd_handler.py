@@ -21,7 +21,6 @@ class ParseJDHandler:
         role = payload.role.strip() or parsed.get("role", "Role")
         row = self._jds.create(
             created_by=user.id,
-            college_id=payload.college_id,
             company=company,
             role=role,
             raw_text=payload.jd_text,

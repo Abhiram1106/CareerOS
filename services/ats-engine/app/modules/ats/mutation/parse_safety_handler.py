@@ -1,13 +1,6 @@
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-
-_SCORING_ROOT = Path(__file__).resolve().parents[6] / "packages" / "scoring"
-if _SCORING_ROOT.is_dir() and str(_SCORING_ROOT) not in sys.path:
-    sys.path.insert(0, str(_SCORING_ROOT))
-
-from careeros_scoring.parse_safety import FLAG_PENALTIES, ats_parse_safety_from_flags  # noqa: E402
+from careeros_scoring.parse_safety import FLAG_PENALTIES, ats_parse_safety_from_flags
 
 from ..dto.parse_safety_dto import ParseSafetyRequest, ParseSafetyResponse
 

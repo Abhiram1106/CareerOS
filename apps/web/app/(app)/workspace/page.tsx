@@ -24,7 +24,7 @@ const TABS: ReadonlyArray<[WorkspaceTab, string]> = [
   ["rewrite", "Proof-Linked Rewrite"],
   ["jobs", "Jobs Feed"],
   ["builder", "Builder Wizard"],
-  ["assistant", "Campus Assistant"],
+  ["assistant", "Student Assistant"],
 ];
 
 function ScoreBarsInline({

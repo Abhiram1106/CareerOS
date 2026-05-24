@@ -1,9 +1,10 @@
-# Frontend modules (feature-first)
+# Frontend modules (feature-first, flat)
 
-Screens stay in `app/` (Next.js App Router). Modules own:
+Screens stay in `app/` (Next.js App Router). Each feature module keeps only real files,
+with no placeholder subfolders:
 
-- `services/` — calls `lib/api.ts` only (no inline `fetch` in screens)
-- `types/` / `dto/` — module contracts
-- `hooks/` / `store/` — module state (extracted from `usePlacementWorkspace` as features grow)
+- `<feature>Service.ts` — API calls through `lib/api.ts`
+- `use<Feature>.ts` — client hooks when needed
+- `types.ts` — local contracts when needed
 
-Shared UI: see `../shared/README.md` and existing `../components/ui/`.
+If a feature has no runtime code, its folder should not exist.

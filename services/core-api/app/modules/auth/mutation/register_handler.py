@@ -24,7 +24,7 @@ class RegisterHandler:
             email=payload.email,
             password=payload.password,
             full_name=payload.full_name,
-            role=payload.role,
+            role="student",
         )
         self._profiles.create_default_for_user(user)
         token = self._sessions.create_for_user(user)

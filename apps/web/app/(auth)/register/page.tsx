@@ -3,19 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { storeAuth, type UserRole } from "../../../lib/auth";
-import { register as registerRequest } from "../../../modules/auth/services/authService";
+import { storeAuth } from "../../../lib/auth";
+import { register as registerRequest } from "../../../modules/auth/authService";
 
 const YEARS = ["2024", "2025", "2026", "2027", "2028"];
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [role, setRole] = useState<UserRole>("student");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [batchYear, setBatchYear] = useState("");
-  const [department, setDepartment] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,10 +27,9 @@ export default function RegisterPage() {
         full_name: fullName,
         email,
         password,
-        role,
       });
-      storeAuth({ token: data.token, email: data.email, full_name: data.full_name, role: data.role as UserRole });
-      router.replace(role === "officer" ? "/officer/dashboard" : "/workspace");
+      storeAuth({ token: data.token, email: data.email, full_name: data.full_name, role: "student" });
+      router.replace("/workspace");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Cannot reach the server. Please try again.");
     } finally {
@@ -57,7 +54,7 @@ export default function RegisterPage() {
         <div className="auth-brand-body">
           <h2 className="auth-brand-headline">Command your academic trajectory.</h2>
           <p className="auth-brand-sub">
-            Join the intelligence-driven platform designed to optimize placements and bridge the gap between campus and corporate.
+            Join the intelligence-driven platform designed to optimize placements and bridge the gap between students and employers.
           </p>
           <div className="auth-brand-glass">
             <div className="auth-brand-glass-row">
@@ -86,17 +83,7 @@ export default function RegisterPage() {
           </div>
 
           <h2 className="auth-heading">Create your account</h2>
-          <p className="auth-sub">Select your role to configure your workspace.</p>
-
-          {/* Role toggle */}
-          <div className="auth-role-tabs" role="tablist">
-            <button type="button" role="tab" aria-selected={role === "student"} className={`auth-role-tab${role === "student" ? " active" : ""}`} onClick={() => { setRole("student"); setError(null); }}>
-              Student
-            </button>
-            <button type="button" role="tab" aria-selected={role === "officer"} className={`auth-role-tab${role === "officer" ? " active" : ""}`} onClick={() => { setRole("officer"); setError(null); }}>
-              Placement Officer
-            </button>
-          </div>
+          <p className="auth-sub">Set up your student workspace in one step.</p>
 
           {error && (
             <div className="auth-error" role="alert">
@@ -148,35 +135,20 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* Conditional fields */}
-              {role === "student" ? (
-                <div className="auth-field">
-                  <label className="auth-label" htmlFor="reg-batch">Batch / Graduation Year</label>
-                  <div className="auth-input-wrap">
-                    <span className="auth-input-icon">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" />
-                      </svg>
-                    </span>
-                    <select id="reg-batch" className="auth-input" value={batchYear} onChange={e => setBatchYear(e.target.value)} required style={{ appearance: "none" }}>
-                      <option value="" disabled>Select year</option>
-                      {YEARS.map(y => <option key={y} value={y}>Class of {y}</option>)}
-                    </select>
-                  </div>
+              <div className="auth-field">
+                <label className="auth-label" htmlFor="reg-batch">Batch / Graduation Year</label>
+                <div className="auth-input-wrap">
+                  <span className="auth-input-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" />
+                    </svg>
+                  </span>
+                  <select id="reg-batch" className="auth-input" value={batchYear} onChange={e => setBatchYear(e.target.value)} required style={{ appearance: "none" }}>
+                    <option value="" disabled>Select year</option>
+                    {YEARS.map(y => <option key={y} value={y}>Class of {y}</option>)}
+                  </select>
                 </div>
-              ) : (
-                <div className="auth-field">
-                  <label className="auth-label" htmlFor="reg-dept">Department</label>
-                  <div className="auth-input-wrap">
-                    <span className="auth-input-icon">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
-                      </svg>
-                    </span>
-                    <input id="reg-dept" type="text" className="auth-input" placeholder="e.g. Computer Science" value={department} onChange={e => setDepartment(e.target.value)} />
-                  </div>
-                </div>
-              )}
+              </div>
 
               <button type="submit" className="auth-submit" disabled={loading}>
                 {loading ? "Initializing…" : "Initialize Account"}

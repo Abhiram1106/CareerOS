@@ -12,7 +12,6 @@ class ScorecardScoreRequest(StrictModel):
     company: str = ""
     role: str = ""
     ats_flags: list[str] = Field(default_factory=list)
-    college_id: int | None = None
 
 
 class ScoreComponents(BaseModel):

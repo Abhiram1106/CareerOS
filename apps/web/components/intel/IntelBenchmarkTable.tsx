@@ -1,6 +1,6 @@
 "use client";
 
-import type { BenchmarkWorkload } from "../../modules/intel/types/intel.types";
+import type { BenchmarkWorkload } from "../../modules/intel/types";
 
 type IntelBenchmarkTableProps = {
   workloads: BenchmarkWorkload[];

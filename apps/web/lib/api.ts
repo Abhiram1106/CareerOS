@@ -71,83 +71,6 @@ export type JobsSearchResult = {
   results: JobSearchItem[];
 };
 
-export type OfficerKpis = {
-  students_scored: number;
-  avg_readiness: number;
-  parse_safe_rate: number;
-  ready_count: number;
-};
-
-export type OfficerBuckets = {
-  strong: number;
-  ready: number;
-  borderline: number;
-  risk: number;
-};
-
-export type OfficerReviewItem = {
-  student_name: string;
-  target_role: string;
-  overall_score: number;
-  bucket: string;
-  scorecard_id: number;
-  resume_id: number;
-};
-
-export type OfficerDashboardResult = {
-  kpis: OfficerKpis;
-  buckets: OfficerBuckets;
-};
-
-export type OfficerReviewListResult = {
-  items: OfficerReviewItem[];
-};
-
-export type OfficerBatchItem = {
-  id: number;
-  name: string;
-  grad_year: number;
-  college_id: number;
-  dept_id: number | null;
-  created_at: string;
-};
-
-export type OfficerBatchListResult = {
-  batches: OfficerBatchItem[];
-};
-
-export type OfficerCohortResult = OfficerDashboardResult & {
-  review_queue: OfficerReviewItem[];
-};
-
-export type OfficerHeatmapRow = {
-  name: string;
-  strong: number;
-  ready: number;
-  borderline: number;
-  risk: number;
-};
-
-export type OfficerHeatmapResult = {
-  departments: OfficerHeatmapRow[];
-};
-
-export type OfficerSkillGapItem = {
-  skill: string;
-  student_count: number;
-};
-
-export type OfficerSkillGapsResult = {
-  items: OfficerSkillGapItem[];
-};
-
-export type OfficerBatchUploadResult = {
-  batch_id: number;
-  uploaded: number;
-  resume_ids: number[];
-  errors: string[];
-};
-
 export type BenchmarkWorkload = {
   id: string;
   name: string;
@@ -240,33 +163,9 @@ async function uploadFile<T>(path: string, file: File, token: string): Promise<T
   return res.json();
 }
 
-async function uploadFiles<T>(path: string, files: File[], token: string): Promise<T> {
-  const form = new FormData();
-  for (const file of files) {
-    form.append("files", file);
-  }
-  const res = await fetch(`${API_BASE}${path}`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-    body: form,
-    cache: "no-store",
-  });
-  if (!res.ok) {
-    let msg = "Upload failed";
-    try {
-      const err = await res.json();
-      msg = err.detail || msg;
-    } catch {
-      // noop
-    }
-    throw new Error(msg);
-  }
-  return res.json();
-}
-
 export const api = {
   // Auth
-  register: (payload: { email: string; password: string; full_name: string; role?: string }) =>
+  register: (payload: { email: string; password: string; full_name: string }) =>
     request<AuthResponse>("/auth/register", "POST", payload),
   login: (payload: { email: string; password: string }) =>
     request<AuthResponse>("/auth/login", "POST", payload),
@@ -384,50 +283,6 @@ export const api = {
 
   logout: (token: string) =>
     request<{ ok: boolean; revoked: boolean }>("/auth/logout", "POST", undefined, token),
-
-  officerDashboard: (token: string) =>
-    request<OfficerDashboardResult>("/officer/dashboard", "GET", undefined, token),
-
-  officerReview: (token: string) =>
-    request<OfficerReviewListResult>("/officer/review", "GET", undefined, token),
-
-  officerBatches: (token: string) =>
-    request<OfficerBatchListResult>("/officer/batches", "GET", undefined, token),
-
-  officerCohort: (token: string) =>
-    request<OfficerCohortResult>("/officer/cohort", "GET", undefined, token),
-
-  officerHeatmap: (token: string) =>
-    request<OfficerHeatmapResult>("/officer/heatmap", "GET", undefined, token),
-
-  officerSkillGaps: (token: string) =>
-    request<OfficerSkillGapsResult>("/officer/skill-gaps", "GET", undefined, token),
-
-  officerCreateBatch: (
-    token: string,
-    payload: { name: string; grad_year: number; dept_id?: number | null }
-  ) => request<{ batch: OfficerBatchItem }>("/officer/batches", "POST", payload, token),
-
-  officerBatchUpload: (token: string, batchId: number, files: File[]) =>
-    uploadFiles<OfficerBatchUploadResult>(`/officer/batches/${batchId}/upload`, files, token),
-
-  downloadOfficerReadinessReport: async (token: string): Promise<Blob> => {
-    const res = await fetch(`${API_BASE}/officer/reports/readiness`, {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: "no-store",
-    });
-    if (!res.ok) {
-      let msg = "Readiness report download failed";
-      try {
-        const err = (await res.json()) as { detail?: string };
-        msg = err.detail || msg;
-      } catch {
-        // noop
-      }
-      throw new Error(msg);
-    }
-    return res.blob();
-  },
 
   benchmarks: () => request<BenchmarkPanelResult>("/benchmarks", "GET"),
 

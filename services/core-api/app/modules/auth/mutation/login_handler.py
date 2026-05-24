@@ -21,6 +21,8 @@ class LoginHandler:
         user = self._users.find_by_email(payload.email)
         if not user or not verify_password(payload.password, user.password_hash):
             raise HTTPException(status_code=401, detail="Invalid credentials")
+        if user.role != "student":
+            raise HTTPException(status_code=403, detail="Only student accounts are supported")
 
         token = self._sessions.create_for_user(user)
         record_audit(

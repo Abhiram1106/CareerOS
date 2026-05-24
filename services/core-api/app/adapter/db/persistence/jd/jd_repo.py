@@ -18,7 +18,6 @@ class JDRepo:
         self,
         *,
         created_by: int,
-        college_id: int | None,
         company: str,
         role: str,
         raw_text: str,
@@ -27,7 +26,6 @@ class JDRepo:
     ) -> JobDescription:
         row = JobDescription(
             created_by=created_by,
-            college_id=college_id,
             company=company,
             role=role,
             raw_text=raw_text,

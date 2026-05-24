@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { toErrorMessage } from "../../../lib/errors";
-import { fetchBenchmarkPanel } from "../services/intelService";
-import type { BenchmarkPanelResult } from "../types/intel.types";
+import { toErrorMessage } from "../../lib/errors";
+import { fetchBenchmarkPanel } from "./intelService";
+import type { BenchmarkPanelResult } from "./types";
 
 export function useIntelBenchmarkPanel() {
   const [data, setData] = useState<BenchmarkPanelResult | null>(null);

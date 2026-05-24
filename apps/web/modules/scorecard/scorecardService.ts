@@ -1,4 +1,4 @@
-import { api, type ScorecardResult } from "../../../lib/api";
+import { api, type ScorecardResult } from "../../lib/api";
 
 export type ScoreResumePayload = {
   resume_id: number;
