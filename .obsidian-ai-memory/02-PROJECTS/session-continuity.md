@@ -38,6 +38,7 @@
 | Commit | Scope |
 |--------|--------|
 | `04b2f16` | feat: TPO PDF report + prod docs |
+| `e1c0c9a` | memory: Phase 4 close-out |
 | Push | `origin/main` |
 
 ---
