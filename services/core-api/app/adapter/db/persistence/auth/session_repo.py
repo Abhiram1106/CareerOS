@@ -15,3 +15,15 @@ class SessionRepo:
         self._db.add(SessionToken(token=token, user_id=user.id, is_active=True))
         self._db.commit()
         return token
+
+    def revoke_token(self, token: str) -> bool:
+        session = (
+            self._db.query(SessionToken)
+            .filter(SessionToken.token == token, SessionToken.is_active.is_(True))
+            .first()
+        )
+        if not session:
+            return False
+        session.is_active = False
+        self._db.commit()
+        return True

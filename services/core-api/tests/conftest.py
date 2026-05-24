@@ -19,6 +19,7 @@ from pathlib import Path
 os.environ.setdefault("DATABASE_URL", "sqlite:///:memory:")
 os.environ.setdefault("AUTO_CREATE_TABLES", "true")
 os.environ.setdefault("JWT_SECRET", "test-secret")
+os.environ.setdefault("RATE_LIMIT_ENABLED", "false")
 
 _CORE_API_ROOT = Path(__file__).resolve().parents[1]
 if str(_CORE_API_ROOT) not in sys.path:

@@ -10,6 +10,7 @@ from ...adapter.db.persistence.agent_run.agent_run_repo import AgentRunRepo
 from ...adapter.db.persistence.job.job_repo import JobRepo
 from ...adapter.db.persistence.resume.resume_view import ResumeView
 from ...models.entities import User
+from ...services.audit import record_audit
 from ...services.clients import jobs_feed_search, run_ats_parse_safety
 from ..export.dto.export_dto import ExportResumeRequest
 from ..export.mutation.queue_export_handler import QueueExportHandler
@@ -127,6 +128,14 @@ class AgentStateMachine:
             summary_json=json.dumps(summary),
             status="completed",
             finished=True,
+        )
+        record_audit(
+            self._db,
+            actor_id=user.id,
+            action="agent.run.completed",
+            target_type="agent_run",
+            target_id=run.id,
+            payload={"scorecard_id": scorecard_id, "resume_id": resume.id},
         )
         return AgentRunStepState(
             run_id=run.id,

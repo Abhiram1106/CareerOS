@@ -8,6 +8,9 @@ RESUME_PARSER_URL = os.getenv("RESUME_PARSER_URL", "http://localhost:8004")
 MATCH_ENGINE_URL = os.getenv("MATCH_ENGINE_URL", "http://localhost:8005")
 JOBS_FEED_URL = os.getenv("JOBS_FEED_URL", "http://localhost:8006")
 ENABLE_OFFICER_SURFACE = os.getenv("ENABLE_OFFICER_SURFACE", "false").lower() == "true"
+RATE_LIMIT_ENABLED = os.getenv("RATE_LIMIT_ENABLED", "true").lower() == "true"
+RATE_LIMIT_WINDOW_SECONDS = int(os.getenv("RATE_LIMIT_WINDOW_SECONDS", "60"))
+RATE_LIMIT_MAX_REQUESTS = int(os.getenv("RATE_LIMIT_MAX_REQUESTS", "30"))
 JWT_SECRET = os.getenv("JWT_SECRET", "change-me")
 JWT_ALG = "HS256"
 JWT_EXPIRE_MINUTES = 60 * 24

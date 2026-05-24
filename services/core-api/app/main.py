@@ -5,9 +5,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .api.router import api_router
 from .db_bootstrap import DatabaseNotReadyError, bootstrap_database
+from .middleware.rate_limit import RateLimitMiddleware
+from .middleware.security_headers import SecurityHeadersMiddleware
 
-app = FastAPI(title="CareerOS Campus AI — Core API", version="0.4.0")
+app = FastAPI(title="CareerOS Campus AI — Core API", version="0.5.0")
 app.include_router(api_router)
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RateLimitMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

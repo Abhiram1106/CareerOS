@@ -246,4 +246,26 @@ export const api = {
 
   // Dashboard
   dashboard: (token: string) => request("/dashboard", "GET", undefined, token),
+
+  logout: (token: string) =>
+    request<{ ok: boolean; revoked: boolean }>("/auth/logout", "POST", undefined, token),
+
+  officerCohort: (token: string) =>
+    request<{
+      kpis: {
+        students_scored: number;
+        avg_readiness: number;
+        parse_safe_rate: number;
+        ready_count: number;
+      };
+      buckets: { strong: number; ready: number; borderline: number; risk: number };
+      review_queue: Array<{
+        student_name: string;
+        target_role: string;
+        overall_score: number;
+        bucket: string;
+        scorecard_id: number;
+        resume_id: number;
+      }>;
+    }>("/officer/cohort", "GET", undefined, token),
 };
