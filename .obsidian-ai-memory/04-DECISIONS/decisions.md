@@ -35,7 +35,7 @@ with no entrenched competitor, real measurable outcomes, and an honest Intel
 story (CPU-bound NLP inference + analytics — where OpenVINO and sklearnex
 genuinely shine).
 
-**Status**: Accepted. Full record at `docs/adr/0001-pivot-to-campus-ai.md`.
+**Status**: Accepted. Full record at `docs/adr/0001-placement-readiness-pivot.md`.
 
 **Consequences**: Cut NEXUS recruiter side, billing, public job board, job
 alerts, application tracker, LinkedIn import. Recoverable via
