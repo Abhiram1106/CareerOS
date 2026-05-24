@@ -1,63 +1,43 @@
-# CareerOS Campus AI — 6-slide pitch deck (markdown)
-
-> Export to PDF/slides for judges. Screenshots: `docs/pitch/screenshots/`.
-
----
+# CareerOS Student AI — 6-Slide Pitch
 
 ## Slide 1 — Problem
 
-Indian colleges run campus drives with hundreds of resumes, one JD, and one TPO.
+- Students struggle to convert raw resumes into ATS-safe, JD-aligned submissions.
+- Generic AI rewriting often introduces unsupported claims.
+- Job search guidance is fragmented across disconnected tools.
 
-- Students guess formatting and keywords
-- Officers lack cohort-level readiness before day-one interviews
-- Generic AI rewriters invent claims recruiters reject
+## Slide 2 — Product
 
----
+CareerOS Student AI is a student-first placement-readiness workspace:
 
-## Slide 2 — Solution
+- Resume parse + ATS safety
+- JD match scoring
+- Proof-linked rewrite suggestions
+- Job discovery + deterministic agent flow
+- Export-ready outputs
 
-**CareerOS Campus AI** — placement-readiness operating layer (not a job board).
+## Slide 3 — Demo loop
 
-- Parse → score vs JD → proof-linked rewrite → export
-- Officer cohort dashboard + batch intake
-- Intel-optimized matching path (measured sklearnex benchmarks)
+1. Upload resume
+2. Parse + score ATS safety
+3. Compare against JD
+4. Accept evidence-linked recommendations
+5. Export and apply with confidence
 
----
+## Slide 4 — Intel angle
 
-## Slide 3 — Demo loop (student)
+- TF-IDF and ML pipeline acceleration with sklearnex
+- OpenVINO path for inference workloads
+- Benchmark panel with measured p50/p95 and throughput metrics
 
-1. Upload resume (PDF/DOCX)
-2. Paste JD → placement readiness score
-3. Proof-linked rewrite with `unsupported_claims[]`
-4. Jobs + deterministic agent → PDF export
+## Slide 5 — Why now
 
-Campus Assistant: FAQ-grounded guidance (no fabrication).
+- GenAI adoption is high, trust in outputs is low.
+- Students need reliable, explainable, and fast preparation workflows.
+- CareerOS focuses on high-signal readiness, not generic text generation.
 
----
+## Slide 6 — Ask
 
-## Slide 4 — Demo loop (officer)
-
-- Cohort KPIs + readiness buckets (live scorecards)
-- Department heatmap + top skill gaps
-- Batch create + bulk resume upload
-- Review queue sorted by score
-
----
-
-## Slide 5 — Intel optimization
-
-- `services/intel-bench` harness — TF-IDF/sklearnex measured on lab hardware
-- `/lab/intel` panel — p50/p95/speedup from `GET /benchmarks`
-- OpenVINO embedding path: probe + export step documented (run on Python 3.11/3.12)
-
-Honest skips when packages unavailable — no vendor headline numbers.
-
----
-
-## Slide 6 — Ask / traction
-
-- Pilot with one college TPO before next drive
-- Measured benchmark artifact in repo (`docs/benchmarks/`)
-- Security: JWT RBAC, IDOR tests, rate limits, audit log, CI dependency + secrets scan
-
-**Contact:** Bootcamp demo · `docs/pitch/demo-script.md`
+- Pilot with student cohorts
+- Validate conversion from upload to export and application outcomes
+- Expand enterprise controls after core student outcomes stabilize

@@ -1,25 +1,21 @@
-# Campus Assistant — privacy notice
+# Student Assistant — Privacy Notice
 
-## What we send
+## Purpose
 
-- **FAQ mode (default):** Your question is matched against static product FAQ text on our server. No third-party LLM is called.
-- **Optional LLM mode:** When `LLM_API_KEY` is configured server-side, we send:
-  - Retrieved FAQ excerpts
-  - Anonymized score bands (overall, bucket, JD match, ATS safety) — not resume text or scorecard IDs
-  - Your question inside a delimited block
+The assistant helps students understand resume quality, scoring signals, and workflow steps.
 
-## What we do not send
+## Data usage
 
-- Full resume text
-- Email, phone, or other profile PII
-- Other students' data
+- Input messages may include resume/job context supplied by the user.
+- Responses may use internal FAQ logic and configured model providers.
+- Session data is handled under authenticated user scope.
 
-## Logging
+## Guardrails
 
-- Audit events record provider, source ids, and message length — not full chat bodies in application logs.
-- Prompt-injection patterns are rejected before any LLM call.
+- No intentional fabrication of user facts.
+- Prompt-injection defenses are applied before model calls.
+- Sensitive account operations remain API-authenticated.
 
-## Your controls
+## Retention
 
-- Assistant requires student login (JWT).
-- Answers include suggested links only — no autonomous writes to your resume.
+Retention follows environment policy for logs and audit records.

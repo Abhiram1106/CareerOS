@@ -1,25 +1,17 @@
-# Horizontal scale path — core-api + workers
+# Horizontal Scale Notes — Student Platform
 
-## Current shape (bootcamp)
+## API scale
 
-- **core-api:** stateless FastAPI replicas behind a load balancer
-- **core-worker:** Celery workers consuming Redis broker
-- **PostgreSQL:** single primary (readiness data, scorecards, batches)
-- **Redis:** broker + optional cache
+- Run multiple `core-api` replicas behind a load balancer.
+- Keep JWT/session checks stateless at API layer, state in Postgres/Redis.
+- Use connection pooling (`pool_size` and PgBouncer where applicable).
 
-## Scale-out steps
+## Worker and async scale
 
-1. **API tier** — run N identical `core-api` containers; sticky sessions not required (JWT is stateless).
-2. **Workers** — scale `core-worker` replicas; ensure idempotent tasks and `db.close()` in `finally` (already required).
-3. **Rate limits** — replace in-process `RateLimitMiddleware` with Redis-backed counters when N > 1.
-4. **Exports** — use `EXPORT_STORAGE=s3` so PDF jobs from any worker write to shared object storage.
-5. **DB** — connection pool per replica (`pool_size` / PgBouncer); read replicas optional for officer dashboards later.
+- Scale background workers separately from API replicas.
+- Isolate long-running export/agent tasks in worker queue.
 
-## Health checks for orchestrators
+## Data layer
 
-- Liveness: `GET /health`
-- Readiness: `GET /ready` (Postgres ping)
-
-## What not to scale independently (yet)
-
-- `resume-parser`, `match-engine`, `ai-rewriter`, `ats-engine` — internal HTTP only; scale via more core-api traffic, not public replicas.
+- Add read replicas for heavy analytics/reporting workloads.
+- Monitor query latency and lock contention.

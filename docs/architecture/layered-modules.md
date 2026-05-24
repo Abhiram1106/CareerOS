@@ -151,16 +151,12 @@ apps/web/
     workspace/
     panes/
 
-  modules/                         # NEW — feature-first
+  modules/                         # feature-first, flat files only
     auth/
-      services/
-      types/
-      dto/
-    profile/
+    assistant/
+    intel/
     resume/
-    ats/
-    dashboard/
-    officer/                       # Week 4
+    scorecard/
 
   shared/                          # NEW — aliases / docs for cross-module UI
     README.md
@@ -168,9 +164,9 @@ apps/web/
 
 ### Frontend migration checklist
 
-- [ ] `login` / `register` pages → `modules/auth/services`
+- [ ] `login` / `register` pages → `modules/auth/authService.ts`
 - [ ] `workspace/page.tsx` upload `fetch` → `lib/api.ts`
-- [ ] Types from `components/panes/types.ts` → `modules/*/types`
+- [ ] Types from `components/panes/types.ts` → `modules/*/types.ts`
 - [ ] Single auth token key (`cos_auth` via `lib/auth.ts`)
 
 ---

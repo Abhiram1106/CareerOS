@@ -1,51 +1,26 @@
-# Production deployment — CareerOS Campus AI
+# Production Deployment — CareerOS Student AI
 
-## Database schema
+## Required services
 
-- Set **`AUTO_CREATE_TABLES=false`** on `core-api` and Celery workers in every production environment.
-- Apply schema only with Alembic:
+- `core-api`
+- `resume-parser`
+- `ats-engine`
+- `ai-rewriter`
+- `jobs-feed`
+- `postgres`
+- `redis`
 
-```bash
-cd services/core-api
-alembic upgrade head
-```
+## Production checklist
 
-Never rely on SQLAlchemy `create_all` in production — it bypasses migration history and can drift from `entities.py`.
+1. `AUTO_CREATE_TABLES=false`
+2. Run Alembic baseline migration (`0001_student_baseline`)
+3. Configure JWT/DB/Redis secrets from secret manager
+4. Enable HTTPS and secure cookie/session policy
+5. Configure log aggregation and alerting
+6. Validate health checks and readiness probes
 
-## Required environment variables
+## Environment hardening
 
-| Variable | Production value |
-|----------|------------------|
-| `AUTO_CREATE_TABLES` | `false` |
-| `JWT_SECRET` | Strong random secret (not `change-me`) |
-| `DATABASE_URL` | Managed PostgreSQL URL |
-| `ENABLE_OFFICER_SURFACE` | `true` only when TPO review is complete |
-| `LLM_API_KEY` | Optional; leave empty for FAQ-only assistant |
-
-## Docker Compose
-
-Use `docker-compose.prod.yml` overlay or set in your orchestrator:
-
-```yaml
-environment:
-  AUTO_CREATE_TABLES: "false"
-```
-
-Internal services (`resume-parser`, `match-engine`, `ai-rewriter`, `ats-engine`) should not publish host ports — only `core-api` and `web` are public.
-
-```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-```
-
-See also: `docs/deployment/horizontal-scale.md`
-
-## Health checks
-
-- `GET /health` — process up
-- `GET /ready` — database connectivity
-
-## Horizontal scale (path)
-
-- Stateless `core-api` replicas behind a load balancer
-- Shared PostgreSQL + Redis
-- Celery workers scaled independently for export/ATS jobs
+- Restrict CORS to known origins
+- Enforce least-privilege DB credentials
+- Use managed backups and retention policy
