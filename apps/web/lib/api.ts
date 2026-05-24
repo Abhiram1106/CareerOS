@@ -120,6 +120,34 @@ export type OfficerCohortResult = OfficerDashboardResult & {
   review_queue: OfficerReviewItem[];
 };
 
+export type OfficerHeatmapRow = {
+  name: string;
+  strong: number;
+  ready: number;
+  borderline: number;
+  risk: number;
+};
+
+export type OfficerHeatmapResult = {
+  departments: OfficerHeatmapRow[];
+};
+
+export type OfficerSkillGapItem = {
+  skill: string;
+  student_count: number;
+};
+
+export type OfficerSkillGapsResult = {
+  items: OfficerSkillGapItem[];
+};
+
+export type OfficerBatchUploadResult = {
+  batch_id: number;
+  uploaded: number;
+  resume_ids: number[];
+  errors: string[];
+};
+
 export type BenchmarkWorkload = {
   id: string;
   name: string;
@@ -193,6 +221,30 @@ async function request<T>(path: string, method = "GET", body?: unknown, token?: 
 async function uploadFile<T>(path: string, file: File, token: string): Promise<T> {
   const form = new FormData();
   form.append("file", file);
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    let msg = "Upload failed";
+    try {
+      const err = await res.json();
+      msg = err.detail || msg;
+    } catch {
+      // noop
+    }
+    throw new Error(msg);
+  }
+  return res.json();
+}
+
+async function uploadFiles<T>(path: string, files: File[], token: string): Promise<T> {
+  const form = new FormData();
+  for (const file of files) {
+    form.append("files", file);
+  }
   const res = await fetch(`${API_BASE}${path}`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
@@ -344,6 +396,20 @@ export const api = {
 
   officerCohort: (token: string) =>
     request<OfficerCohortResult>("/officer/cohort", "GET", undefined, token),
+
+  officerHeatmap: (token: string) =>
+    request<OfficerHeatmapResult>("/officer/heatmap", "GET", undefined, token),
+
+  officerSkillGaps: (token: string) =>
+    request<OfficerSkillGapsResult>("/officer/skill-gaps", "GET", undefined, token),
+
+  officerCreateBatch: (
+    token: string,
+    payload: { name: string; grad_year: number; dept_id?: number | null }
+  ) => request<{ batch: OfficerBatchItem }>("/officer/batches", "POST", payload, token),
+
+  officerBatchUpload: (token: string, batchId: number, files: File[]) =>
+    uploadFiles<OfficerBatchUploadResult>(`/officer/batches/${batchId}/upload`, files, token),
 
   benchmarks: () => request<BenchmarkPanelResult>("/benchmarks", "GET"),
 

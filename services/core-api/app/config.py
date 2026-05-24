@@ -13,6 +13,7 @@ RESUME_PARSER_URL = os.getenv("RESUME_PARSER_URL", "http://localhost:8004")
 MATCH_ENGINE_URL = os.getenv("MATCH_ENGINE_URL", "http://localhost:8005")
 JOBS_FEED_URL = os.getenv("JOBS_FEED_URL", "http://localhost:8006")
 ENABLE_OFFICER_SURFACE = os.getenv("ENABLE_OFFICER_SURFACE", "false").lower() == "true"
+OFFICER_DEFAULT_COLLEGE_ID = int(os.getenv("OFFICER_DEFAULT_COLLEGE_ID", "0"))
 RATE_LIMIT_ENABLED = os.getenv("RATE_LIMIT_ENABLED", "true").lower() == "true"
 RATE_LIMIT_WINDOW_SECONDS = int(os.getenv("RATE_LIMIT_WINDOW_SECONDS", "60"))
 RATE_LIMIT_MAX_REQUESTS = int(os.getenv("RATE_LIMIT_MAX_REQUESTS", "30"))

@@ -24,6 +24,16 @@ jobs:
         run: |
           pip-audit -r services/core-api/requirements.txt --desc on --severity critical --fail-on critical
 
+      - name: Audit Python dependencies (ai-rewriter)
+        run: |
+          pip-audit -r services/ai-rewriter/requirements.txt --desc on --severity critical --fail-on critical
+        continue-on-error: true
+
+      - name: Audit Python dependencies (resume-parser)
+        run: |
+          pip-audit -r services/resume-parser/requirements.txt --desc on --severity critical --fail-on critical
+        continue-on-error: true
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:

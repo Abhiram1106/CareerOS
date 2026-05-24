@@ -20,13 +20,31 @@ import {
 
 export type WorkspaceTab = "resume" | "scan" | "readiness" | "rewrite" | "jobs" | "builder" | "assistant";
 
+const WORKSPACE_TABS: WorkspaceTab[] = [
+  "resume",
+  "scan",
+  "readiness",
+  "rewrite",
+  "jobs",
+  "builder",
+  "assistant",
+];
+
+export function parseWorkspaceTab(raw: string | null): WorkspaceTab {
+  return WORKSPACE_TABS.includes(raw as WorkspaceTab) ? (raw as WorkspaceTab) : "resume";
+}
+
 type BarScores = Record<ScoreComponentKey, number> | null;
 
-export function usePlacementWorkspace() {
+export function usePlacementWorkspace(initialTab: WorkspaceTab = "resume") {
   const auth = getStoredAuth();
   const token = auth?.token ?? "";
 
-  const [tab, setTab] = useState<WorkspaceTab>("resume");
+  const [tab, setTab] = useState<WorkspaceTab>(initialTab);
+
+  useEffect(() => {
+    setTab(initialTab);
+  }, [initialTab]);
   const [parseResult, setParseResult] = useState<ParseResult | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);

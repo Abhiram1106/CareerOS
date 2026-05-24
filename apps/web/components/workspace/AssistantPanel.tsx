@@ -33,6 +33,26 @@ export function AssistantPanel() {
           scorecard summary only.
         </p>
 
+        <p
+          style={{
+            fontSize: "0.78rem",
+            color: "#717783",
+            marginBottom: 12,
+            lineHeight: 1.5,
+            padding: "8px 10px",
+            borderRadius: 8,
+            background: "rgba(0,113,197,0.06)",
+            border: "1px solid rgba(0,113,197,0.15)",
+          }}
+        >
+          Privacy: messages stay on our servers. If an external LLM key is configured, only FAQ excerpts and
+          anonymized score bands are sent — never your full resume text. See{" "}
+          <a href="/privacy/assistant" style={{ color: "#0071c5" }}>
+            assistant privacy notice
+          </a>
+          .
+        </p>
+
         {!canChat && <p style={{ color: "#93000a", fontSize: "0.82rem" }}>Sign in to use the assistant.</p>}
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>

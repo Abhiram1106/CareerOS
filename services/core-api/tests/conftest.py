@@ -21,6 +21,7 @@ os.environ.setdefault("AUTO_CREATE_TABLES", "true")
 os.environ.setdefault("JWT_SECRET", "test-secret")
 os.environ.setdefault("RATE_LIMIT_ENABLED", "false")
 os.environ.setdefault("LLM_API_KEY", "")
+os.environ.setdefault("ENABLE_OFFICER_SURFACE", "true")
 
 _CORE_API_ROOT = Path(__file__).resolve().parents[1]
 if str(_CORE_API_ROOT) not in sys.path:

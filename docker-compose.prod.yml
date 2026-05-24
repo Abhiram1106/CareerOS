@@ -1,0 +1,8 @@
+# Production overlay — use with: docker compose -f docker-compose.yml -f docker-compose.prod.yml up
+services:
+  core-api:
+    environment:
+      AUTO_CREATE_TABLES: "false"
+  worker:
+    environment:
+      AUTO_CREATE_TABLES: "false"

@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useMemo, useState } from "react";
 
 import { AgentProgress } from "../../../components/workspace/AgentProgress";
 import { AssistantPanel } from "../../../components/workspace/AssistantPanel";
@@ -9,7 +10,11 @@ import { JobCard } from "../../../components/workspace/JobCard";
 import { RewriteDiffPanel } from "../../../components/workspace/RewriteDiffPanel";
 import { ScoreBreakdown } from "../../../components/workspace/ScoreBreakdown";
 import { ResumeDropzone } from "../../../components/workspace/ResumeDropzone";
-import { usePlacementWorkspace, type WorkspaceTab } from "../../../hooks/usePlacementWorkspace";
+import {
+  parseWorkspaceTab,
+  usePlacementWorkspace,
+  type WorkspaceTab,
+} from "../../../hooks/usePlacementWorkspace";
 import { SCORE_COMPONENTS, TEMPLATE_OPTIONS, readinessBucket } from "../../../lib/placement";
 
 const TABS: ReadonlyArray<[WorkspaceTab, string]> = [
@@ -79,8 +84,10 @@ function SkillLists({ matched, missing }: { matched: string[]; missing: string[]
   );
 }
 
-export default function WorkspacePage() {
-  const ws = usePlacementWorkspace();
+function WorkspacePageContent() {
+  const searchParams = useSearchParams();
+  const initialTab = parseWorkspaceTab(searchParams.get("tab"));
+  const ws = usePlacementWorkspace(initialTab);
   const [jobsQuery, setJobsQuery] = useState("software engineer");
   const [jobsLoc, setJobsLoc] = useState("India");
   const wizardSteps = useMemo(
@@ -536,5 +543,17 @@ export default function WorkspacePage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function WorkspacePage() {
+  return (
+    <Suspense
+      fallback={
+        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.82rem", color: "#717783" }}>Loading workspace…</p>
+      }
+    >
+      <WorkspacePageContent />
+    </Suspense>
   );
 }

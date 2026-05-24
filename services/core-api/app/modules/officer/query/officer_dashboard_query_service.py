@@ -4,14 +4,16 @@ from sqlalchemy.orm import Session
 
 from ....adapter.db.persistence.officer.officer_cohort_view import OfficerCohortView
 from ..dto.officer_dto import OfficerBucketCounts, OfficerCohortKpi, OfficerDashboardResponse
+from ..officer_scope import resolve_officer_college_id
 
 
 class OfficerDashboardQueryService:
     def __init__(self, db: Session) -> None:
         self._view = OfficerCohortView(db)
+        self._college_id = resolve_officer_college_id(db)
 
     def get_dashboard(self) -> OfficerDashboardResponse:
-        rows = self._view.latest_scorecards_by_student()
+        rows = self._view.latest_scorecards_by_student(self._college_id)
         if not rows:
             return OfficerDashboardResponse(
                 kpis=OfficerCohortKpi(
