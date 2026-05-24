@@ -10,17 +10,17 @@
 |-------|-------|
 | Updated | 2026-05-23 |
 | Tool | cursor |
-| Session file | `01-SESSIONS/2026-05-23/session-phase4-closeout-cursor.md` |
-| User ask | Go to next step |
+| Session file | `01-SESSIONS/2026-05-23/session-phase4-security-gate-cursor.md` |
+| User ask | Phase 4 security gate + bootcamp polish + Phase 7 stub (ordered) |
 
 ---
 
 ## Active thread
 
-- **Shipped:** TPO cohort readiness PDF (`GET /officer/reports/readiness`), dashboard download, horizontal-scale doc, prod compose port hardening.
-- **Next (Phase 4 security gate):** Pydantic `extra=forbid` on sensitive DTOs, expand `docs/security/threat-model.md`, handler DI factories.
-- **Manual:** Intel-bench on Py 3.11/3.12, pitch PNGs per `docs/pitch/screenshots/README.md`.
-- **Later:** Phase 7 enterprise (OIDC, DPDP).
+- **Shipped:** Phase 4 security gate — `StrictModel`, handler DI factories, expanded threat model; Phase 7 roadmap stub.
+- **Bootcamp manual:** Start Docker Desktop → `.\scripts\run-intel-bench-py312.ps1`; capture pitch PNGs per `docs/pitch/screenshots/README.md`.
+- **Prod gate:** Enable officer surface only after review: `ENABLE_OFFICER_SURFACE=true`.
+- **Later:** Phase 7 implementation (OIDC, DPDP) — see `docs/roadmap/phase7-enterprise.md`.
 
 ---
 
@@ -28,8 +28,9 @@
 
 | Check | Result |
 |-------|--------|
-| pytest officer analytics | 3 passed |
+| pytest core-api | 23 passed |
 | tsc --noEmit | passed |
+| AST core-api | OK |
 
 ---
 
@@ -37,13 +38,13 @@
 
 | Commit | Scope |
 |--------|--------|
-| `04b2f16` | feat: TPO PDF report + prod docs |
-| `e1c0c9a` | memory: Phase 4 close-out |
-| Push | `origin/main` |
+| (pending this reply) | feat: Phase 4 security gate |
+| (pending this reply) | memory: Phase 4 security gate + git-shutdown rule |
 
 ---
 
 ## Read first next chat
 
-1. `active-goals.md` — Phase 4 security blocking items
-2. `session-phase4-closeout-cursor.md`
+1. `active-goals.md` — officer prod flag + bootcamp polish
+2. `session-phase4-security-gate-cursor.md`
+3. `docs/security/threat-model.md`

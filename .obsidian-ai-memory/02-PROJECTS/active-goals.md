@@ -49,14 +49,14 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 ### Security (blocking)
 - [x] **IDOR prevention:** resume/agent_run/export scoped to `user_id` (+ tests in `test_security_idor.py`)
 - [x] **OpenAPI:** `packages/contracts/openapi/core-api.openapi.json` via `scripts/export_openapi.py`
-- [ ] **API validation:** Pydantic `extra=forbid` on sensitive DTOs (upload MIME/size done)
+- [x] **API validation:** Pydantic `extra=forbid` on sensitive DTOs via `StrictModel` + `test_validation_strict.py`
 - [x] **Rate limiting:** in-process middleware on auth, upload, `/agent/run`
 - [x] **Security headers:** CSP, X-Frame-Options, nosniff, HSTS when HTTPS
 - [x] **Audit log:** login, logout, export queue, agent complete, officer cohort view
 - [x] **Session hardening:** `POST /auth/logout` revokes `session_tokens`
-- [ ] **DI cleanup:** handler factories in `dependencies.py` for testability
+- [x] **DI cleanup:** handler factories in `handler_dependencies.py` (re-exported from `dependencies.py`)
 - [x] **Tests:** IDOR + RBAC + headers (`test_security_idor.py`)
-- [ ] **Threat model:** expand `docs/security/threat-model.md` (STRIDE-lite stub exists)
+- [x] **Threat model:** expanded `docs/security/threat-model.md` (officer, assistant, strict DTOs, DI)
 
 ### Infrastructure
 - [x] Prod compose profile: `docker-compose.prod.yml` + `docs/deployment/production.md`
@@ -112,6 +112,8 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 ---
 
 ## Phase 7 — Enterprise hardening (post-bootcamp)
+
+> Roadmap stub: `docs/roadmap/phase7-enterprise.md` (OIDC, DPDP, multi-college — not implemented)
 
 - [ ] OAuth2/OIDC (college SSO)
 - [ ] Refresh token rotation + device/session management UI

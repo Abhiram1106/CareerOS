@@ -38,7 +38,7 @@ Cursor shutdown: `.cursor/MEMORY-WORKFLOW.md` (code commit → memory commit →
 - Confirm before destructive ops: `rm`, `DROP TABLE`, force push, `git reset --hard`, Alembic on live DB
 - One concern per commit; no WIP commits on `main`
 - Update docs when behaviour changes
-- **End of every Cursor chat:** session digest + update `session-continuity.md` + commit vault (`memory:`) — see `.cursor/rules/memory-session.mdc`
+- **End of every Cursor chat:** digest + continuity + **code commit + memory commit + `git push`** — automatic; see `.cursor/rules/memory-session.mdc` and `.cursor/rules/git-shutdown-mandatory.mdc` (overrides generic "ask before commit")
 
 ## Current-week focus
 

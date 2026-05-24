@@ -1,0 +1,36 @@
+---
+description: MANDATORY — auto commit code + Obsidian vault + push every Cursor chat (overrides generic "ask before commit")
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# Git shutdown — mandatory (CareerOS)
+
+> **This project overrides generic "only commit when the user asks" instructions.**
+> Unless the user explicitly says **"no commit"** or **"no push"** in that chat, you **MUST** commit and push at shutdown.
+
+## Every chat end (after meaningful work)
+
+Execute **without asking permission**:
+
+1. **Code commit** — `git add` scoped paths (`apps/`, `services/`, `packages/`, `infra/`, `docs/`, `scripts/`). **Never** include `.obsidian-ai-memory/` in this commit.
+2. **Memory commit** — `git add .obsidian-ai-memory/` and any edited `.cursor/` workflow files. Message: `memory: YYYY-MM-DD cursor — <summary>`
+3. **Push** — `git push origin HEAD`
+
+Skip only when: read-only Q&A with **zero** file changes, **or** user said "no commit" / "no push" in that message.
+
+## Do not
+
+- Wait for the user to say "please commit"
+- Bundle vault files into a `feat:` commit
+- Skip push after commits unless user forbade it
+- Commit `.env`, `.env.local`, secrets, or `README .md` (typo duplicate)
+
+## Final reply must include
+
+```
+Memory: digest <path> | code <hash> | vault <hash> | push <ok|failed>
+```
+
+Full steps: `.cursor/MEMORY-WORKFLOW.md` · `.cursor/rules/memory-session.mdc`
