@@ -67,19 +67,19 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 ## Phase 5 — Intel lab + production posture
 
 ### Product
-- [ ] `services/intel-bench` — OpenVINO + sklearnex full harness
-- [ ] `apps/web/lab/intel` — p50/p95/throughput/accuracy-delta panel
+- [x] `services/intel-bench` — harness (sklearnex measured; OpenVINO/KMeans skipped on Py3.13)
+- [x] `apps/web/lab/intel` — benchmark panel wired to `GET /benchmarks`
 - [ ] 6-slide pitch deck, product screenshots
 
 ### Security (blocking)
-- [ ] CI dependency audit (`pip-audit`, `pnpm audit`) — fail on critical
+- [x] CI dependency audit (`pip-audit`, `pnpm audit`) — fail on critical
 - [ ] `AUTO_CREATE_TABLES=false` in prod documentation; Alembic-only schema
 - [ ] Secrets scan in CI (no keys in diff)
-- [ ] Benchmark endpoints admin-only or read-only public aggregate
+- [x] Benchmark endpoints read-only public aggregate
 
 ### Availability
 - [ ] Document horizontal scale path for core-api + workers
-- [ ] Health/readiness endpoints for orchestration (K8s-ready pattern)
+- [x] Health/readiness endpoints (`GET /ready` DB check)
 
 ---
 
@@ -88,26 +88,26 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 > Lightweight assistant for onboarding, workflow help, and score interpretation—not a general-purpose chatbot.
 
 ### Product
-- [ ] In-app assistant panel (student workspace)
-- [ ] Grounded answers: product docs + user's own latest scorecard summary
-- [ ] Suggested actions: link to Builder, Jobs, rewrite tab (no autonomous writes without confirm)
+- [x] In-app assistant panel (student workspace tab)
+- [x] Grounded answers: static FAQ + user's latest scorecard summary
+- [x] Suggested actions: link to Builder, Jobs, rewrite tab (no autonomous writes)
 
 ### Security (blocking)
-- [ ] **Auth required** — same JWT; no anonymous LLM proxy
-- [ ] **Context isolation** — never inject another user's resume/score into prompt
-- [ ] **Prompt injection defenses** — fixed system prompt; tool calls RBAC-gated
-- [ ] **LLM keys server-side only** — `LLM_PROVIDER`, `LLM_API_KEY` in env
+- [x] **Auth required** — same JWT; no anonymous LLM proxy
+- [x] **Context isolation** — scorecard scoped to `user_id` in view
+- [ ] **Prompt injection defenses** — fixed system prompt; tool calls RBAC-gated (partial)
+- [x] **LLM keys server-side only** — `LLM_API_KEY` in env
 - [ ] **Logging redaction** — no PII in application logs
 - [ ] **Privacy notice** — third-party LLM disclosure if external API used
 
 ### Technical options (explore in order)
-- [ ] **RAG pipeline:** index `docs/` + static FAQ; retrieval via embeddings (TF-IDF or small embedding model)
-- [ ] **External LLM:** Claude / DeepSeek / OpenAI-compatible API via httpx in `services/assistant/`
+- [x] **RAG pipeline:** static FAQ; TF-IDF retrieval
+- [x] **External LLM:** OpenAI-compatible API via httpx (optional when key set)
 - [ ] **TensorFlow (optional):** embedding or re-ranker for RAG—offline index build, no training on student PII
 - [ ] **Internal dev agents (Surf-like):** dev-only automation; not student runtime unless separately threat-modeled
 
 ### API
-- [ ] `POST /assistant/chat` — Pydantic request/response, OpenAPI documented, rate limited
+- [x] `POST /assistant/chat` — Pydantic request/response, rate limited
 
 ---
 
