@@ -42,3 +42,7 @@ export async function uploadOfficerBatch(
 ): Promise<OfficerBatchUploadResult> {
   return api.officerBatchUpload(token, batchId, files);
 }
+
+export async function downloadOfficerReadinessReport(token: string): Promise<Blob> {
+  return api.downloadOfficerReadinessReport(token);
+}

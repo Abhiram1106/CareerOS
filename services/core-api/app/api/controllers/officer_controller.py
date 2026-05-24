@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi.responses import Response
 from sqlalchemy.orm import Session
 
 from ...database import get_db
@@ -12,6 +13,7 @@ from ...modules.officer.query.officer_batch_query_service import OfficerBatchQue
 from ...modules.officer.query.officer_cohort_query_service import OfficerCohortQueryService
 from ...modules.officer.query.officer_dashboard_query_service import OfficerDashboardQueryService
 from ...modules.officer.query.officer_heatmap_query_service import OfficerHeatmapQueryService
+from ...modules.officer.query.officer_readiness_report_service import OfficerReadinessReportService
 from ...modules.officer.query.officer_review_query_service import OfficerReviewQueryService
 from ...modules.officer.query.officer_skill_gaps_query_service import OfficerSkillGapsQueryService
 from ...services.audit import record_audit
@@ -134,6 +136,26 @@ async def officer_batch_upload(
         payload={"uploaded": result.uploaded, "errors": len(result.errors)},
     )
     return result.model_dump()
+
+
+@router.get("/reports/readiness")
+def officer_readiness_report(
+    user: User = Depends(require_officer),
+    db: Session = Depends(get_db),
+):
+    pdf_bytes = OfficerReadinessReportService(db).generate_pdf_bytes()
+    record_audit(
+        db,
+        actor_id=user.id,
+        action="officer.report.readiness",
+        target_type="cohort",
+        payload={"bytes": len(pdf_bytes)},
+    )
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": 'attachment; filename="cohort-readiness-report.pdf"'},
+    )
 
 
 @router.get("/cohort")

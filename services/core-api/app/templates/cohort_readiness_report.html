@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @page { size: A4; margin: 18mm 14mm; }
+      body { font-family: DejaVu Sans, Arial, sans-serif; color: #111827; font-size: 10pt; line-height: 1.4; }
+      h1 { font-size: 18pt; margin: 0 0 2mm 0; color: #0071c5; }
+      .meta { color: #6b7280; font-size: 9pt; margin-bottom: 8mm; }
+      h2 { font-size: 12pt; margin: 6mm 0 2mm 0; border-bottom: 1px solid #e5e7eb; padding-bottom: 1mm; }
+      table { width: 100%; border-collapse: collapse; margin-bottom: 4mm; }
+      th, td { border: 1px solid #e5e7eb; padding: 2mm 3mm; text-align: left; }
+      th { background: #f3f4f6; font-weight: 600; }
+      .kpi-grid { display: table; width: 100%; margin-bottom: 4mm; }
+      .kpi { display: table-cell; width: 25%; padding: 2mm; vertical-align: top; }
+      .kpi-val { font-size: 14pt; font-weight: 700; color: #0071c5; }
+      .kpi-label { font-size: 8pt; color: #6b7280; }
+      .footer { margin-top: 8mm; color: #9ca3af; font-size: 8pt; }
+    </style>
+  </head>
+  <body>
+    <h1>Cohort Readiness Report</h1>
+    <div class="meta">CareerOS Campus AI · Generated {{GENERATED_AT}} · College scope: {{COLLEGE_LABEL}}</div>
+
+    <h2>Summary KPIs</h2>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-val">{{STUDENTS_SCORED}}</div><div class="kpi-label">Students scored</div></div>
+      <div class="kpi"><div class="kpi-val">{{AVG_READINESS}}</div><div class="kpi-label">Avg readiness</div></div>
+      <div class="kpi"><div class="kpi-val">{{PARSE_SAFE_RATE}}%</div><div class="kpi-label">Parse-safe rate</div></div>
+      <div class="kpi"><div class="kpi-val">{{READY_COUNT}}</div><div class="kpi-label">Ready + strong</div></div>
+    </div>
+
+    <h2>Readiness buckets</h2>
+    <table>
+      <tr><th>Bucket</th><th>Count</th></tr>
+      <tr><td>Strong</td><td>{{BUCKET_STRONG}}</td></tr>
+      <tr><td>Ready</td><td>{{BUCKET_READY}}</td></tr>
+      <tr><td>Borderline</td><td>{{BUCKET_BORDERLINE}}</td></tr>
+      <tr><td>At risk</td><td>{{BUCKET_RISK}}</td></tr>
+    </table>
+
+    <h2>Department heatmap</h2>
+    {{HEATMAP_TABLE}}
+
+    <h2>Top skill gaps</h2>
+    {{SKILL_GAPS_TABLE}}
+
+    <div class="footer">Placement-readiness aggregates from latest scorecards per student. Not for external distribution without TPO review.</div>
+  </body>
+</html>

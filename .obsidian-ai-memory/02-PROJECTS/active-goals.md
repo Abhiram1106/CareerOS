@@ -43,7 +43,7 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 - [x] Officer cohort API `GET /officer/cohort` (live aggregates from scorecards)
 - [x] `apps/web/(officer)/` — dashboard, review, batches wired to live APIs
 - [x] Batch upload, dept heatmap, skill-gap chart (company-fit columns deferred)
-- [ ] Readiness PDF report export for TPO
+- [x] Readiness PDF report export for TPO (`GET /officer/reports/readiness`)
 - [ ] Enable officer surface only after review: `ENABLE_OFFICER_SURFACE=true`
 
 ### Security (blocking)
@@ -60,7 +60,7 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 
 ### Infrastructure
 - [x] Prod compose profile: `docker-compose.prod.yml` + `docs/deployment/production.md`
-- [ ] Internal-only ports for parser/match/rewriter (no host publish except core-api/web)
+- [x] Internal-only ports for parser/match/rewriter (`docker-compose.prod.yml` clears match-engine/jobs-feed host ports)
 
 ---
 
@@ -78,7 +78,7 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 - [x] Benchmark endpoints read-only public aggregate
 
 ### Availability
-- [ ] Document horizontal scale path for core-api + workers
+- [x] Document horizontal scale path for core-api + workers (`docs/deployment/horizontal-scale.md`)
 - [x] Health/readiness endpoints (`GET /ready` DB check)
 
 ---

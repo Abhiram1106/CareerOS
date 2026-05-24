@@ -74,6 +74,15 @@ def test_officer_heatmap_and_skill_gaps(client, db_session):
     assert items[0]["skill"] == "Python"
 
 
+def test_officer_readiness_report_pdf(client, db_session):
+    token = _officer(db_session)
+    headers = {"Authorization": f"Bearer {token}"}
+    resp = client.get("/officer/reports/readiness", headers=headers)
+    assert resp.status_code == 200
+    assert resp.headers["content-type"] == "application/pdf"
+    assert resp.content[:4] == b"%PDF"
+
+
 def test_officer_create_batch(client, db_session):
     token = _officer(db_session)
     headers = {"Authorization": f"Bearer {token}"}

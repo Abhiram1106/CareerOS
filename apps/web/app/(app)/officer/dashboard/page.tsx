@@ -4,6 +4,7 @@ import { OfficerBucketSummary } from "../../../../components/officer/OfficerBuck
 import { OfficerDeptHeatmap } from "../../../../components/officer/OfficerDeptHeatmap";
 import { OfficerKpiGrid } from "../../../../components/officer/OfficerKpiGrid";
 import { OfficerPageShell } from "../../../../components/officer/OfficerPageShell";
+import { OfficerReportDownload } from "../../../../components/officer/OfficerReportDownload";
 import { OfficerSkillGaps } from "../../../../components/officer/OfficerSkillGaps";
 import { OfficerStateMessage } from "../../../../components/officer/OfficerStateMessage";
 import { useOfficerDashboard } from "../../../../modules/officer/hooks/useOfficerDashboard";
@@ -23,6 +24,7 @@ export default function OfficerDashboardPage() {
       <OfficerStateMessage loading={loading} error={error} />
       {!loading && !error && data && (
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <OfficerReportDownload />
           <OfficerKpiGrid kpis={data.kpis} />
           <OfficerBucketSummary buckets={data.buckets} />
           <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 20 }}>

@@ -33,6 +33,12 @@ environment:
 
 Internal services (`resume-parser`, `match-engine`, `ai-rewriter`, `ats-engine`) should not publish host ports — only `core-api` and `web` are public.
 
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+See also: `docs/deployment/horizontal-scale.md`
+
 ## Health checks
 
 - `GET /health` — process up

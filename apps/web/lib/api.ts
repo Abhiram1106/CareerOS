@@ -411,6 +411,24 @@ export const api = {
   officerBatchUpload: (token: string, batchId: number, files: File[]) =>
     uploadFiles<OfficerBatchUploadResult>(`/officer/batches/${batchId}/upload`, files, token),
 
+  downloadOfficerReadinessReport: async (token: string): Promise<Blob> => {
+    const res = await fetch(`${API_BASE}/officer/reports/readiness`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      let msg = "Readiness report download failed";
+      try {
+        const err = (await res.json()) as { detail?: string };
+        msg = err.detail || msg;
+      } catch {
+        // noop
+      }
+      throw new Error(msg);
+    }
+    return res.blob();
+  },
+
   benchmarks: () => request<BenchmarkPanelResult>("/benchmarks", "GET"),
 
   assistantChat: (token: string, message: string) =>

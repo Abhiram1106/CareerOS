@@ -1,4 +1,5 @@
 # Production overlay — use with: docker compose -f docker-compose.yml -f docker-compose.prod.yml up
+# Only core-api (8000) and web (3000) should be published to the host in production.
 services:
   core-api:
     environment:
@@ -6,3 +7,7 @@ services:
   worker:
     environment:
       AUTO_CREATE_TABLES: "false"
+  match-engine:
+    ports: []
+  jobs-feed:
+    ports: []
