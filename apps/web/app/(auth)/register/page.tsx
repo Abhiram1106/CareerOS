@@ -32,7 +32,7 @@ export default function RegisterPage() {
         role,
       });
       storeAuth({ token: data.token, email: data.email, full_name: data.full_name, role: data.role as UserRole });
-      router.replace(role === "officer" ? "/officer" : "/workspace");
+      router.replace(role === "officer" ? "/officer/dashboard" : "/workspace");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Cannot reach the server. Please try again.");
     } finally {

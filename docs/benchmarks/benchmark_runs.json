@@ -1,0 +1,68 @@
+{
+  "generated_at": "2026-05-24T07:38:19.307472+00:00",
+  "hardware": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 154 Stepping 4, GenuineIntel",
+    "python": "3.13.7"
+  },
+  "methodology": {
+    "baseline": "Stock sklearn / PyTorch CPU (no Intel patches)",
+    "intel_path": "sklearnex.patch_sklearn() before sklearn imports; OpenVINO when IR present",
+    "accuracy_guard": "If accuracy_delta > 1% vs baseline, do not promote INT8 \u2014 stay FP16"
+  },
+  "workloads": [
+    {
+      "id": "tfidf_cosine",
+      "name": "TF-IDF + cosine similarity (match-engine)",
+      "tool": "sklearnex",
+      "status": "measured",
+      "note": "",
+      "baseline_p50_ms": 20.878,
+      "intel_p50_ms": 18.381,
+      "baseline_p95_ms": 29.978,
+      "intel_p95_ms": 25.968,
+      "speedup": 1.136,
+      "accuracy_delta_pct": 0.0,
+      "throughput_baseline_rph": 163465.5,
+      "throughput_intel_rph": 202625.7,
+      "dataset": {
+        "resumes": 50,
+        "jds": 50
+      }
+    },
+    {
+      "id": "kmeans_cohort",
+      "name": "KMeans cohort clustering",
+      "tool": "sklearnex",
+      "status": "skipped",
+      "note": "Traceback (most recent call last):\n  File \"C:\\Users\\ADMIN\\Desktop\\Projects\\CareerOS\\services\\intel-bench\\workloads\\sklearn_kmeans.py\", line 45, in <module>\n    print(json.dumps(run_kmeans_benchmark(patch_intel=args.patch_mode == \"intel\")))\n                     ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ADMIN\\Desktop\\Projects\\CareerOS\\services\\intel-bench\\workloads\\kmeans_core.py\", line 11, in run_kmeans_benchmark\n    from sklearnex import patch_sklearn\n  File \"",
+      "baseline_p50_ms": null,
+      "intel_p50_ms": null,
+      "baseline_p95_ms": null,
+      "intel_p95_ms": null,
+      "speedup": null,
+      "accuracy_delta_pct": null,
+      "throughput_baseline_rph": null,
+      "throughput_intel_rph": null,
+      "dataset": {}
+    },
+    {
+      "id": "embedding_openvino",
+      "name": "Sentence-transformer inference",
+      "tool": "OpenVINO FP16",
+      "status": "skipped",
+      "note": "openvino package not installed in this environment.",
+      "baseline_p50_ms": null,
+      "intel_p50_ms": null,
+      "baseline_p95_ms": null,
+      "intel_p95_ms": null,
+      "speedup": null,
+      "accuracy_delta_pct": null,
+      "throughput_baseline_rph": null,
+      "throughput_intel_rph": null,
+      "dataset": {
+        "devices": []
+      }
+    }
+  ]
+}

@@ -40,15 +40,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const navLinks = isOfficer
     ? [
-        { href: "/officer", label: "Dashboard" },
+        { href: "/officer/dashboard", label: "Dashboard" },
         { href: "/officer/batches", label: "Batches" },
         { href: "/officer/review", label: "Review Queue" },
-        { href: "/lab", label: "Intel Lab" },
+        { href: "/lab/intel", label: "Intel Lab" },
       ]
     : [
         { href: "/", label: "Overview" },
         { href: "/workspace", label: "Workspace" },
-        { href: "/lab", label: "Intel Lab" },
+        { href: "/lab/intel", label: "Intel Lab" },
       ];
 
   return (
@@ -61,15 +61,21 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </Link>
 
           <div className="app-nav-links" role="navigation">
-            {navLinks.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className={`app-nav-link${pathname === href ? " active" : ""}`}
-              >
-                {label}
-              </Link>
-            ))}
+            {navLinks.map(({ href, label }) => {
+              const active =
+                pathname === href ||
+                (href !== "/" && href !== "/lab/intel" && pathname?.startsWith(href) === true) ||
+                (href === "/lab/intel" && pathname?.startsWith("/lab") === true);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`app-nav-link${active ? " active" : ""}`}
+                >
+                  {label}
+                </Link>
+              );
+            })}
           </div>
 
           <div className="app-nav-end">

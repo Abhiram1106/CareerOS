@@ -1,6 +1,11 @@
 import os
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_DEFAULT_BENCH = _REPO_ROOT / "docs" / "benchmarks" / "benchmark_runs.json"
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./careeros_dev.db")
+BENCHMARK_ARTIFACT_PATH = os.getenv("BENCHMARK_ARTIFACT_PATH", str(_DEFAULT_BENCH))
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 ATS_ENGINE_URL = os.getenv("ATS_ENGINE_URL", "http://localhost:8001")
 AI_REWRITER_URL = os.getenv("AI_REWRITER_URL", "http://localhost:8003")

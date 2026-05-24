@@ -3,7 +3,10 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from sqlalchemy import text
+
 from .api.router import api_router
+from .database import SessionLocal
 from .db_bootstrap import DatabaseNotReadyError, bootstrap_database
 from .middleware.rate_limit import RateLimitMiddleware
 from .middleware.security_headers import SecurityHeadersMiddleware
@@ -24,6 +27,19 @@ app.add_middleware(
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/ready")
+def ready():
+    """K8s-style readiness — verifies database connectivity."""
+    db = SessionLocal()
+    try:
+        db.execute(text("SELECT 1"))
+        return {"status": "ready", "database": "ok"}
+    except Exception as exc:
+        return {"status": "not_ready", "database": str(exc)}
+    finally:
+        db.close()
 
 
 @app.on_event("startup")

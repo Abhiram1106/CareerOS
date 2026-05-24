@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 
+import pytest
+
 from app.adapter.db.persistence.agent_run.agent_run_repo import AgentRunRepo
 from app.models.entities import Resume, ResumeSection, User
 from app.services.auth import create_session
@@ -82,16 +84,19 @@ def test_logout_revokes_token(client, db_session):
     assert profile.status_code == 401
 
 
-def test_officer_cohort_requires_officer_role(client, db_session):
-    _, student_token = _seed_user(db_session, "student-cohort@example.com", role="student")
-    _, officer_token = _seed_user(db_session, "officer-cohort@example.com", role="officer")
+@pytest.mark.parametrize(
+    "path",
+    ["/officer/dashboard", "/officer/review", "/officer/batches", "/officer/cohort"],
+)
+def test_officer_read_routes_require_officer_role(client, db_session, path):
+    _, student_token = _seed_user(db_session, f"student-{path}@example.com", role="student")
+    _, officer_token = _seed_user(db_session, f"officer-{path}@example.com", role="officer")
 
-    denied = client.get("/officer/cohort", headers={"Authorization": f"Bearer {student_token}"})
+    denied = client.get(path, headers={"Authorization": f"Bearer {student_token}"})
     assert denied.status_code == 403
 
-    allowed = client.get("/officer/cohort", headers={"Authorization": f"Bearer {officer_token}"})
+    allowed = client.get(path, headers={"Authorization": f"Bearer {officer_token}"})
     assert allowed.status_code == 200
-    assert "kpis" in allowed.json()
 
 
 def test_security_headers_present(client):

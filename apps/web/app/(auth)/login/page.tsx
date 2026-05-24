@@ -28,7 +28,7 @@ export default function LoginPage() {
         full_name: data.full_name,
         role: (data.role ?? role) as UserRole,
       });
-      router.replace(data.role === "officer" ? "/officer" : "/workspace");
+      router.replace(data.role === "officer" ? "/officer/dashboard" : "/workspace");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Cannot reach the server. Please try again.");
     } finally {

@@ -26,7 +26,31 @@ class OfficerReviewItem(BaseModel):
     resume_id: int
 
 
+class OfficerDashboardResponse(BaseModel):
+    kpis: OfficerCohortKpi
+    buckets: OfficerBucketCounts
+
+
+class OfficerReviewListResponse(BaseModel):
+    items: list[OfficerReviewItem]
+
+
+class OfficerBatchItem(BaseModel):
+    id: int
+    name: str
+    grad_year: int
+    college_id: int
+    dept_id: int | None
+    created_at: str
+
+
+class OfficerBatchListResponse(BaseModel):
+    batches: list[OfficerBatchItem]
+
+
 class OfficerCohortResponse(BaseModel):
+    """Legacy aggregate for clients that fetch dashboard + queue in one call."""
+
     kpis: OfficerCohortKpi
     buckets: OfficerBucketCounts
     review_queue: list[OfficerReviewItem]

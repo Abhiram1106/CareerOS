@@ -97,7 +97,7 @@ export default function OverviewPage() {
               <p style={{ fontSize: "0.88rem", color: "#414752", lineHeight: 1.6, marginBottom: 20 }}>
                 Monitor batch readiness, view department heatmaps, enforce AI guardrails, and track top skill gaps before every drive.
               </p>
-              <Link href="/officer" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", padding: "13px", borderRadius: 10, background: "transparent", color: "#005d7f", fontWeight: 600, fontSize: "0.9rem", textDecoration: "none", border: "2px solid #005d7f", transition: "background 0.15s, color 0.15s" }}>
+              <Link href="/officer/dashboard" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", padding: "13px", borderRadius: 10, background: "transparent", color: "#005d7f", fontWeight: 600, fontSize: "0.9rem", textDecoration: "none", border: "2px solid #005d7f", transition: "background 0.15s, color 0.15s" }}>
                 Officer command center
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />

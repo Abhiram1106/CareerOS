@@ -71,6 +71,79 @@ export type JobsSearchResult = {
   results: JobSearchItem[];
 };
 
+export type OfficerKpis = {
+  students_scored: number;
+  avg_readiness: number;
+  parse_safe_rate: number;
+  ready_count: number;
+};
+
+export type OfficerBuckets = {
+  strong: number;
+  ready: number;
+  borderline: number;
+  risk: number;
+};
+
+export type OfficerReviewItem = {
+  student_name: string;
+  target_role: string;
+  overall_score: number;
+  bucket: string;
+  scorecard_id: number;
+  resume_id: number;
+};
+
+export type OfficerDashboardResult = {
+  kpis: OfficerKpis;
+  buckets: OfficerBuckets;
+};
+
+export type OfficerReviewListResult = {
+  items: OfficerReviewItem[];
+};
+
+export type OfficerBatchItem = {
+  id: number;
+  name: string;
+  grad_year: number;
+  college_id: number;
+  dept_id: number | null;
+  created_at: string;
+};
+
+export type OfficerBatchListResult = {
+  batches: OfficerBatchItem[];
+};
+
+export type OfficerCohortResult = OfficerDashboardResult & {
+  review_queue: OfficerReviewItem[];
+};
+
+export type BenchmarkWorkload = {
+  id: string;
+  name: string;
+  tool: string;
+  status: string;
+  note: string;
+  baseline_p50_ms: number | null;
+  intel_p50_ms: number | null;
+  baseline_p95_ms: number | null;
+  intel_p95_ms: number | null;
+  speedup: number | null;
+  accuracy_delta_pct: number | null;
+  throughput_baseline_rph: number | null;
+  throughput_intel_rph: number | null;
+  dataset: Record<string, unknown>;
+};
+
+export type BenchmarkPanelResult = {
+  generated_at: string;
+  hardware: { platform: string; processor: string; python: string };
+  methodology: { baseline: string; intel_path: string; accuracy_guard: string };
+  workloads: BenchmarkWorkload[];
+};
+
 export type AgentRunResult = {
   run_id: number;
   status: string;
@@ -250,22 +323,17 @@ export const api = {
   logout: (token: string) =>
     request<{ ok: boolean; revoked: boolean }>("/auth/logout", "POST", undefined, token),
 
+  officerDashboard: (token: string) =>
+    request<OfficerDashboardResult>("/officer/dashboard", "GET", undefined, token),
+
+  officerReview: (token: string) =>
+    request<OfficerReviewListResult>("/officer/review", "GET", undefined, token),
+
+  officerBatches: (token: string) =>
+    request<OfficerBatchListResult>("/officer/batches", "GET", undefined, token),
+
   officerCohort: (token: string) =>
-    request<{
-      kpis: {
-        students_scored: number;
-        avg_readiness: number;
-        parse_safe_rate: number;
-        ready_count: number;
-      };
-      buckets: { strong: number; ready: number; borderline: number; risk: number };
-      review_queue: Array<{
-        student_name: string;
-        target_role: string;
-        overall_score: number;
-        bucket: string;
-        scorecard_id: number;
-        resume_id: number;
-      }>;
-    }>("/officer/cohort", "GET", undefined, token),
+    request<OfficerCohortResult>("/officer/cohort", "GET", undefined, token),
+
+  benchmarks: () => request<BenchmarkPanelResult>("/benchmarks", "GET"),
 };
