@@ -41,8 +41,8 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 
 ### Product
 - [x] Officer cohort API `GET /officer/cohort` (live aggregates from scorecards)
-- [ ] `apps/web/(officer)/` — wire UI to API (page exists with mock data)
-- [ ] Batch upload, dept heatmap, skill-gap chart, company-fit columns
+- [x] `apps/web/(officer)/` — dashboard, review, batches wired to live APIs
+- [x] Batch upload, dept heatmap, skill-gap chart (company-fit columns deferred)
 - [ ] Readiness PDF report export for TPO
 - [ ] Enable officer surface only after review: `ENABLE_OFFICER_SURFACE=true`
 
@@ -59,7 +59,7 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 - [ ] **Threat model:** expand `docs/security/threat-model.md` (STRIDE-lite stub exists)
 
 ### Infrastructure
-- [ ] Prod compose profile: TLS termination notes, secrets via env (no defaults)
+- [x] Prod compose profile: `docker-compose.prod.yml` + `docs/deployment/production.md`
 - [ ] Internal-only ports for parser/match/rewriter (no host publish except core-api/web)
 
 ---
@@ -69,12 +69,12 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 ### Product
 - [x] `services/intel-bench` — harness (sklearnex measured; OpenVINO/KMeans skipped on Py3.13)
 - [x] `apps/web/lab/intel` — benchmark panel wired to `GET /benchmarks`
-- [ ] 6-slide pitch deck, product screenshots
+- [x] 6-slide pitch deck (`docs/pitch/deck.md`), screenshot guide (`docs/pitch/screenshots/`)
 
 ### Security (blocking)
 - [x] CI dependency audit (`pip-audit`, `pnpm audit`) — fail on critical
-- [ ] `AUTO_CREATE_TABLES=false` in prod documentation; Alembic-only schema
-- [ ] Secrets scan in CI (no keys in diff)
+- [x] `AUTO_CREATE_TABLES=false` in prod documentation; Alembic-only schema
+- [x] Secrets scan in CI (Gitleaks — `.github/workflows/secrets-scan.yml`)
 - [x] Benchmark endpoints read-only public aggregate
 
 ### Availability
@@ -95,10 +95,10 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 ### Security (blocking)
 - [x] **Auth required** — same JWT; no anonymous LLM proxy
 - [x] **Context isolation** — scorecard scoped to `user_id` in view
-- [ ] **Prompt injection defenses** — fixed system prompt; tool calls RBAC-gated (partial)
+- [x] **Prompt injection defenses** — `guard.py` patterns + delimited LLM prompts; test coverage
 - [x] **LLM keys server-side only** — `LLM_API_KEY` in env
-- [ ] **Logging redaction** — no PII in application logs
-- [ ] **Privacy notice** — third-party LLM disclosure if external API used
+- [x] **Logging redaction** — `log_redact.py` for audit previews
+- [x] **Privacy notice** — `/privacy/assistant` + workspace panel disclosure
 
 ### Technical options (explore in order)
 - [x] **RAG pipeline:** static FAQ; TF-IDF retrieval

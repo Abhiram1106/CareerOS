@@ -10,16 +10,17 @@
 |-------|-------|
 | Updated | 2026-05-23 |
 | Tool | cursor |
-| Session file | `01-SESSIONS/2026-05-23/session-phase5-6-cursor.md` |
-| User ask | Push everything; move to next phase |
+| Session file | `01-SESSIONS/2026-05-23/session-phase4-5-6-complete-cursor.md` |
+| User ask | Complete Phase 4 officer + Phase 5 polish + Phase 6 hardening |
 
 ---
 
 ## Active thread
 
-- **Phase 5 (mostly done):** intel-bench harness, `GET /benchmarks`, `/lab/intel` panel, CI pip-audit workflow. OpenVINO/KMeans skipped on Py3.13.
-- **Phase 6 (MVP done):** `POST /assistant/chat` FAQ RAG + optional LLM; Campus Assistant workspace tab.
-- **Next:** Phase 5 polish (pitch deck, prod docs, full bench on 3.11), Phase 6 privacy/redaction, Phase 4 officer UI wiring.
+- **Phase 4 (done):** Live officer dashboard heatmap + skill gaps; batch create + multipart upload; college scoping via `officer_scope.py`.
+- **Phase 5 (done):** `docs/pitch/deck.md`, screenshot guide, `docs/deployment/production.md`, `docker-compose.prod.yml`, Gitleaks CI, `services/intel-bench/README.md` for Py 3.11/3.12 re-run.
+- **Phase 6 (done):** `guard.py`, `log_redact.py`, privacy page `/privacy/assistant`, injection test.
+- **Open:** Re-run intel-bench on machine with Python 3.11/3.12 + OpenVINO; capture pitch screenshots; company-fit columns on officer review (deferred).
 
 ---
 
@@ -27,23 +28,18 @@
 
 | Check | Result |
 |-------|--------|
-| pytest `test_assistant_chat.py` | 2 passed |
+| pytest `services/core-api/tests/` | 19 passed |
 | tsc --noEmit (apps/web) | passed |
-| pytest `test_benchmark_panel.py` | 2 passed (prior session) |
 
 ---
 
-## Git (this shutdown)
+## Git
 
-| Commit | Scope |
-|--------|--------|
-| `003b209` | feat: Intel lab panel, benchmark API, modular officer routes |
-| `93feab5` | feat: campus assistant FAQ chat API and workspace panel |
-| (memory) | memory: 2026-05-23 cursor — Phase 5–6 push |
+Uncommitted local changes from this session — user to commit when ready.
 
 ---
 
-## Recent sessions
+## Read first next chat
 
-- `01-SESSIONS/2026-05-23/session-phase5-6-cursor.md`
-- `01-SESSIONS/2026-05-24/session-phase4-security-cursor.md`
+1. `active-goals.md`
+2. `01-SESSIONS/2026-05-23/session-phase4-5-6-complete-cursor.md`
