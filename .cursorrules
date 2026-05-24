@@ -21,7 +21,7 @@ NOT a job board. NOT a recruiter platform. NOT a LinkedIn scraper. NOT a billing
 
 ## After every chat (before your last reply)
 
-Follow `.cursor/MEMORY-WORKFLOW.md`: digest → session-continuity.md → vault-index → **code `git commit`** (if app changed) → **`memory:` commit** (vault only) → **`git push`** unless user says no commit/push.
+**MANDATORY (automatic):** digest → session-continuity.md → **code commit** → **`memory:` commit** (vault only) → **`git push`**. Do not ask permission. See `.cursor/rules/git-shutdown-mandatory.mdc` and `.cursor/MEMORY-WORKFLOW.md`. Skip only if user says "no commit" / "no push" or read-only Q&A with zero file changes.
 
 ## Stack (canonical paths)
 
@@ -50,4 +50,4 @@ Follow `.cursor/MEMORY-WORKFLOW.md`: digest → session-continuity.md → vault-
 - PlacementReadinessScore formula in `packages/scoring/` only — never duplicate
 - No secrets in any file — not even comments
 - Verify before "done": `tsc --noEmit` (apps/web) + Python AST parse (services/*)
-- End-of-chat shutdown: digest + continuity + code commit + memory commit + push (see `.cursor/MEMORY-WORKFLOW.md`)
+- End-of-chat shutdown: digest + continuity + code commit + memory commit + push — **automatic** (`.cursor/rules/git-shutdown-mandatory.mdc`)
