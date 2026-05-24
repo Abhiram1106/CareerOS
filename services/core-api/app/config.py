@@ -19,6 +19,9 @@ RATE_LIMIT_MAX_REQUESTS = int(os.getenv("RATE_LIMIT_MAX_REQUESTS", "30"))
 JWT_SECRET = os.getenv("JWT_SECRET", "change-me")
 JWT_ALG = "HS256"
 JWT_EXPIRE_MINUTES = 60 * 24
+LLM_API_KEY = os.getenv("LLM_API_KEY", "")
+LLM_API_BASE = os.getenv("LLM_API_BASE", "https://api.openai.com/v1")
+LLM_MODEL = os.getenv("LLM_MODEL", "gpt-4o-mini")
 AUTO_CREATE_TABLES = os.getenv("AUTO_CREATE_TABLES", "false").lower() == "true"
 EXPORTS_DIR = os.getenv("EXPORTS_DIR", "./exports")
 EXPORT_STORAGE = os.getenv("EXPORT_STORAGE", "local").lower()

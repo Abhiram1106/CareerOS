@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import { AgentProgress } from "../../../components/workspace/AgentProgress";
+import { AssistantPanel } from "../../../components/workspace/AssistantPanel";
 import { BuilderWizard } from "../../../components/workspace/BuilderWizard";
 import { JobCard } from "../../../components/workspace/JobCard";
 import { RewriteDiffPanel } from "../../../components/workspace/RewriteDiffPanel";
@@ -18,6 +19,7 @@ const TABS: ReadonlyArray<[WorkspaceTab, string]> = [
   ["rewrite", "Proof-Linked Rewrite"],
   ["jobs", "Jobs Feed"],
   ["builder", "Builder Wizard"],
+  ["assistant", "Campus Assistant"],
 ];
 
 function ScoreBarsInline({
@@ -525,6 +527,12 @@ export default function WorkspacePage() {
               onRunRewrite={() => void ws.runProofRewrite()}
             />
           ) : null}
+        </div>
+      )}
+
+      {ws.tab === "assistant" && (
+        <div className="readiness-stack">
+          <AssistantPanel />
         </div>
       )}
     </div>

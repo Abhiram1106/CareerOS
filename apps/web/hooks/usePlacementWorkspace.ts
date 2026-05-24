@@ -18,7 +18,7 @@ import {
   type TemplateName,
 } from "../lib/placement";
 
-export type WorkspaceTab = "resume" | "scan" | "readiness" | "rewrite" | "jobs" | "builder";
+export type WorkspaceTab = "resume" | "scan" | "readiness" | "rewrite" | "jobs" | "builder" | "assistant";
 
 type BarScores = Record<ScoreComponentKey, number> | null;
 

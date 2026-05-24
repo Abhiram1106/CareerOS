@@ -144,6 +144,16 @@ export type BenchmarkPanelResult = {
   workloads: BenchmarkWorkload[];
 };
 
+export type AssistantSuggestedAction = { label: string; href: string };
+
+export type AssistantChatResult = {
+  answer: string;
+  sources: string[];
+  suggested_actions: AssistantSuggestedAction[];
+  score_summary: string | null;
+  provider: string;
+};
+
 export type AgentRunResult = {
   run_id: number;
   status: string;
@@ -336,4 +346,7 @@ export const api = {
     request<OfficerCohortResult>("/officer/cohort", "GET", undefined, token),
 
   benchmarks: () => request<BenchmarkPanelResult>("/benchmarks", "GET"),
+
+  assistantChat: (token: string, message: string) =>
+    request<AssistantChatResult>("/assistant/chat", "POST", { message }, token),
 };

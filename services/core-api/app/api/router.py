@@ -3,6 +3,7 @@
 from fastapi import APIRouter
 
 from ..config import ENABLE_OFFICER_SURFACE
+from .controllers.assistant_controller import router as assistant_router
 from .controllers.ats_controller import router as ats_router
 from .controllers.auth_controller import router as auth_router
 from .controllers.benchmark_controller import router as benchmark_router
@@ -20,6 +21,7 @@ from .controllers.resume_controller import router as resume_router
 api_router = APIRouter()
 
 api_router.include_router(benchmark_router)
+api_router.include_router(assistant_router, tags=["assistant"])
 api_router.include_router(auth_router, prefix="/auth", tags=["auth"])
 api_router.include_router(agent_router, tags=["agent"])
 api_router.include_router(profile_router, tags=["profile"])
