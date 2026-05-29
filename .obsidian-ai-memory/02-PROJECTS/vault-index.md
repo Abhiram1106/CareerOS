@@ -1,135 +1,50 @@
 ---
-tags: [vault, index, legacy-lookup]
+tags: [vault, index, lookup]
 type: hub
-updated: 2026-05-21
+updated: 2026-05-29
 links: [_INDEX, session-index]
 ---
 
-# Vault Index — CareerOS Campus AI
+# Vault Index - CareerOS Campus AI
 
-> **Prefer graph hubs:** [[_INDEX]] · [[session-index]] · [[architecture-index]] · [[api-index]]  
-> Quick-lookup map of the entire `.obsidian-ai-memory/` vault.
-> AI tools read this first (priority 3 in MEMORY-READ-PROTOCOL.md) to
-> decide which other files to load without reading the whole vault.
-> **Keep this file current.** Update it every time a session, decision, or
-> error entry is added.
+## Always-load project context
 
----
-
-## Read protocols (read these before anything else)
-
-| File | Purpose |
+| File | Why |
 |---|---|
-| `MEMORY-READ-PROTOCOL.md` | Exactly how to retrieve from this vault (modes, order, red flags) |
-| `MEMORY-WRITE-PROTOCOL.md` | Exactly how to write to this vault (format, rules, commit procedure) |
+| `02-PROJECTS/bootcamp-brief.md` | Bootcamp and pitch context |
+| `02-PROJECTS/project-context.md` | Architecture, stack, constraints |
+| `02-PROJECTS/active-goals.md` | Active roadmap and gates |
+| `02-PROJECTS/current-state.md` | Current implementation snapshot |
+| `03-ERRORS/error-memory.md` | Known fixed-error memory |
+| `03-ERRORS/anti-patterns.md` | Prevention rules |
 
----
+## Architecture/design references
 
-## Project state — always load (priority 1–3)
-
-| File | Contents | Load when |
-|---|---|---|
-| `02-PROJECTS/session-continuity.md` | **Rolling handoff — read first each Cursor chat** (overwrite every chat end) | Always (Cursor) |
-| `02-PROJECTS/bootcamp-brief.md` | **Intel AI Bootcamp context** — what the project is, why, Intel tools, demo script, judge Q&A, 5-week schedule, pitch outline | Always — this is the bootcamp submission |
-| `02-PROJECTS/project-context.md` | Stack, architecture, constraints, next steps | Always |
-| `02-PROJECTS/active-goals.md` | Phases 4–7 (Kirito security-first roadmap) + checkboxes | Always |
-| `05-ARCHITECTURE/security-architecture.md` | **CIA, auth, OpenAPI, Phases 4–7 security gates** | Auth, officer, assistant, infra tasks |
-| `02-PROJECTS/current-state.md` | Snapshot: exact versions, infra state, blocked | Always |
-
----
-
-## Errors and anti-patterns — always load (priority 4–5)
-
-| File | Contents | Load when |
-|---|---|---|
-| `03-ERRORS/error-memory.md` | Every fixed bug — symptom, root cause, fix, prevention rule | Always |
-| `03-ERRORS/anti-patterns.md` | Promoted prevention rules from recurring errors | Always |
-
----
-
-## Decisions — load for architecture/design tasks (priority 6)
-
-| File | Contents |
+| File | Why |
 |---|---|
-| `04-DECISIONS/decisions.md` | 5 active decisions with rationale. Also see `docs/adr/` |
+| `04-DECISIONS/decisions.md` | Non-trivial architecture/product decisions |
+| `05-ARCHITECTURE/README.md` | System architecture and flows |
+| `05-ARCHITECTURE/security-architecture.md` | Security gating model |
 
-Current decision count: **6**
-Last decision added: 2026-05-23 — "Security-first future phases (Kirito)"
+Current decision count: **7**  
+Last decision added: **2026-05-29 - route-per-workflow command center**
 
----
-
-## Architecture — load for system-design tasks (priority 7)
-
-| File | Contents |
-|---|---|
-| `05-ARCHITECTURE/README.md` | System diagram, data flows, DB schema, layered-refactor summary |
-| `05-ARCHITECTURE/security-architecture.md` | Kirito: CIA, auth, OpenAPI, encryption, Phases 4–7 gates |
-| `05-ARCHITECTURE/layered-modules.md` | **Phase table, on-disk trees, migration rules, next-agent steps** |
-| `05-ARCHITECTURE/frontend-ux.md` | Web IA: hero, workspace tabs, component map, a11y, styling rules |
-
-Also in repo: `docs/architecture/layered-modules.md` (keep in sync with vault copy).
-
----
-
-## Workflows — load for procedural tasks
-
-| File | Contents |
-|---|---|
-| `06-WORKFLOWS/README.md` | Step-by-step procedures: new endpoint, new table, new service, bug fix, Intel bench, session digest |
-
----
-
-## Lessons — load for debugging tasks (priority: deep mode)
-
-| File | Contents |
-|---|---|
-| `07-LESSONS/debugging-lessons.md` | Hard-won lessons: git mv staging trap, blanket gitignore trap |
-
-Current lesson count: **2**
-
----
-
-## Sessions — load last 3 for context continuity (priority 8)
-
-Most recent sessions (newest first):
+## Most recent sessions (read last 3)
 
 | Session file | Date | Tool | Type | Key outcome |
 |---|---|---|---|---|
-| `01-SESSIONS/2026-05-21/session-phases-4-7-cursor.md` | 2026-05-21 | cursor | architecture | Phases 4–7 layered migration + shutdown code/memory/push workflow |
-| `01-SESSIONS/2026-05-21/session-1900-cursor.md` | 2026-05-21 | cursor | docs | Cursor MEMORY-WORKFLOW + session-continuity handoff |
-| `01-SESSIONS/2026-05-21/session-1800-cursor.md` | 2026-05-21 | cursor | architecture | Phase 3 profile GET/PUT migrated to layered stack |
-| `01-SESSIONS/2026-05-21/session-1700-cursor.md` | 2026-05-21 | cursor | architecture | Layered scaffold + auth domain migrated off main.py |
-| `01-SESSIONS/2026-05-20/session-1600-claude.md` | 2026-05-20 | claude | project-setup | .cursor power-up (AGENTS, context/, agents/) + all pending changes pushed to origin |
-| `01-SESSIONS/2026-05-20/session-1430-cursor.md` | 2026-05-20 | cursor | feature-build + frontend | Enterprise shell, hero page, workspace tabs, `frontend-ux.md` |
-| `01-SESSIONS/2026-05-20/session-0001-claude.md` | 2026-05-20 | claude | feature-build | W1.3 migration + W1.4 role auth + W1.5 resume parser — all Week 1 tasks done |
-| `01-SESSIONS/2026-05-19/session-1800-claude.md` | 2026-05-19 | claude | docs | AI agent docs personalization + strict memory protocol |
-| `01-SESSIONS/2026-05-19/session-restructure.md` | 2026-05-19 | claude | architecture | Pivot + monorepo restructure + .claude scaffolding + memory populated |
-| `01-SESSIONS/2026-05-18/session-2015-omnix-init.md` | 2026-05-18 | omnix | onboarding | Omnix init scan |
+| `01-SESSIONS/2026-05-29/session-2326-codex.md` | 2026-05-29 | cursor | feature-build + refactor | Route-per-workflow IA, dashboard, persistent state, global toasts |
+| `01-SESSIONS/2026-05-24/session-1824-cursor.md` | 2026-05-24 | cursor | docs + refactor + infra | Push closure and memory alignment |
+| `01-SESSIONS/2026-05-23/session-phase4-security-gate-cursor.md` | 2026-05-23 | cursor | security + architecture | Strict DTOs, DI cleanup, threat model updates |
 
-Session count: **8**
-
----
+Session count tracked in index: **9**
 
 ## Templates
 
-| File | Use for |
+| File | Purpose |
 |---|---|
-| `templates/session-digest.md` | End-of-session digest (CareerOS-specific, all fields required) |
-| `templates/decision-entry.md` | Appending to `04-DECISIONS/decisions.md` |
-| `templates/error-entry.md` | Appending to `03-ERRORS/error-memory.md` |
+| `templates/session-digest.md` | End-of-session memory digest |
+| `templates/decision-entry.md` | Decision log append template |
+| `templates/error-entry.md` | Error log append template |
 
----
-
-## How to keep this file current
-
-After every session:
-1. Add the new session to the Sessions table above (newest at top)
-2. If a decision was added: increment count, update "Last decision added"
-3. If a lesson was added: increment count in Lessons section
-4. Update the `_Updated` date below
-
----
-
-_Updated: 2026-05-21 — layered-modules architecture doc + auth migration session._
-
-*Related: [[_INDEX]] · [[session-index]] · [[architecture-index]] · [[MEMORY-READ-PROTOCOL]] · [[02-PROJECTS/session-continuity]]*
+Updated: 2026-05-29.

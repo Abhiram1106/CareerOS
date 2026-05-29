@@ -1,74 +1,59 @@
 ---
-tags: [project, snapshot, verification, security]
+tags: [project, snapshot, verification, ux]
 type: project
-updated: 2026-05-23
-links: [_INDEX, architecture-index, session-index, security-architecture]
+updated: 2026-05-29
+links: [_INDEX, architecture-index, session-index]
 ---
 
 # Current State
 
-← [[_INDEX]] · [[05-ARCHITECTURE/security-architecture]]
+Last scanned: 2026-05-29.
 
-_Last scanned: 2026-05-23 (student-first pivot complete; Kirito security roadmap defined)._
-
-> **Latest:** Jobs feed + deterministic agent + Builder/Jobs UI shipped. RBAC on student routes. **Next:** Phase 4 officer dashboard **blocked on security gate** (IDOR, OpenAPI export, rate limits, audit).
+Latest update: student UX architecture moved from tab-centric workspace to route-per-workflow product shell.
 
 ## Stack
 
-- **Languages**: TypeScript strict (apps/web), Python 3.10+ (services/*, packages/scoring/)
-- **Frameworks**: Next.js 14.2.35, FastAPI 0.115, SQLAlchemy 2.0, Pydantic v2, Celery
-- **Package Manager**: pnpm 9; pip per service
-- **Databases**: PostgreSQL 16, Redis 7
-- **Security (baseline)**: JWT + RBAC; Pydantic validation; proof-linked rewriter; officer flags off
-
-## Infrastructure
-
-- **Docker**: postgres, redis, core-api, core-worker, ats-engine, ai-rewriter, resume-parser, match-engine, **jobs-feed**
-- **Web**: http://localhost:3000 · **API**: http://localhost:8000 (`/docs` OpenAPI)
+- Web: Next.js 14 + TypeScript strict
+- API: FastAPI 0.115
+- Data: PostgreSQL + Redis
+- Scoring: packages/scoring as single source of truth
 
 ## Product surfaces
 
 | Surface | Status |
-|---------|--------|
-| Student workspace (manual tabs) | Live |
-| Jobs Feed + Builder + agent | Live |
-| Officer dashboard | Code exists; `ENABLE_OFFICER_SURFACE=false` |
-| Intel lab panel | Planned (Phase 5) |
-| Campus assistant | Planned (Phase 6) |
+|---|---|
+| `/dashboard` command center | Live |
+| `/resume` upload/parse/generate/export | Live |
+| `/match` JD scan + readiness breakdown | Live |
+| `/rewrite` proof-linked rewrite | Live |
+| `/jobs` search + score-me CTA | Live |
+| `/assistant` persistent chat + score context | Live |
+| `/settings` profile completeness surface | Live |
+| `/workspace*` legacy tab routes | Redirect only |
+| `/lab/intel` | Live, demoted to secondary nav |
 
-## Backend highlights
+## Frontend architecture changes
 
-- Agent state machine: `POST /agent/run`, `GET /agent/runs/{id}`
-- Tables: `jobs`, `agent_runs` (migration `0003`)
-- Match-engine sklearnex benchmark documented
-- Scoring: `packages/scoring/` only
+- New authenticated shell: left rail (desktop) + bottom nav (mobile)
+- Topbar now shows profile completeness + user controls
+- Global toast system added and wired to async actions
+- Workspace persistence added via localStorage:
+  - `resume_id`
+  - `jd_text`
+  - latest score snapshot
+  - active tab
+- Assistant history persisted in localStorage
 
-## Security posture
-
-| Control | Status |
-|---------|--------|
-| JWT + role guards | Implemented |
-| Resource ownership (IDOR) | **Phase 4 required** |
-| OpenAPI committed export | **Phase 4 required** |
-| Rate limiting | **Phase 4 required** |
-| TLS / prod secrets | **Phase 5 required** |
-| Assistant isolation | **Phase 6 required** |
-
-Full plan: [[05-ARCHITECTURE/security-architecture]] · `docs/security/threat-model.md`
-
-## Verification (2026-05-23)
+## Verification (2026-05-29)
 
 | Check | Result |
-|-------|--------|
-| `tsc --noEmit` (apps/web) | pass |
-| Agent golden-path test | pass |
-| Scoring golden-path test | pass |
+|---|---|
+| `npx tsc --noEmit` (apps/web) | pass |
+| Python AST parse (`services/**/*.py`) | pass |
+| Alembic upgrade | skipped (frontend-only session) |
 
-## What's next
+## Open risks
 
-1. Phase 4 product: officer routes + cohort UI  
-2. Phase 4 security gate: must complete before officer GA  
-3. Phase 5: intel-bench + `/lab/intel`  
-4. Phase 6: RAG assistant + optional LLM  
-
-→ [[02-PROJECTS/active-goals]] · [[MASTER_PLAN]]
+1. `/match/[scorecard_id]` permalink still needs backend read endpoint for true shareability.
+2. Builder flow has been de-emphasized; if retained, it should be reintroduced as a first-class route.
+3. Additional responsive QA is still needed at 360px and 768px breakpoints.

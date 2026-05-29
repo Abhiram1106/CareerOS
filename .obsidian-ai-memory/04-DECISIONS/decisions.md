@@ -144,4 +144,25 @@ Surf/LLM keys never in git.
 
 ---
 
+## Decision 7 - Student IA shift: route-per-workflow command center
+
+## 2026-05-29 - Student IA shift: route-per-workflow command center
+
+**Decision**: Replace the tab-centric `/workspace` primary UX with a
+route-per-workflow IA and a real dashboard home:
+`/dashboard`, `/resume`, `/match`, `/rewrite`, `/jobs`, `/assistant`,
+`/settings`. Keep `/workspace*` only as legacy redirects.
+
+**Rationale**: The tab mega-pane caused dead-end navigation, poor mobile
+behavior, and session-friction. Per-workflow routes improve back/forward
+navigation, deep-linking, retention, and future assistant action linking.
+
+**Status**: Accepted and implemented in `apps/web`.
+
+**Consequences**: Top-level navigation now reflects actual student jobs,
+Intel Lab is demoted to secondary nav, and workspace state persistence +
+toasts become first-class UX infrastructure.
+
+---
+
 *Related: [[_INDEX]] · [[architecture-index]] · [[05-ARCHITECTURE/security-architecture]] · [[MASTER_PLAN]]*
