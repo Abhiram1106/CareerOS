@@ -49,6 +49,11 @@ class CareerProfile(Base):
     skills_csv: Mapped[str] = mapped_column(Text, default="")
     summary: Mapped[str] = mapped_column(Text, default="")
     experience_bullet: Mapped[str] = mapped_column(Text, default="")
+    # Eligibility fields — used by the match-engine to compute a real eligibility score.
+    cgpa: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    active_backlogs: Mapped[int] = mapped_column(Integer, default=0)
+    branch: Mapped[str] = mapped_column(String(80), default="")
+    grad_year: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     user = relationship("User", back_populates="profile")

@@ -15,6 +15,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY packages/scoring /packages/scoring
 ENV PYTHONPATH=/packages/scoring
 COPY services/core-api/app ./app
+COPY services/core-api/migrations ./migrations
+COPY services/core-api/alembic.ini ./alembic.ini
 
 EXPOSE 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

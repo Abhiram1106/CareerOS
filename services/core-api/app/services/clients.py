@@ -29,12 +29,12 @@ async def proof_linked_rewrite(payload: dict) -> dict:
             raise HTTPException(status_code=503, detail="AI rewriter unavailable") from exc
 
 
-async def run_ats_parse_safety(ats_flags: list[str]) -> dict:
+async def run_ats_parse_safety(ats_flags: list[str], resume_text: str = "") -> dict:
     async with httpx.AsyncClient(timeout=20) as client:
         try:
             resp = await client.post(
                 f"{ATS_ENGINE_URL}/parse-safety",
-                json={"ats_flags": ats_flags},
+                json={"ats_flags": ats_flags, "resume_text": resume_text},
             )
             resp.raise_for_status()
             return resp.json()

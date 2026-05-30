@@ -52,4 +52,8 @@ def to_profile_response(user: User, profile: Optional[CareerProfile]) -> Profile
         skills_csv=profile.skills_csv,
         summary=profile.summary,
         experience_bullet=profile.experience_bullet,
+        cgpa=profile.cgpa,
+        active_backlogs=profile.active_backlogs,
+        branch=profile.branch,
+        grad_year=profile.grad_year,
     )

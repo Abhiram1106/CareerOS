@@ -6,3 +6,4 @@ class ParseResponse(BaseModel):
     ats_flags: list[str]
     parse_warnings: list[str]
     char_count: int
+    full_text: str

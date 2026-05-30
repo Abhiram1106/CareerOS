@@ -35,6 +35,7 @@ def compute_match(
     jd_text: str,
     required_skills: list[str],
     student_profile: dict[str, Any] | None = None,
+    jd_eligibility: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     resume_text = (resume_text or "").strip()
     jd_text = (jd_text or "").strip()
@@ -69,7 +70,7 @@ def compute_match(
     missing = [s for s in required if s not in resume_skills]
     recall = round(100 * len(matched) / len(required), 1) if required else 100.0
 
-    eligibility_rule_score = _eligibility_score(student_profile or {})
+    eligibility_rule_score = _eligibility_score(student_profile or {}, jd_eligibility)
 
     jd_match = round(
         0.35 * tfidf_cosine
@@ -92,13 +93,62 @@ def compute_match(
     }
 
 
-def _eligibility_score(profile: dict[str, Any]) -> float:
-    """Placeholder until student CGPA/backlog fields exist on profile."""
-    if not profile:
+def _eligibility_score(profile: dict[str, Any], jd_eligibility: dict[str, Any] | None = None) -> float:
+    """Real eligibility scoring against JD requirements.
+
+    Compares student CGPA, active backlogs, branch, and graduation year from
+    their profile against the parsed JD eligibility criteria. Each criterion
+    that fails incurs a calibrated penalty. When the JD has no criterion (None),
+    that dimension is skipped — a JD without a CGPA requirement cannot penalise
+    any student on CGPA.
+
+    Returns 0–100. 100 = fully eligible. Partial penalties allow borderline
+    candidates to score higher than clearly ineligible ones.
+    """
+    if not profile and not jd_eligibility:
         return 100.0
+
+    jd = jd_eligibility or {}
     score = 100.0
-    if not str(profile.get("skills_csv", "")).strip():
-        score -= 5
-    if not str(profile.get("target_role", "")).strip():
-        score -= 5
+
+    # CGPA criterion
+    min_cgpa = jd.get("min_cgpa")
+    student_cgpa = profile.get("cgpa") if profile else None
+    if min_cgpa is not None:
+        if student_cgpa is None:
+            score -= 10  # unknown CGPA: moderate penalty, not disqualifying
+        elif student_cgpa < min_cgpa:
+            gap = min_cgpa - student_cgpa
+            score -= min(35.0, gap * 12)  # 1pt below → -12; 3pt below → -35 cap
+
+    # Backlog criterion
+    max_backlogs = jd.get("max_backlogs")
+    student_backlogs = profile.get("active_backlogs", 0) if profile else 0
+    if max_backlogs is not None:
+        if student_backlogs > max_backlogs:
+            excess = student_backlogs - max_backlogs
+            score -= min(40.0, excess * 20)  # each extra backlog: -20, cap 40
+
+    # Branch criterion
+    allowed_branches = jd.get("allowed_branches", [])
+    student_branch = (profile.get("branch", "") if profile else "").upper().replace(" ", "")
+    if allowed_branches and student_branch:
+        # Normalise: "CSE" matches "COMPUTERSCIENCE" etc.
+        _BRANCH_ALIASES: dict[str, str] = {
+            "CS": "CSE", "COMPUTERSCIENCE": "CSE",
+            "INFORMATIONTECHNOLOGY": "IT",
+            "ELECTRONICSANDCOMMUNICATION": "ECE",
+            "ELECTRONICSANDCOMMUNICATIONENGINEERING": "ECE",
+        }
+        normalised = _BRANCH_ALIASES.get(student_branch, student_branch)
+        if normalised not in allowed_branches:
+            score -= 15
+
+    # Graduation year criterion
+    allowed_years = jd.get("graduation_years", [])
+    student_year = profile.get("grad_year") if profile else None
+    if allowed_years and student_year is not None:
+        if student_year not in allowed_years:
+            score -= 20
+
     return max(0.0, min(100.0, round(score, 1)))

@@ -3,7 +3,7 @@ from __future__ import annotations
 from fastapi import HTTPException, UploadFile
 
 from ....extractor import _extract_ats_flags, build_section_payload, split_into_sections
-from ....parsers import extract_docx, extract_pdf
+from ....parsers import extract_docx, extract_pdf, ocr_pdf
 from ..dto.parse_dto import ParseResponse
 
 ALLOWED_CONTENT_TYPES = {
@@ -37,11 +37,21 @@ class ParseResumeHandler:
         else:
             text, parse_warnings = extract_docx(raw)
 
+        # Scanned / image-only PDF: pdfplumber yields little or no text from a
+        # large file — that combination indicates an image-only scan, not a sparse
+        # resume. A legitimate sparse resume is small; a scanned PDF is large.
+        if "pdf" in content_type and len(text.strip()) < 200 and len(raw) > 50_000:
+            ocr_text, ocr_warnings = ocr_pdf(raw)
+            parse_warnings.extend(ocr_warnings)
+            if len(ocr_text.strip()) > len(text.strip()):
+                text = ocr_text
+
         if not text.strip():
             raise HTTPException(
                 status_code=422,
-                detail="Could not extract any text from the resume. "
-                "If this is a scanned resume, OCR support is coming in Week 2.",
+                detail="Could not extract any text from this file. It appears to be a "
+                "scanned image with no recognizable text. Re-export a text-based PDF "
+                "from your editor (File → Save as PDF), or upload a DOCX.",
             )
 
         lines = text.split("\n")
@@ -54,4 +64,5 @@ class ParseResumeHandler:
             ats_flags=ats_flags,
             parse_warnings=parse_warnings,
             char_count=len(text),
+            full_text=text,
         ).model_dump()

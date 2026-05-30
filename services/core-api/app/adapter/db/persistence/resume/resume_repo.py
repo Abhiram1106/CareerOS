@@ -33,8 +33,13 @@ class ResumeRepo:
         self._db.refresh(resume)
         return resume
 
-    def create_uploaded(self, *, user_id: int, source_format: str) -> Resume:
-        resume = Resume(user_id=user_id, source_format=source_format, template_name="uploaded")
+    def create_uploaded(self, *, user_id: int, source_format: str, content_text: str = "") -> Resume:
+        resume = Resume(
+            user_id=user_id,
+            source_format=source_format,
+            template_name="uploaded",
+            content_text=content_text,
+        )
         self._db.add(resume)
         self._db.commit()
         self._db.refresh(resume)

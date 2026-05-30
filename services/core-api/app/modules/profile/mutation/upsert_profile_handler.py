@@ -20,5 +20,9 @@ class UpsertProfileHandler:
             skills_csv=payload.skills_csv,
             summary=payload.summary,
             experience_bullet=payload.experience_bullet,
+            cgpa=payload.cgpa,
+            active_backlogs=payload.active_backlogs,
+            branch=payload.branch,
+            grad_year=payload.grad_year,
         )
         return ProfileUpdateResponse().model_dump()

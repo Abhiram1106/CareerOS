@@ -5,7 +5,7 @@ from .formula import (
     compute_jd_match,
     compute_placement_readiness,
 )
-from .parse_safety import ats_parse_safety_from_flags
+from .parse_safety import analyze_ats, ats_parse_safety_from_flags
 from .resume_components import (
     evidence_quality_score,
     interview_readiness_score,
@@ -15,6 +15,7 @@ from .resume_components import (
 )
 
 __all__ = [
+    "analyze_ats",
     "ats_parse_safety_from_flags",
     "bucket_label",
     "compute_jd_match",

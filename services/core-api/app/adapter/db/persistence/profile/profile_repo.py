@@ -33,6 +33,10 @@ class ProfileRepo:
         skills_csv: str,
         summary: str,
         experience_bullet: str,
+        cgpa: float | None = None,
+        active_backlogs: int = 0,
+        branch: str = "",
+        grad_year: int | None = None,
     ) -> CareerProfile:
         profile = self.find_by_user_id(user_id)
         if profile is None:
@@ -45,6 +49,10 @@ class ProfileRepo:
         profile.skills_csv = skills_csv
         profile.summary = summary
         profile.experience_bullet = experience_bullet
+        profile.cgpa = cgpa
+        profile.active_backlogs = active_backlogs
+        profile.branch = branch
+        profile.grad_year = grad_year
         self._db.commit()
         self._db.refresh(profile)
         return profile

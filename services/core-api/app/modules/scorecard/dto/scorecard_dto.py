@@ -23,6 +23,22 @@ class ScoreComponents(BaseModel):
     hygiene: float
 
 
+class ATSCheck(BaseModel):
+    key: str
+    label: str
+    score: float
+    weight: float
+    status: str
+
+
+class ATSIssue(BaseModel):
+    id: str
+    dimension: str
+    severity: str
+    message: str
+    fix: str
+
+
 class ScorecardScoreResponse(BaseModel):
     scorecard_id: int
     jd_id: int
@@ -33,3 +49,6 @@ class ScorecardScoreResponse(BaseModel):
     missing_required_skills: list[str]
     matched_skills: list[str]
     semantic_method: str = "char_ngram_proxy"
+    ats_bucket: str = ""
+    ats_checks: list[ATSCheck] = Field(default_factory=list)
+    ats_issues: list[ATSIssue] = Field(default_factory=list)

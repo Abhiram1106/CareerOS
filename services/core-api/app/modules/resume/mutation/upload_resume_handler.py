@@ -36,8 +36,12 @@ class UploadResumeHandler:
             raise HTTPException(status_code=413, detail="File must be under 5 MB")
 
         source_format = "pdf" if "pdf" in ct else "docx"
-        resume = self._resumes.create_uploaded(user_id=user.id, source_format=source_format)
         parse_result = await parse_resume_file(content, file.filename or f"resume.{source_format}", ct)
+        resume = self._resumes.create_uploaded(
+            user_id=user.id,
+            source_format=source_format,
+            content_text=parse_result.get("full_text", ""),
+        )
         self._sections.add_sections(resume.id, parse_result.get("sections", []))
 
         return ResumeUploadResponse(

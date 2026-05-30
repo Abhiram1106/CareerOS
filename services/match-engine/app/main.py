@@ -34,11 +34,13 @@ def jd_parse(payload: ParseJdRequest):
 
 @app.post("/match")
 def match(payload: MatchRequest):
-    parsed = parse_jd(payload.jd_text) if not payload.required_skills else None
-    required = payload.required_skills or (parsed or {}).get("required_skills", [])
+    parsed = parse_jd(payload.jd_text)
+    required = payload.required_skills or parsed.get("required_skills", [])
+    jd_eligibility = parsed.get("eligibility")
     return compute_match(
         payload.resume_text,
         payload.jd_text,
         required,
         payload.student_profile,
+        jd_eligibility,
     )

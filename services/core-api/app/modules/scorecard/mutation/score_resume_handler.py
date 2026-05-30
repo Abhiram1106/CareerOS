@@ -14,7 +14,7 @@ from ....services.clients import match_resume_to_jd, parse_jd_text
 from ..dto.scorecard_dto import ScoreComponents, ScorecardScoreRequest, ScorecardScoreResponse
 
 from careeros_scoring import (
-    ats_parse_safety_from_flags,
+    analyze_ats,
     compute_placement_readiness,
     evidence_quality_score,
     interview_readiness_score,
@@ -55,6 +55,10 @@ class ScoreResumeHandler:
             "skills_csv": profile.skills_csv if profile else "",
             "target_role": profile.target_role if profile else "",
             "city": profile.city if profile else "",
+            "cgpa": profile.cgpa if profile else None,
+            "active_backlogs": profile.active_backlogs if profile else 0,
+            "branch": profile.branch if profile else "",
+            "grad_year": profile.grad_year if profile else None,
         }
 
         jd_id = payload.jd_id
@@ -104,7 +108,8 @@ class ScoreResumeHandler:
             eligibility_rule_score=float(match["eligibility_rule_score"]),
         )
 
-        ats_safety = ats_parse_safety_from_flags(payload.ats_flags)
+        ats_report = analyze_ats(resume_text, payload.ats_flags)
+        ats_safety = ats_report["ats_parse_safety"]
         evidence = evidence_quality_score(section_dicts)
         completeness = profile_completeness_score(section_dicts)
         interview = interview_readiness_score(section_dicts)
@@ -148,6 +153,9 @@ class ScoreResumeHandler:
             "match_method": match.get("match_method"),
             "semantic_method": match.get("semantic_method", "char_ngram_proxy"),
             "ats_flags": list(payload.ats_flags),
+            "ats_checks": ats_report["checks"],
+            "ats_issues": ats_report["issues"],
+            "ats_bucket": ats_report["bucket"],
         }
 
         row = self._scorecards.create_from_result(
@@ -183,4 +191,7 @@ class ScoreResumeHandler:
             missing_required_skills=match.get("missing_required_skills", []),
             matched_skills=match.get("matched_skills", []),
             semantic_method=match.get("semantic_method", "char_ngram_proxy"),
+            ats_bucket=ats_report["bucket"],
+            ats_checks=ats_report["checks"],
+            ats_issues=ats_report["issues"],
         ).model_dump()

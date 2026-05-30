@@ -66,3 +66,38 @@ def extract_docx(content: bytes) -> Tuple[str, list[str]]:
         warnings.append(f"docx_parse_error:{exc}")
 
     return "\n".join(paragraphs), warnings
+
+
+def ocr_pdf(content: bytes) -> Tuple[str, list[str]]:
+    """OCR a scanned/image-only PDF. Returns (text, warnings).
+
+    Renders each page to an image and runs Tesseract. Degrades honestly: if the
+    OCR libraries or the Tesseract binary are unavailable, returns an empty
+    string with a specific warning rather than raising.
+    """
+    try:
+        import pytesseract
+        from pdf2image import convert_from_bytes
+    except ImportError:
+        return "", ["ocr_unavailable_dependencies_missing"]
+
+    warnings: list[str] = []
+    try:
+        images = convert_from_bytes(content, dpi=200)
+    except Exception as exc:  # pdf2image needs poppler; surface why, don't crash
+        return "", [f"ocr_render_failed:{type(exc).__name__}"]
+
+    pages_text: list[str] = []
+    for page_no, image in enumerate(images, start=1):
+        try:
+            page_text = pytesseract.image_to_string(image)
+        except Exception as exc:
+            warnings.append(f"ocr_page_{page_no}_failed:{type(exc).__name__}")
+            continue
+        if page_text.strip():
+            pages_text.append(page_text)
+
+    text = "\n".join(pages_text)
+    if text.strip():
+        warnings.append("ocr_applied_scanned_pdf")
+    return text, warnings
