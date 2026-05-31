@@ -86,15 +86,21 @@ def _workload_row(
 
 
 def run_all() -> dict:
-    from workloads.openvino_probe import probe_openvino
+    from workloads.embedding_minilm import benchmark_embedding_compare
     from workloads.sklearn_kmeans import benchmark_kmeans_compare
 
     match = _load_match_compare()
     kmeans = benchmark_kmeans_compare()
-    openvino = probe_openvino()
+    embedding = benchmark_embedding_compare()
 
     kmeans_status = "measured" if kmeans and "stock" in kmeans else "skipped"
     kmeans_note = kmeans.get("note", "") if kmeans and "stock" not in kmeans else ""
+
+    # Embedding workload row — two sub-paths (pytorch_cpu baseline + openvino)
+    emb_pytorch = embedding.get("pytorch_cpu", {})
+    emb_ov = embedding.get("openvino", {})
+    emb_status = emb_pytorch.get("status", "skipped")
+    emb_note = embedding.get("note", emb_pytorch.get("note", ""))
 
     workloads = [
         _workload_row(
@@ -114,20 +120,20 @@ def run_all() -> dict:
             note=kmeans_note,
         ),
         {
-            "id": "embedding_openvino",
-            "name": "Sentence-transformer inference",
-            "tool": "OpenVINO FP16",
-            "status": openvino["status"],
-            "note": openvino["note"],
-            "baseline_p50_ms": None,
-            "intel_p50_ms": None,
-            "baseline_p95_ms": None,
-            "intel_p95_ms": None,
-            "speedup": None,
-            "accuracy_delta_pct": None,
-            "throughput_baseline_rph": None,
-            "throughput_intel_rph": None,
-            "dataset": {"devices": openvino.get("devices", [])},
+            "id": "embedding_minilm",
+            "name": "MiniLM sentence embedding (PyTorch CPU → OpenVINO)",
+            "tool": "OpenVINO FP16" if emb_ov.get("status") == "measured" else "PyTorch CPU",
+            "status": emb_ov.get("status", emb_status),
+            "note": emb_ov.get("note", emb_note),
+            "baseline_p50_ms": emb_pytorch.get("p50_latency_ms"),
+            "intel_p50_ms": emb_ov.get("p50_latency_ms"),
+            "baseline_p95_ms": emb_pytorch.get("p95_latency_ms"),
+            "intel_p95_ms": emb_ov.get("p95_latency_ms"),
+            "speedup": embedding.get("p50_speedup"),
+            "accuracy_delta_pct": embedding.get("accuracy_delta_pct"),
+            "throughput_baseline_rph": emb_pytorch.get("throughput_rph"),
+            "throughput_intel_rph": emb_ov.get("throughput_rph"),
+            "dataset": embedding.get("dataset", {}),
         },
     ]
 

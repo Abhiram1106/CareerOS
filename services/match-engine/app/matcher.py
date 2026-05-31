@@ -1,14 +1,12 @@
-"""TF-IDF + char n-gram cosine match (sklearnex-patched when available).
+"""TF-IDF word match + sentence-embedding semantic match.
 
-The output field ``embedding_cosine`` is intentionally named for the slot it
-fills in ``packages.scoring`` — it is **not** a true sentence embedding. It is a
-char-n-gram TF-IDF cosine, which is a fast lexical proxy for semantic overlap
-that catches misspellings and morphological variants without any model.
-
-When real embeddings (e.g. OpenVINO MiniLM) replace this proxy in Week 5, the
-slot stays the same and only ``semantic_method`` changes from
-``"char_ngram_proxy"`` to ``"sentence_embedding"``. UI tooltips read
-``semantic_method`` so the user never sees a misleading "embedding" claim.
+Two-path scoring:
+  1. ``tfidf_cosine`` — word/bigram TF-IDF overlap (sklearnex-patched).
+     Catches keyword presence, bigram patterns, exact skill mentions.
+  2. ``embedding_cosine`` — semantic cosine from ``embedder.py``.
+     Backend is chosen at startup (OpenVINO IR > sentence-transformers > char-ngram).
+     ``semantic_method`` in the response always reports the true backend so the
+     UI never shows a false "embedding" claim when using the fallback.
 """
 
 from __future__ import annotations
@@ -22,6 +20,9 @@ patch_sklearn_if_available()
 from sklearn.feature_extraction.text import TfidfVectorizer  # noqa: E402
 from sklearn.metrics.pairwise import cosine_similarity  # noqa: E402
 
+from .embedder import SEMANTIC_METHOD as _SEMANTIC_METHOD
+from .embedder import cosine_similarity_pct as _emb_cosine
+from .embedder import embed_texts as _embed
 from .skill_taxonomy import extract_skills_from_text
 
 
@@ -48,17 +49,17 @@ def compute_match(
             "jd_match": 0.0,
             "missing_required_skills": required_skills,
             "matched_skills": [],
-            "match_method": "lexical_dual_tfidf",
-            "semantic_method": "char_ngram_proxy",
+            "match_method": "tfidf_plus_embedding",
+            "semantic_method": _SEMANTIC_METHOD,
         }
 
     word_vec = TfidfVectorizer(ngram_range=(1, 2), max_features=8000, stop_words="english")
     word_mat = word_vec.fit_transform([resume_text, jd_text])
     tfidf_cosine = _cosine_pct(word_mat[0], word_mat[1])
 
-    char_vec = TfidfVectorizer(analyzer="char_wb", ngram_range=(3, 5), max_features=6000)
-    char_mat = char_vec.fit_transform([resume_text, jd_text])
-    embedding_cosine = _cosine_pct(char_mat[0], char_mat[1])
+    # Semantic match — uses the best available backend (OpenVINO > PyTorch > char-ngram).
+    vecs = _embed([resume_text, jd_text])
+    embedding_cosine = _emb_cosine(vecs[0], vecs[1])
 
     resume_skills = set(extract_skills_from_text(resume_text))
     if student_profile:
@@ -88,8 +89,8 @@ def compute_match(
         "jd_match": jd_match,
         "missing_required_skills": missing,
         "matched_skills": matched,
-        "match_method": "lexical_dual_tfidf",
-        "semantic_method": "char_ngram_proxy",
+        "match_method": "tfidf_plus_embedding",
+        "semantic_method": _SEMANTIC_METHOD,
     }
 
 

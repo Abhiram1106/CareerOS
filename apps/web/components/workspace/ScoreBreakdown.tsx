@@ -9,13 +9,14 @@ type Props = {
 };
 
 const SEMANTIC_METHOD_LABEL: Record<string, string> = {
-  char_ngram_proxy: "Char-n-gram TF-IDF (lexical proxy)",
-  sentence_embedding: "Sentence embedding (OpenVINO)",
+  char_ngram_proxy: "Char-n-gram TF-IDF (lexical proxy — no model)",
+  sentence_embedding: "MiniLM sentence embedding (PyTorch CPU)",
+  sentence_embedding_openvino: "MiniLM sentence embedding (OpenVINO-accelerated)",
 };
 
 const JD_MATCH_TOOLTIP =
-  "JD Match = 0.35·TF-IDF cosine + 0.35·char-n-gram cosine + 0.20·skill recall + 0.10·eligibility. " +
-  "The second term is a lexical proxy in Week 2; a real sentence embedding lands in Week 5.";
+  "JD Match = 0.35·TF-IDF cosine + 0.35·semantic cosine + 0.20·skill recall + 0.10·eligibility. " +
+  "Semantic method shown below — sentence embeddings when available, char-n-gram proxy otherwise.";
 
 export function ScoreBreakdown({ barScores, overallScore, scoreBucket, semanticMethod }: Props) {
   const methodLabel = semanticMethod ? SEMANTIC_METHOD_LABEL[semanticMethod] ?? semanticMethod : null;

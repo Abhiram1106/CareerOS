@@ -28,10 +28,10 @@ export function IntelScoreFormulaPanel() {
 + 0.05 × Placement_Hygiene
 
 JD_Match =
-  0.35 × TFIDF_Cosine           (lexical keyword overlap)
-+ 0.35 × Embedding_Cosine       (semantic — OpenVINO-accelerated)
-+ 0.20 × Required_Skill_Recall  (fraction of JD required skills found)
-+ 0.10 × Eligibility_Rule_Score (CGPA, branch, backlogs, grad year)
+  0.35 × TFIDF_Cosine           (word/bigram TF-IDF overlap, sklearnex-patched)
++ 0.35 × Semantic_Cosine        (MiniLM all-MiniLM-L6-v2 sentence embeddings)
++ 0.20 × Required_Skill_Recall  (fraction of JD required skills found in resume)
++ 0.10 × Eligibility_Rule_Score (CGPA ≥ min, backlogs ≤ max, branch, grad year)
 
 Buckets:  0–49 🔴 High Risk  |  50–69 🟡 Borderline  |  70–84 🟢 Ready  |  85–100 🏆 Strong`}
         </pre>
