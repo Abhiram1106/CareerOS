@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { getStoredAuth } from "../../lib/auth";
 import { toErrorMessage } from "../../lib/errors";
@@ -13,11 +13,34 @@ type ChatMessage = {
   meta?: AssistantChatResult;
 };
 
+const CHAT_KEY = "cos_assistant_chat_v1";
+
 export function useAssistantChat() {
   const token = getStoredAuth()?.token ?? "";
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = localStorage.getItem(CHAT_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as ChatMessage[];
+      setMessages(parsed.slice(-20));
+    } catch {
+      setMessages([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      localStorage.setItem(CHAT_KEY, JSON.stringify(messages.slice(-20)));
+    } catch {
+      // noop
+    }
+  }, [messages]);
 
   const send = useCallback(
     async (message: string) => {

@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { MotionProvider } from "../components/motion-provider";
+import { ToastProvider } from "../components/ui/toast";
 
 export const metadata: Metadata = {
   title: "CareerOS Student AI — Placement readiness",
@@ -21,7 +22,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <div className="app-root">
-          <MotionProvider>{children}</MotionProvider>
+          <ToastProvider>
+            <MotionProvider>{children}</MotionProvider>
+          </ToastProvider>
         </div>
       </body>
     </html>

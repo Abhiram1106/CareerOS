@@ -7,6 +7,7 @@ type Props = {
 };
 
 export function JobCard({ job, onRunAgent, busy = false }: Props) {
+  const requiredSkills = job.skills_required.length;
   return (
     <article className="content-card">
       <div className="content-card-header">
@@ -18,13 +19,15 @@ export function JobCard({ job, onRunAgent, busy = false }: Props) {
           <strong>{job.company}</strong> · {job.location}
         </p>
         {job.skills_required.length > 0 ? (
-          <p className="scan-intro">Skills: {job.skills_required.join(", ")}</p>
+          <p className="scan-intro">
+            Required skills ({requiredSkills}): {job.skills_required.join(", ")}
+          </p>
         ) : null}
         <p className="scan-intro">
           {job.raw_jd_text.length > 220 ? `${job.raw_jd_text.slice(0, 220)}...` : job.raw_jd_text}
         </p>
         <button type="button" className="btn-primary" disabled={busy} onClick={() => onRunAgent(job.id)}>
-          {busy ? "Running agent..." : "Run agent on this job"}
+          {busy ? "Scoring..." : "Score me against this job"}
         </button>
       </div>
     </article>

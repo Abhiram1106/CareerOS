@@ -24,6 +24,22 @@ export type ScorecardComponents = {
   hygiene: number;
 };
 
+export type ATSCheck = {
+  key: string;
+  label: string;
+  score: number;
+  weight: number;
+  status: string;
+};
+
+export type ATSIssue = {
+  id: string;
+  dimension: string;
+  severity: "high" | "medium" | "low";
+  message: string;
+  fix: string;
+};
+
 export type ScorecardResult = {
   scorecard_id: number;
   jd_id: number;
@@ -34,6 +50,9 @@ export type ScorecardResult = {
   missing_required_skills: string[];
   matched_skills: string[];
   semantic_method?: string;
+  ats_bucket?: string;
+  ats_checks?: ATSCheck[];
+  ats_issues?: ATSIssue[];
 };
 
 export type RewriteSection = {
@@ -267,6 +286,9 @@ export const api = {
       scan_id: number;
       resume_id: number;
       ats_parse_safety: number;
+      bucket: string;
+      checks: ATSCheck[];
+      issues: ATSIssue[];
       penalties: Record<string, number>;
       unknown_flags: string[];
     }>("/ats/parse-safety", "POST", payload, token),

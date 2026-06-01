@@ -27,7 +27,7 @@ export default function LoginPage() {
         full_name: data.full_name,
         role: "student",
       });
-      router.replace("/workspace");
+      router.replace("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Cannot reach the server. Please try again.");
     } finally {
@@ -52,10 +52,9 @@ export default function LoginPage() {
         </div>
 
         <div className="auth-brand-body">
-          <h2 className="auth-brand-headline">Powering the next generation of student placements.</h2>
+          <h2 className="auth-brand-headline">Intel-optimized placement scoring for Indian students.</h2>
           <p className="auth-brand-sub">
-            An ecosystem optimized for high-performance recruitment, bringing data-driven clarity to the academic
-            landscape.
+            Upload your resume, match against real JDs, and improve with proof-linked rewrites before campus drives.
           </p>
 
           <div className="auth-brand-glass">
@@ -67,7 +66,7 @@ export default function LoginPage() {
               <span className="auth-brand-glass-label">System Status</span>
             </div>
             <p className="auth-brand-glass-text">
-              Matchmaking engine online. Processing real-time placement data across 450+ enterprise partners.
+              Resume intelligence, JD matching, and ATS-safe export are available in your student workspace.
             </p>
           </div>
         </div>
@@ -88,7 +87,7 @@ export default function LoginPage() {
           </div>
 
           <h2 className="auth-heading">Welcome back</h2>
-          <p className="auth-sub">Please enter your details to access your command center.</p>
+          <p className="auth-sub">Sign in to continue your placement readiness journey.</p>
 
           {error && (
             <div className="auth-error" role="alert">
@@ -155,9 +154,7 @@ export default function LoginPage() {
                 <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
                 <span className="auth-remember-label">Remember me</span>
               </label>
-              <Link href="#" className="auth-link">
-                Forgot Password?
-              </Link>
+              <span className="auth-help-text">Need password help? Contact your placement coordinator.</span>
             </div>
 
             <button type="submit" className="auth-submit" disabled={loading}>

@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
 import { useAssistantChat } from "../../modules/assistant/useAssistantChat";
 
 const STARTERS = [
@@ -14,6 +13,18 @@ const STARTERS = [
 export function AssistantPanel() {
   const { messages, loading, error, send, canChat } = useAssistantChat();
   const [draft, setDraft] = useState("");
+  const [lastScore, setLastScore] = useState<number | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("cos_workspace_state_v1");
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as { score_snapshot?: { overall_score?: number } };
+      setLastScore(parsed.score_snapshot?.overall_score ?? null);
+    } catch {
+      setLastScore(null);
+    }
+  }, []);
 
   const onSubmit = () => {
     if (!draft.trim() || loading) return;
@@ -32,6 +43,9 @@ export function AssistantPanel() {
           Ask about uploads, JD matching, rewrites, and readiness scores. Answers use product FAQ plus your latest
           scorecard summary only.
         </p>
+        {lastScore !== null ? (
+          <p className="assistant-score-context">Your latest readiness score is {lastScore}.</p>
+        ) : null}
 
         <p
           style={{
@@ -46,7 +60,7 @@ export function AssistantPanel() {
           }}
         >
           Privacy: messages stay on our servers. If an external LLM key is configured, only FAQ excerpts and
-          anonymized score bands are sent — never your full resume text. See{" "}
+          anonymized score bands are sent, never your full resume text. See{" "}
           <a href="/privacy/assistant" style={{ color: "#0071c5" }}>
             assistant privacy notice
           </a>
@@ -86,10 +100,7 @@ export function AssistantPanel() {
             <p style={{ fontSize: "0.82rem", color: "#717783", margin: 0 }}>No messages yet.</p>
           ) : (
             messages.map((msg, idx) => (
-              <div
-                key={`${msg.role}-${idx}`}
-                style={{ marginBottom: 10, textAlign: msg.role === "user" ? "right" : "left" }}
-              >
+              <div key={`${msg.role}-${idx}`} style={{ marginBottom: 10, textAlign: msg.role === "user" ? "right" : "left" }}>
                 <span
                   style={{
                     display: "inline-block",
@@ -117,7 +128,13 @@ export function AssistantPanel() {
               </div>
             ))
           )}
-          {loading ? <p style={{ fontSize: "0.78rem", color: "#717783" }}>Thinking…</p> : null}
+          {loading ? (
+            <div className="typing-indicator" aria-label="Assistant is typing">
+              <span />
+              <span />
+              <span />
+            </div>
+          ) : null}
           {error ? <p style={{ fontSize: "0.78rem", color: "#93000a" }}>{error}</p> : null}
         </div>
 
@@ -126,18 +143,13 @@ export function AssistantPanel() {
             className="auth-input"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            placeholder="Ask about readiness, ATS, or next steps…"
+            placeholder="Ask about readiness, ATS, or next steps..."
             disabled={!canChat || loading}
             onKeyDown={(e) => {
               if (e.key === "Enter") onSubmit();
             }}
           />
-          <button
-            type="button"
-            className="btn-primary"
-            disabled={!canChat || loading || !draft.trim()}
-            onClick={onSubmit}
-          >
+          <button type="button" className="btn-primary" disabled={!canChat || loading || !draft.trim()} onClick={onSubmit}>
             Send
           </button>
         </div>
