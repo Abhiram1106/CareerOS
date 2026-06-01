@@ -15,6 +15,9 @@ class UserRepo:
     def find_by_email(self, email: str) -> Optional[User]:
         return self._db.query(User).filter(User.email == email).first()
 
+    def find_by_id(self, user_id: int) -> Optional[User]:
+        return self._db.query(User).filter(User.id == user_id).first()
+
     def create(
         self,
         *,

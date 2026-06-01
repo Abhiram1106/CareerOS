@@ -154,7 +154,7 @@ export default function LoginPage() {
                 <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
                 <span className="auth-remember-label">Remember me</span>
               </label>
-              <span className="auth-help-text">Need password help? Contact your placement coordinator.</span>
+              <a href="/reset-password" className="auth-link">Forgot password?</a>
             </div>
 
             <button type="submit" className="auth-submit" disabled={loading}>

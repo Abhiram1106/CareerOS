@@ -310,4 +310,10 @@ export const api = {
 
   assistantChat: (token: string, message: string) =>
     request<AssistantChatResult>("/assistant/chat", "POST", { message }, token),
+
+  requestPasswordReset: (email: string) =>
+    request<{ ok: boolean; note: string }>("/auth/reset-request", "POST", { email }),
+
+  confirmPasswordReset: (token: string, new_password: string) =>
+    request<{ ok: boolean; detail: string }>("/auth/reset-confirm", "POST", { token, new_password }),
 };

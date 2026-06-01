@@ -16,6 +16,18 @@ class SessionRepo:
         self._db.commit()
         return token
 
+    def revoke_all_for_user(self, user_id: int) -> int:
+        """Deactivate all active sessions for a user. Returns count revoked."""
+        updated = (
+            self._db.query(SessionToken)
+            .filter(SessionToken.user_id == user_id, SessionToken.is_active.is_(True))
+            .all()
+        )
+        for s in updated:
+            s.is_active = False
+        self._db.commit()
+        return len(updated)
+
     def revoke_token(self, token: str) -> bool:
         session = (
             self._db.query(SessionToken)

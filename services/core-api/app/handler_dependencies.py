@@ -14,6 +14,10 @@ from .modules.ats.query.ats_query_service import ATSQueryService
 from .modules.auth.mutation.login_handler import LoginHandler
 from .modules.auth.mutation.logout_handler import LogoutHandler
 from .modules.auth.mutation.register_handler import RegisterHandler
+from .modules.auth.mutation.reset_password_handler import (
+    ConfirmPasswordResetHandler,
+    RequestPasswordResetHandler,
+)
 from .modules.dashboard.query.dashboard_query_service import DashboardQueryService
 from .modules.export.mutation.queue_export_handler import QueueExportHandler
 from .modules.export.query.export_query_service import ExportQueryService
@@ -39,6 +43,14 @@ def get_login_handler(db: Session = Depends(get_db)) -> LoginHandler:
 
 def get_logout_handler(db: Session = Depends(get_db)) -> LogoutHandler:
     return LogoutHandler(db)
+
+
+def get_request_reset_handler(db: Session = Depends(get_db)) -> RequestPasswordResetHandler:
+    return RequestPasswordResetHandler(db)
+
+
+def get_confirm_reset_handler(db: Session = Depends(get_db)) -> ConfirmPasswordResetHandler:
+    return ConfirmPasswordResetHandler(db)
 
 
 def get_queue_export_handler(db: Session = Depends(get_db)) -> QueueExportHandler:

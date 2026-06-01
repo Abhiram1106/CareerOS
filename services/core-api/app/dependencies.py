@@ -54,6 +54,8 @@ from .handler_dependencies import (  # noqa: E402
     get_generate_resume_handler,
     get_login_handler,
     get_logout_handler,
+    get_request_reset_handler,
+    get_confirm_reset_handler,
     get_parse_jd_handler,
     get_profile_query_service,
     get_queue_export_handler,

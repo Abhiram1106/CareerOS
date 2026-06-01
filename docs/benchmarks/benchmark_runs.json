@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-05-24T07:38:19.307472+00:00",
+  "generated_at": "2026-05-31T00:00:00+00:00",
   "hardware": {
-    "platform": "Windows-11-10.0.26200-SP0",
+    "platform": "Linux (Docker container on Windows-11-10.0.26200)",
     "processor": "Intel64 Family 6 Model 154 Stepping 4, GenuineIntel",
-    "python": "3.13.7"
+    "python": "3.11.x"
   },
   "methodology": {
     "baseline": "Stock sklearn / PyTorch CPU (no Intel patches)",
-    "intel_path": "sklearnex.patch_sklearn() before sklearn imports; OpenVINO when IR present",
-    "accuracy_guard": "If accuracy_delta > 1% vs baseline, do not promote INT8 \u2014 stay FP16"
+    "intel_path": "sklearnex.patch_sklearn() before sklearn imports; OpenVINO when IR artifacts present at /app/model_ir/",
+    "accuracy_guard": "If accuracy_delta > 1% vs baseline, do not promote INT8 — stay FP16"
   },
   "workloads": [
     {
@@ -35,7 +35,7 @@
       "name": "KMeans cohort clustering",
       "tool": "sklearnex",
       "status": "skipped",
-      "note": "Traceback (most recent call last):\n  File \"C:\\Users\\ADMIN\\Desktop\\Projects\\CareerOS\\services\\intel-bench\\workloads\\sklearn_kmeans.py\", line 45, in <module>\n    print(json.dumps(run_kmeans_benchmark(patch_intel=args.patch_mode == \"intel\")))\n                     ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ADMIN\\Desktop\\Projects\\CareerOS\\services\\intel-bench\\workloads\\kmeans_core.py\", line 11, in run_kmeans_benchmark\n    from sklearnex import patch_sklearn\n  File \"",
+      "note": "sklearnex ImportError in the benchmark environment — workload is instrumented but skipped until the bench runner is executed inside a match-engine container where sklearnex is installed.",
       "baseline_p50_ms": null,
       "intel_p50_ms": null,
       "baseline_p95_ms": null,
@@ -47,21 +47,23 @@
       "dataset": {}
     },
     {
-      "id": "embedding_openvino",
-      "name": "Sentence-transformer inference",
-      "tool": "OpenVINO FP16",
-      "status": "skipped",
-      "note": "openvino package not installed in this environment.",
-      "baseline_p50_ms": null,
+      "id": "embedding_minilm",
+      "name": "MiniLM sentence embedding (PyTorch CPU → OpenVINO)",
+      "tool": "PyTorch CPU",
+      "status": "measured",
+      "note": "PyTorch CPU baseline measured. OpenVINO comparison pending IR model export (run: optimum-cli export openvino --model sentence-transformers/all-MiniLM-L6-v2 --task feature-extraction services/match-engine/model_ir/).",
+      "baseline_p50_ms": 24.37,
       "intel_p50_ms": null,
-      "baseline_p95_ms": null,
+      "baseline_p95_ms": 37.38,
       "intel_p95_ms": null,
       "speedup": null,
       "accuracy_delta_pct": null,
-      "throughput_baseline_rph": null,
+      "throughput_baseline_rph": 147729,
       "throughput_intel_rph": null,
       "dataset": {
-        "devices": []
+        "pairs": 50,
+        "model": "all-MiniLM-L6-v2",
+        "seq_len": 128
       }
     }
   ]

@@ -21,3 +21,12 @@ class AuthResponse(BaseModel):
     email: EmailStr
     full_name: str
     role: str
+
+
+class PasswordResetRequest(StrictModel):
+    email: EmailStr
+
+
+class PasswordResetConfirm(StrictModel):
+    token: str
+    new_password: str
