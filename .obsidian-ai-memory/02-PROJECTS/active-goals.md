@@ -1,139 +1,128 @@
 ---
-tags: [project, goals, week-plan, security, kirito]
+tags: [project, goals, roadmap, careeros]
 type: project
-updated: 2026-05-23
+updated: 2026-06-02
 links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 ---
 
-# Active Goals
+# Active Goals — CareerOS Campus AI
 
-← [[MASTER_PLAN]] · [[05-ARCHITECTURE/security-architecture]] · [[_INDEX]]
+← [[MASTER_PLAN]] · [[_INDEX]]
 
-> **Kirito roadmap:** All remaining phases prioritize **CIA** (confidentiality, integrity, availability), cryptography, secure networking, and production-grade auth/API design. Full checklist: [[05-ARCHITECTURE/security-architecture]] · Repo ADR: `docs/adr/0007-security-first-future-phases.md`.
-
----
-
-## Completed foundation (Weeks 1–3 + pivot)
-
-### Week 1
-- [x] Monorepo scaffold, Alembic schema, JWT roles, resume parser, layered core-api
-
-### Week 2
-- [x] Match-engine, `packages/scoring`, scorecard API + UI
-
-### Audit hardening
-- [x] RBAC (`require_student` / `require_officer`), honest semantic labels, golden-path tests, persistence fixes
-
-### Week 3
-- [x] Proof-linked rewriter, recommendations API, diff UI, PDF export
-
-### Student-first pivot (2026-05-23)
-- [x] `jobs-feed`, deterministic agent, Jobs/Builder UI, sklearnex benchmark doc, ADR 0006, officer flags default-off
-
-### Week 5 (partial)
-- [x] sklearnex measured benchmark, demo script, enterprise README
+> **Product vision (from CareerOS_Complete_Documentation.md):**
+> A unified career intelligence platform: AI-powered resume building, proprietary ATS scoring engine,
+> and job intelligence layer — all powered by a single persistent career profile.
+> Primary market: Indian students, freshers, early-career professionals.
 
 ---
 
-## Phase 4 — Officer dashboard + security hardening (NEXT)
+## ✅ Completed (Phases 0–7 + doc-aligned foundation)
 
-> **Gate:** Officer routes must not ship to production until every **Security (blocking)** item is checked.
+### Bootcamp submission phases (Phases 0–7)
+- [x] Phase 0 — Test harness + discrimination gate (5/5 PASS)
+- [x] Phase 1 — content_text persistence, section extractor hardening, OCR fallback
+- [x] Phase 2 — Real eligibility scoring (CGPA/backlogs/branch/grad_year), skill synonyms (70 skills, 50 aliases)
+- [x] Phase 3 — MiniLM sentence embeddings (all-MiniLM-L6-v2, 24ms p50, 148K pairs/hr)
+- [x] Phase 4 — Content-aware sub-scorers (evidence, interview_readiness, placement_hygiene, profile_completeness)
+- [x] Phase 5 — Proof-linked rewriter rebuilt (STAR verb upgrade, filler removal, anti-fabrication)
+- [x] Phase 6 — Frontend honesty (hasExport live, dead bell removed, honest formula labels)
+- [x] Phase 7 — CI workflow fixed, password reset (console-mode), Intel benchmark docs
 
-### Product
-- [x] Officer cohort API `GET /officer/cohort` (live aggregates from scorecards)
-- [x] `apps/web/(officer)/` — dashboard, review, batches wired to live APIs
-- [x] Batch upload, dept heatmap, skill-gap chart (company-fit columns deferred)
-- [x] Readiness PDF report export for TPO (`GET /officer/reports/readiness`)
-- [ ] Enable officer surface only after review: `ENABLE_OFFICER_SURFACE=true`
-
-### Security (blocking)
-- [x] **IDOR prevention:** resume/agent_run/export scoped to `user_id` (+ tests in `test_security_idor.py`)
-- [x] **OpenAPI:** `packages/contracts/openapi/core-api.openapi.json` via `scripts/export_openapi.py`
-- [x] **API validation:** Pydantic `extra=forbid` on sensitive DTOs via `StrictModel` + `test_validation_strict.py`
-- [x] **Rate limiting:** in-process middleware on auth, upload, `/agent/run`
-- [x] **Security headers:** CSP, X-Frame-Options, nosniff, HSTS when HTTPS
-- [x] **Audit log:** login, logout, export queue, agent complete, officer cohort view
-- [x] **Session hardening:** `POST /auth/logout` revokes `session_tokens`
-- [x] **DI cleanup:** handler factories in `handler_dependencies.py` (re-exported from `dependencies.py`)
-- [x] **Tests:** IDOR + RBAC + headers (`test_security_idor.py`)
-- [x] **Threat model:** expanded `docs/security/threat-model.md` (officer, assistant, strict DTOs, DI)
-
-### Infrastructure
-- [x] Prod compose profile: `docker-compose.prod.yml` + `docs/deployment/production.md`
-- [x] Internal-only ports for parser/match/rewriter (`docker-compose.prod.yml` clears match-engine/jobs-feed host ports)
+### Doc-aligned foundation (latest session)
+- [x] Structured career profile entities: WorkExperience, Education, Skill, Project, Certification, JobApplication
+- [x] User extended with: phone, linkedin_url, github_url, portfolio_url
+- [x] 24 REST endpoints (full CRUD for all section types)
+- [x] GET /profile/complete — full structured profile in one call
+- [x] Typed API wrappers in apps/web/lib/api.ts
+- [x] Alembic migration 0003_structured_profile
+- [x] docs/handoff/ — full knowledge-transfer for teammates
 
 ---
 
-## Phase 5 — Intel lab + production posture
+## 🔴 Next: MVP build (mapped to CareerOS_Complete_Documentation.md)
 
-### Product
-- [x] `services/intel-bench` — harness (sklearnex measured; OpenVINO/KMeans skipped on Py3.13)
-- [x] `apps/web/lab/intel` — benchmark panel wired to `GET /benchmarks`
-- [x] 6-slide pitch deck (`docs/pitch/deck.md`), screenshot guide (`docs/pitch/screenshots/`)
+### M1 — Settings page: structured profile editor (IMMEDIATE)
+> Replaces current flat-text settings form.
+- [ ] Multi-section editor: add/edit/delete WorkExperience entries (company, title, bullets)
+- [ ] Education entries (institution, degree, CGPA)
+- [ ] Skills: tag-based input with category + proficiency
+- [ ] Projects: title, description, tech stack tags, GitHub URL
+- [ ] Certifications: name, issuer, date, credential URL
+- [ ] Social links: phone, LinkedIn, GitHub, portfolio
+- [ ] Profile completeness meter updates live as sections are filled
+- **Files to touch:** `apps/web/app/(app)/settings/page.tsx`, `apps/web/hooks/useProfileSections.ts` (new)
 
-### Security (blocking)
-- [x] CI dependency audit (`pip-audit`, `pnpm audit`) — fail on critical
-- [x] `AUTO_CREATE_TABLES=false` in prod documentation; Alembic-only schema
-- [x] Secrets scan in CI (Gitleaks — `.github/workflows/secrets-scan.yml`)
-- [x] Benchmark endpoints read-only public aggregate
+### M2 — Resume builder: read from structured profile (HIGH)
+> FR-RB-001 to FR-RB-010 from the doc.
+- [ ] Resume generator reads WorkExperience, Education, Skills, Projects from structured DB
+- [ ] 3 ATS-safe templates: single-column-clean, technical-dev, fresher-optimised
+- [ ] Template HTML/CSS rendered by WeasyPrint → ATS-safe PDF
+- [ ] Template selector UI in `/resume` page with ATS compatibility badge per template
+- [ ] Live text preview (rendered from structured profile)
+- [ ] Professional summary auto-generator from target_role + skills + experience
+- **Files to touch:** `services/ai-rewriter/app/modules/rewrite/mutation/generate_resume_handler.py`, `apps/web/app/(app)/resume/page.tsx`
 
-### Availability
-- [x] Document horizontal scale path for core-api + workers (`docs/deployment/horizontal-scale.md`)
-- [x] Health/readiness endpoints (`GET /ready` DB check)
+### M3 — Multi-vendor ATS simulation (HIGH)
+> FR-ATS-006: simulate Taleo, Workday, Naukri RMS, Greenhouse, PeopleStrong, Darwinbox, Lever.
+- [ ] ATS vendor rule engine: per-vendor weight map + parsing quirks
+- [ ] Composite score = weighted average across simulated vendors
+- [ ] Keyword gap analysis: JD keywords vs resume, missing + present table
+- [ ] Score history endpoint: GET /ats/history?resume_id=N (time-series)
+- [ ] Radar chart data in scorecard response
+- **Files to touch:** `services/ats-engine/app/`, new vendor rule files
+
+### M4 — Application tracker UI (MEDIUM)
+> FR-JI-006: per-job save/track workflow.
+- [ ] "Save job" button on JobCard → POST /applications
+- [ ] `/applications` page: kanban columns (saved → applied → screening → interview → offer/rejected)
+- [ ] Status update via drag or dropdown
+- [ ] Resume version linked to each application
+- **Files to touch:** `apps/web/app/(app)/jobs/page.tsx`, new `apps/web/app/(app)/applications/page.tsx`
+
+### M5 — Analytics: score history + skill trends (MEDIUM)
+> FR-AD-001, FR-AD-002.
+- [ ] GET /analytics/ats-history: scorecard scores over time (date + overall_score)
+- [ ] Dashboard score trend mini-chart (sparkline)
+- [ ] Skill demand signal: which JD skills appear most in user's scans
+- **Files to touch:** `services/core-api/app/api/controllers/` new analytics controller, dashboard page
+
+### M6 — AI resume builder: guided mode (MEDIUM)
+> FR-RB-001, FR-RB-002, FR-RB-003.
+- [ ] Conversational wizard: profile status → role → skills → experience bullets
+- [ ] STAR bullet suggestions per internship/experience entry
+- [ ] AI uses profile sections + target_role to generate context-aware content
+- [ ] No LLM required — rule-based STAR template is acceptable for MVP
+- **Files to touch:** `apps/web/app/(app)/resume/builder/page.tsx` (new), `services/ai-rewriter/`
 
 ---
 
-## Phase 6 — Campus assistant (chatbot / guidance)
+## 🟡 Post-MVP (Phase 3 in the doc)
 
-> Lightweight assistant for onboarding, workflow help, and score interpretation—not a general-purpose chatbot.
-
-### Product
-- [x] In-app assistant panel (student workspace tab)
-- [x] Grounded answers: static FAQ + user's latest scorecard summary
-- [x] Suggested actions: link to Builder, Jobs, rewrite tab (no autonomous writes)
-
-### Security (blocking)
-- [x] **Auth required** — same JWT; no anonymous LLM proxy
-- [x] **Context isolation** — scorecard scoped to `user_id` in view
-- [x] **Prompt injection defenses** — `guard.py` patterns + delimited LLM prompts; test coverage
-- [x] **LLM keys server-side only** — `LLM_API_KEY` in env
-- [x] **Logging redaction** — `log_redact.py` for audit previews
-- [x] **Privacy notice** — `/privacy/assistant` + workspace panel disclosure
-
-### Technical options (explore in order)
-- [x] **RAG pipeline:** static FAQ; TF-IDF retrieval
-- [x] **External LLM:** OpenAI-compatible API via httpx (optional when key set)
-- [ ] **TensorFlow (optional):** embedding or re-ranker for RAG—offline index build, no training on student PII
-- [ ] **Internal dev agents (Surf-like):** dev-only automation; not student runtime unless separately threat-modeled
-
-### API
-- [x] `POST /assistant/chat` — Pydantic request/response, rate limited
-
----
-
-## Phase 7 — Enterprise hardening (post-bootcamp)
-
-> Roadmap stub: `docs/roadmap/phase7-enterprise.md` (OIDC, DPDP, multi-college — not implemented)
-
-- [ ] OAuth2/OIDC (college SSO)
-- [ ] Refresh token rotation + device/session management UI
-- [ ] Field-level encryption for email/phone
-- [ ] mTLS service mesh or signed internal JWT between microservices
-- [ ] DPDP compliance pack (retention, export, delete-my-data)
-- [ ] WAF / DDoS at edge
+- [ ] B2B college portal (placement officer dashboard) — separate route group `(officer)/`
+- [ ] Recruiter database access module
+- [ ] LinkedIn OAuth for profile import (FR-CP-006)
+- [ ] Google OAuth sign-in (EI-003)
+- [ ] Job alerts + email notifications (FR-JI-005)
+- [ ] Cover letter generator
+- [ ] LinkedIn profile optimizer
+- [ ] Native mobile app (React Native)
+- [ ] ATS engine ML upgrade (XGBoost on scan outcome data)
+- [ ] OpenVINO IR model for embedding inference (OPENVINO_MODEL_DIR)
 
 ---
 
 ## Cross-cutting — always in scope
 
-- [ ] Swagger/OpenAPI accurate on every merged route
-- [ ] RBAC on every new endpoint
+- [ ] RBAC on every new endpoint (`require_student`)
 - [ ] No secrets in git; `.env.example` placeholders only
 - [ ] PlacementReadinessScore only in `packages/scoring/`
 - [ ] No fabrication in rewriter (`unsupported_claims[]`)
+- [ ] tsc --noEmit clean before every commit
+- [ ] Python AST-parse clean on all touched services
+- [ ] Discrimination gate 5/5 before any scoring change
 
 ---
 
-_Updated: 2026-05-23 — Kirito security-first phases 4–7; Phase 4 is next._
+_Updated: 2026-06-02 — Goals realigned to CareerOS_Complete_Documentation.md full product vision._
 
-*Related: [[MASTER_PLAN]] · [[05-ARCHITECTURE/security-architecture]] · [[02-PROJECTS/project-context]] · [[intel-index]]*
+*Related: [[MASTER_PLAN]] · [[_INDEX]] · [[scoring-knowledge]] · [[05-ARCHITECTURE/security-architecture]]*
