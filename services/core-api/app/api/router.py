@@ -15,6 +15,7 @@ from .controllers.recommendation_controller import router as recommendation_rout
 from .controllers.export_controller import router as export_router
 from .controllers.profile_controller import router as profile_router
 from .controllers.resume_controller import router as resume_router
+from .controllers.sections_controller import router as sections_router
 
 api_router = APIRouter()
 
@@ -31,3 +32,4 @@ api_router.include_router(jd_router, tags=["jd"])
 api_router.include_router(jobs_router, tags=["jobs"])
 api_router.include_router(scorecard_router, tags=["scorecards"])
 api_router.include_router(recommendation_router, tags=["recommendations"])
+api_router.include_router(sections_router, tags=["profile-sections"])

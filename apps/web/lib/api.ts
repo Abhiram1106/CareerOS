@@ -1,5 +1,92 @@
 export type AuthResponse = { token: string; email: string; full_name: string; role: string };
 
+// ── Structured career profile section types ────────────────────────────────
+export type WorkExperience = {
+  id: number;
+  company: string;
+  title: string;
+  employment_type: string;
+  location: string;
+  start_date: string;
+  end_date: string;
+  is_current: boolean;
+  bullets: string[];
+  sort_order: number;
+};
+
+export type Education = {
+  id: number;
+  institution: string;
+  degree: string;
+  field: string;
+  start_year: number | null;
+  end_year: number | null;
+  cgpa: number | null;
+  percentage: number | null;
+  coursework: string;
+  sort_order: number;
+};
+
+export type Skill = {
+  id: number;
+  name: string;
+  category: "technical" | "soft" | "tool" | "language";
+  proficiency: "beginner" | "intermediate" | "advanced" | "expert";
+};
+
+export type Project = {
+  id: number;
+  title: string;
+  description: string;
+  tech_stack: string[];
+  github_url: string;
+  live_url: string;
+  start_date: string;
+  end_date: string;
+  sort_order: number;
+};
+
+export type Certification = {
+  id: number;
+  name: string;
+  issuer: string;
+  issue_date: string;
+  expiry_date: string;
+  credential_id: string;
+  credential_url: string;
+  sort_order: number;
+};
+
+export type JobApplication = {
+  id: number;
+  job_external_id: string;
+  job_title: string;
+  company: string;
+  apply_url: string;
+  status: "saved" | "applied" | "screening" | "interview" | "offer" | "rejected";
+  resume_id: number | null;
+  notes: string;
+  applied_at: string | null;
+  created_at: string;
+};
+
+export type FullProfile = {
+  user: {
+    id: number;
+    full_name: string;
+    email: string;
+    phone: string;
+    linkedin_url: string;
+    github_url: string;
+    portfolio_url: string;
+  };
+  work_experiences: WorkExperience[];
+  educations: Education[];
+  skills: Skill[];
+  projects: Project[];
+  certifications: Certification[];
+};
+
 export type ResumeSection = {
   section_name: string;
   content_json: Record<string, unknown>;
@@ -316,4 +403,71 @@ export const api = {
 
   confirmPasswordReset: (token: string, new_password: string) =>
     request<{ ok: boolean; detail: string }>("/auth/reset-confirm", "POST", { token, new_password }),
+
+  // ── Structured profile sections ──────────────────────────────────────────
+  getFullProfile: (token: string) =>
+    request<FullProfile>("/profile/complete", "GET", undefined, token),
+
+  updateLinks: (token: string, payload: { phone: string; linkedin_url: string; github_url: string; portfolio_url: string }) =>
+    request<{ ok: boolean }>("/profile/links", "PUT", payload, token),
+
+  // Work Experience
+  listWorkExp: (token: string) =>
+    request<{ work_experiences: WorkExperience[] }>("/profile/work-experience", "GET", undefined, token),
+  addWorkExp: (token: string, payload: Omit<WorkExperience, "id" | "sort_order">) =>
+    request<WorkExperience>("/profile/work-experience", "POST", payload, token),
+  updateWorkExp: (token: string, id: number, payload: Partial<Omit<WorkExperience, "id" | "sort_order">>) =>
+    request<WorkExperience>(`/profile/work-experience/${id}`, "PUT", payload, token),
+  deleteWorkExp: (token: string, id: number) =>
+    request<void>(`/profile/work-experience/${id}`, "DELETE", undefined, token),
+
+  // Education
+  listEducation: (token: string) =>
+    request<{ educations: Education[] }>("/profile/education", "GET", undefined, token),
+  addEducation: (token: string, payload: Omit<Education, "id" | "sort_order">) =>
+    request<Education>("/profile/education", "POST", payload, token),
+  updateEducation: (token: string, id: number, payload: Partial<Omit<Education, "id" | "sort_order">>) =>
+    request<Education>(`/profile/education/${id}`, "PUT", payload, token),
+  deleteEducation: (token: string, id: number) =>
+    request<void>(`/profile/education/${id}`, "DELETE", undefined, token),
+
+  // Skills
+  listSkills: (token: string) =>
+    request<{ skills: Skill[] }>("/profile/skills", "GET", undefined, token),
+  addSkill: (token: string, payload: Omit<Skill, "id">) =>
+    request<Skill>("/profile/skills", "POST", payload, token),
+  bulkUpsertSkills: (token: string, skills: Omit<Skill, "id">[]) =>
+    request<{ skills: Skill[] }>("/profile/skills/bulk", "POST", { skills }, token),
+  deleteSkill: (token: string, id: number) =>
+    request<void>(`/profile/skills/${id}`, "DELETE", undefined, token),
+
+  // Projects
+  listProjects: (token: string) =>
+    request<{ projects: Project[] }>("/profile/projects", "GET", undefined, token),
+  addProject: (token: string, payload: Omit<Project, "id" | "sort_order">) =>
+    request<Project>("/profile/projects", "POST", payload, token),
+  updateProject: (token: string, id: number, payload: Partial<Omit<Project, "id" | "sort_order">>) =>
+    request<Project>(`/profile/projects/${id}`, "PUT", payload, token),
+  deleteProject: (token: string, id: number) =>
+    request<void>(`/profile/projects/${id}`, "DELETE", undefined, token),
+
+  // Certifications
+  listCertifications: (token: string) =>
+    request<{ certifications: Certification[] }>("/profile/certifications", "GET", undefined, token),
+  addCertification: (token: string, payload: Omit<Certification, "id" | "sort_order">) =>
+    request<Certification>("/profile/certifications", "POST", payload, token),
+  updateCertification: (token: string, id: number, payload: Partial<Omit<Certification, "id" | "sort_order">>) =>
+    request<Certification>(`/profile/certifications/${id}`, "PUT", payload, token),
+  deleteCertification: (token: string, id: number) =>
+    request<void>(`/profile/certifications/${id}`, "DELETE", undefined, token),
+
+  // Job Applications
+  listApplications: (token: string) =>
+    request<{ applications: JobApplication[] }>("/applications", "GET", undefined, token),
+  saveApplication: (token: string, payload: { job_external_id: string; job_title: string; company: string; apply_url: string }) =>
+    request<JobApplication>("/applications", "POST", payload, token),
+  updateApplication: (token: string, id: number, payload: { status?: string; notes?: string; resume_id?: number }) =>
+    request<JobApplication>(`/applications/${id}`, "PUT", payload, token),
+  deleteApplication: (token: string, id: number) =>
+    request<void>(`/applications/${id}`, "DELETE", undefined, token),
 };

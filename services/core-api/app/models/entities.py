@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..database import Base
@@ -19,11 +19,21 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[str] = mapped_column(String(20), nullable=False, default="student", index=True)
+    phone: Mapped[str] = mapped_column(String(20), nullable=False, default="")
+    linkedin_url: Mapped[str] = mapped_column(String(300), nullable=False, default="")
+    github_url: Mapped[str] = mapped_column(String(300), nullable=False, default="")
+    portfolio_url: Mapped[str] = mapped_column(String(300), nullable=False, default="")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     profile = relationship("CareerProfile", back_populates="user", uselist=False, cascade="all, delete-orphan")
     resumes = relationship("Resume", back_populates="user", cascade="all, delete-orphan")
     scans = relationship("ATSScan", back_populates="user", cascade="all, delete-orphan")
+    work_experiences = relationship("WorkExperience", back_populates="user", cascade="all, delete-orphan")
+    educations = relationship("Education", back_populates="user", cascade="all, delete-orphan")
+    skills = relationship("Skill", back_populates="user", cascade="all, delete-orphan")
+    projects = relationship("Project", back_populates="user", cascade="all, delete-orphan")
+    certifications = relationship("Certification", back_populates="user", cascade="all, delete-orphan")
+    job_applications = relationship("JobApplication", back_populates="user", cascade="all, delete-orphan")
 
 
 class SessionToken(Base):
@@ -57,6 +67,117 @@ class CareerProfile(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     user = relationship("User", back_populates="profile")
+
+
+# ── Structured career sections ────────────────────────────────────────────────
+
+class WorkExperience(Base):
+    __tablename__ = "work_experiences"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    company: Mapped[str] = mapped_column(String(200), nullable=False)
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    employment_type: Mapped[str] = mapped_column(String(50), default="Full-time")
+    location: Mapped[str] = mapped_column(String(200), default="")
+    start_date: Mapped[str] = mapped_column(String(20), nullable=False)  # "Jun 2024"
+    end_date: Mapped[str] = mapped_column(String(20), default="")        # "" = present
+    is_current: Mapped[bool] = mapped_column(Boolean, default=False)
+    bullets: Mapped[str] = mapped_column(Text, default="[]")             # JSON array of strings
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    user = relationship("User", back_populates="work_experiences")
+
+
+class Education(Base):
+    __tablename__ = "educations"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    institution: Mapped[str] = mapped_column(String(300), nullable=False)
+    degree: Mapped[str] = mapped_column(String(200), nullable=False)      # "B.Tech"
+    field: Mapped[str] = mapped_column(String(200), nullable=False)       # "Computer Science"
+    start_year: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    end_year: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    cgpa: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    percentage: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    coursework: Mapped[str] = mapped_column(Text, default="")
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    user = relationship("User", back_populates="educations")
+
+
+class Skill(Base):
+    __tablename__ = "skills"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    category: Mapped[str] = mapped_column(String(50), default="technical")  # technical/soft/tool/language
+    proficiency: Mapped[str] = mapped_column(String(30), default="intermediate")  # beginner/intermediate/advanced/expert
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="skills")
+
+
+class Project(Base):
+    __tablename__ = "projects"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    description: Mapped[str] = mapped_column(Text, default="")
+    tech_stack: Mapped[str] = mapped_column(Text, default="[]")     # JSON array
+    github_url: Mapped[str] = mapped_column(String(300), default="")
+    live_url: Mapped[str] = mapped_column(String(300), default="")
+    start_date: Mapped[str] = mapped_column(String(20), default="")
+    end_date: Mapped[str] = mapped_column(String(20), default="")
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    user = relationship("User", back_populates="projects")
+
+
+class Certification(Base):
+    __tablename__ = "certifications"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    issuer: Mapped[str] = mapped_column(String(200), nullable=False)
+    issue_date: Mapped[str] = mapped_column(String(20), default="")
+    expiry_date: Mapped[str] = mapped_column(String(20), default="")
+    credential_id: Mapped[str] = mapped_column(String(200), default="")
+    credential_url: Mapped[str] = mapped_column(String(300), default="")
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="certifications")
+
+
+class JobApplication(Base):
+    """Tracks which jobs a user has saved/applied to."""
+    __tablename__ = "job_applications"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    job_external_id: Mapped[str] = mapped_column(String(200), nullable=False)
+    job_title: Mapped[str] = mapped_column(String(255), default="")
+    company: Mapped[str] = mapped_column(String(255), default="")
+    apply_url: Mapped[str] = mapped_column(String(500), default="")
+    status: Mapped[str] = mapped_column(String(30), default="saved")  # saved/applied/screening/interview/offer/rejected
+    resume_id: Mapped[Optional[int]] = mapped_column(ForeignKey("resumes.id"), nullable=True)
+    notes: Mapped[str] = mapped_column(Text, default="")
+    applied_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    user = relationship("User", back_populates="job_applications")
 
 
 # ── Resume ────────────────────────────────────────────────────────────────────
