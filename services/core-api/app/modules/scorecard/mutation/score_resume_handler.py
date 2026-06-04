@@ -18,9 +18,11 @@ from careeros_scoring import (
     compute_placement_readiness,
     evidence_quality_score,
     interview_readiness_score,
+    keyword_gap_analysis,
     placement_hygiene_score,
     profile_completeness_score,
     resume_text_from_sections,
+    simulate_vendors,
 )
 from careeros_scoring.formula import JdMatchBreakdown
 
@@ -156,6 +158,8 @@ class ScoreResumeHandler:
             "ats_checks": ats_report["checks"],
             "ats_issues": ats_report["issues"],
             "ats_bucket": ats_report["bucket"],
+            "vendor_simulation": simulate_vendors(resume_text, jd_text),
+            "keyword_gap": keyword_gap_analysis(resume_text, jd_text),
         }
 
         row = self._scorecards.create_from_result(
@@ -194,4 +198,6 @@ class ScoreResumeHandler:
             ats_bucket=ats_report["bucket"],
             ats_checks=ats_report["checks"],
             ats_issues=ats_report["issues"],
+            vendor_simulation=detail["vendor_simulation"],
+            keyword_gap=detail["keyword_gap"],
         ).model_dump()

@@ -39,6 +39,35 @@ class ATSIssue(BaseModel):
     fix: str
 
 
+class VendorScore(BaseModel):
+    id: str
+    name: str
+    score: float
+    weight_pct: int
+
+
+class VendorSimulation(BaseModel):
+    composite_score: float
+    vendors: list[VendorScore]
+
+
+class KeywordItem(BaseModel):
+    keyword: str
+    context: str = ""
+
+
+class MissingKeyword(BaseModel):
+    keyword: str
+    importance: str  # "high" | "medium" | "low"
+
+
+class KeywordGap(BaseModel):
+    matched: list[KeywordItem] = Field(default_factory=list)
+    missing: list[MissingKeyword] = Field(default_factory=list)
+    match_rate: float = 0.0
+    total_jd_keywords: int = 0
+
+
 class ScorecardScoreResponse(BaseModel):
     scorecard_id: int
     jd_id: int
@@ -52,3 +81,5 @@ class ScorecardScoreResponse(BaseModel):
     ats_bucket: str = ""
     ats_checks: list[ATSCheck] = Field(default_factory=list)
     ats_issues: list[ATSIssue] = Field(default_factory=list)
+    vendor_simulation: VendorSimulation | None = None
+    keyword_gap: KeywordGap | None = None

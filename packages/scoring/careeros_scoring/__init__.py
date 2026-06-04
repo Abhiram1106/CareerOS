@@ -13,6 +13,7 @@ from .resume_components import (
     profile_completeness_score,
     resume_text_from_sections,
 )
+from .vendor_simulation import keyword_gap_analysis, simulate_vendors
 
 __all__ = [
     "analyze_ats",
@@ -22,7 +23,9 @@ __all__ = [
     "compute_placement_readiness",
     "evidence_quality_score",
     "interview_readiness_score",
+    "keyword_gap_analysis",
     "placement_hygiene_score",
     "profile_completeness_score",
     "resume_text_from_sections",
+    "simulate_vendors",
 ]

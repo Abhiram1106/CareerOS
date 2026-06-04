@@ -127,6 +127,28 @@ export type ATSIssue = {
   fix: string;
 };
 
+export type VendorScore = {
+  id: string;
+  name: string;
+  score: number;
+  weight_pct: number;
+};
+
+export type VendorSimulation = {
+  composite_score: number;
+  vendors: VendorScore[];
+};
+
+export type KeywordItem = { keyword: string; context: string };
+export type MissingKeyword = { keyword: string; importance: "high" | "medium" | "low" };
+
+export type KeywordGap = {
+  matched: KeywordItem[];
+  missing: MissingKeyword[];
+  match_rate: number;
+  total_jd_keywords: number;
+};
+
 export type ScorecardResult = {
   scorecard_id: number;
   jd_id: number;
@@ -140,6 +162,8 @@ export type ScorecardResult = {
   ats_bucket?: string;
   ats_checks?: ATSCheck[];
   ats_issues?: ATSIssue[];
+  vendor_simulation?: VendorSimulation;
+  keyword_gap?: KeywordGap;
 };
 
 export type RewriteSection = {

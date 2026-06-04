@@ -102,6 +102,102 @@ export default function MatchPage() {
             issues={ws.atsIssues}
           />
         ) : null}
+
+        {/* ── Vendor simulation ──────────────────────────────────── */}
+        {ws.vendorSimulation ? (
+          <div className="content-card">
+            <div className="content-card-header">
+              <h2 className="content-card-title">ATS Vendor Simulation</h2>
+              <span className="chip chip-primary">
+                Composite {ws.vendorSimulation.composite_score}/100
+              </span>
+            </div>
+            <div className="content-card-body">
+              <p style={{ fontSize: "0.82rem", color: "#5c6570", marginBottom: 14 }}>
+                How your resume scores across 7 ATS systems weighted by Indian market prevalence.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {ws.vendorSimulation.vendors.map((v) => {
+                  const pct = Math.round(v.score);
+                  const color = pct >= 70 ? "#16a34a" : pct >= 50 ? "#d97706" : "#dc2626";
+                  return (
+                    <div key={v.id} style={{ display: "grid", gridTemplateColumns: "160px 1fr 48px", gap: 10, alignItems: "center" }}>
+                      <span style={{ fontSize: "0.82rem", fontWeight: 500, color: "#1a1c20" }}>{v.name}</span>
+                      <div style={{ height: 8, background: "#e8ecf2", borderRadius: 9999, overflow: "hidden" }}>
+                        <div style={{ height: "100%", width: `${pct}%`, background: color, borderRadius: 9999, transition: "width 0.4s" }} />
+                      </div>
+                      <span style={{ fontSize: "0.8rem", fontWeight: 700, color, textAlign: "right" }}>{pct}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              <p style={{ fontSize: "0.75rem", color: "#8a95a2", marginTop: 12 }}>
+                Weights: Taleo 18% · Workday 16% · Naukri RMS 15% · Greenhouse 12% · PeopleStrong 10% · Darwinbox 9% · Lever 8%
+              </p>
+            </div>
+          </div>
+        ) : null}
+
+        {/* ── Keyword gap ────────────────────────────────────────── */}
+        {ws.keywordGap && ws.keywordGap.total_jd_keywords > 0 ? (
+          <div className="content-card">
+            <div className="content-card-header">
+              <h2 className="content-card-title">Keyword Gap Analysis</h2>
+              <span className="chip chip-mono">
+                {ws.keywordGap.match_rate}% match · {ws.keywordGap.total_jd_keywords} JD keywords
+              </span>
+            </div>
+            <div className="content-card-body">
+              {ws.keywordGap.missing.length > 0 && (
+                <div style={{ marginBottom: 18 }}>
+                  <p style={{ fontSize: "0.85rem", fontWeight: 700, color: "#93000a", marginBottom: 8 }}>
+                    Missing from your resume ({ws.keywordGap.missing.length})
+                  </p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {ws.keywordGap.missing.map((kw) => (
+                      <span
+                        key={kw.keyword}
+                        style={{
+                          padding: "3px 10px",
+                          borderRadius: 9999,
+                          fontSize: "0.78rem",
+                          fontWeight: 600,
+                          background: kw.importance === "high" ? "#fef2f2" : kw.importance === "medium" ? "#fff7ed" : "#f9fafb",
+                          border: `1px solid ${kw.importance === "high" ? "#fca5a5" : kw.importance === "medium" ? "#fcd34d" : "#e5e7eb"}`,
+                          color: kw.importance === "high" ? "#dc2626" : kw.importance === "medium" ? "#d97706" : "#6b7280",
+                        }}
+                      >
+                        {kw.keyword}
+                        <span style={{ marginLeft: 4, fontSize: "0.68rem", opacity: 0.7 }}>{kw.importance}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {ws.keywordGap.matched.length > 0 && (
+                <div>
+                  <p style={{ fontSize: "0.85rem", fontWeight: 700, color: "#15803d", marginBottom: 8 }}>
+                    Found in your resume ({ws.keywordGap.matched.length})
+                  </p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {ws.keywordGap.matched.slice(0, 20).map((kw) => (
+                      <span
+                        key={kw.keyword}
+                        style={{
+                          padding: "3px 10px", borderRadius: 9999, fontSize: "0.78rem",
+                          fontWeight: 500, background: "#f0fdf4",
+                          border: "1px solid #86efac", color: "#15803d",
+                        }}
+                      >
+                        {kw.keyword}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );
