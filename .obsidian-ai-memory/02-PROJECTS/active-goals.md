@@ -70,7 +70,7 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 - [x] Standalone: POST /ats/vendor-simulation, POST /ats/keyword-gap
 - [x] Frontend: vendor bar chart + keyword gap chips in /match page
 
-### M4 — Application tracker UI (MEDIUM)
+### M4 — Application tracker UI ✅ DONE
 > FR-JI-006: per-job save/track workflow.
 - [ ] "Save job" button on JobCard → POST /applications
 - [ ] `/applications` page: kanban columns (saved → applied → screening → interview → offer/rejected)
