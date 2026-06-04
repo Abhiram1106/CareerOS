@@ -70,6 +70,36 @@ async def vector_index_jd(jd_id: int, jd_text: str, role: str, required_skills: 
             pass  # non-blocking
 
 
+async def skill_gap_with_graph(known_skills: list[str], missing_skills: list[str]) -> list[dict]:
+    """Enrich missing skills with graph reachability (distance from known skills)."""
+    async with httpx.AsyncClient(timeout=8) as client:
+        try:
+            resp = await client.post(
+                f"{MATCH_ENGINE_URL}/skills/gap-with-graph",
+                json={"known_skills": known_skills, "missing_skills": missing_skills},
+            )
+            if resp.is_success:
+                return resp.json().get("enriched_gaps", [])
+        except Exception:
+            pass
+    return []
+
+
+async def get_adjacent_skills(known_skills: list[str], max_distance: int = 1, limit: int = 8) -> list[dict]:
+    """Return skills adjacent to the known set from the skill graph."""
+    async with httpx.AsyncClient(timeout=8) as client:
+        try:
+            resp = await client.post(
+                f"{MATCH_ENGINE_URL}/skills/adjacent",
+                json={"known_skills": known_skills, "max_distance": max_distance, "limit": limit},
+            )
+            if resp.is_success:
+                return resp.json().get("adjacent", [])
+        except Exception:
+            pass
+    return []
+
+
 async def vector_user_signal(user_id: int, signal_type: str, scorecard_id: int, content: str) -> None:
     """Log a user outcome signal to the CARE-RAG User Memory Index."""
     async with httpx.AsyncClient(timeout=8) as client:

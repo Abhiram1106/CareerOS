@@ -77,6 +77,14 @@ class QualityClassInfo(BaseModel):
     guidance: str   # actionable fix e.g. "Add numbers and outcomes..."
 
 
+class GraphGapItem(BaseModel):
+    """CARE-RAG Layer 3D: skill gap enriched with graph distance."""
+    skill: str
+    distance: int | None    # hops from nearest known skill; None = unreachable
+    nearest_known: str | None
+    reachable: bool
+
+
 class ScorecardScoreResponse(BaseModel):
     scorecard_id: int
     jd_id: int
@@ -93,3 +101,4 @@ class ScorecardScoreResponse(BaseModel):
     ats_issues: list[ATSIssue] = Field(default_factory=list)
     vendor_simulation: VendorSimulation | None = None
     keyword_gap: KeywordGap | None = None
+    graph_gap: list[GraphGapItem] = Field(default_factory=list)  # CARE-RAG Layer 3D

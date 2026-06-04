@@ -8,6 +8,7 @@ patch_sklearn_if_available()
 
 from .jd_parser import parse_jd
 from .matcher import compute_match
+from .skill_taxonomy import get_adjacent_skills, skill_gap_with_graph
 from .vector_store import (
     get_index_stats,
     index_jd,
@@ -61,6 +62,18 @@ class UserSignalRequest(BaseModel):
     signal_type: str   # suggestion_accepted | suggestion_rejected | interview_received
     scorecard_id: int
     content: str = Field(min_length=1)
+
+
+class AdjacentSkillsRequest(BaseModel):
+    known_skills: list[str]
+    max_distance: int = Field(default=1, ge=1, le=3)
+    exclude: list[str] = Field(default_factory=list)
+    limit: int = Field(default=10, ge=1, le=30)
+
+
+class SkillGapGraphRequest(BaseModel):
+    known_skills: list[str]
+    missing_skills: list[str]
 
 
 # ── Core routes ─────────────────────────────────────────────────────────────
@@ -150,3 +163,43 @@ def vector_user_signal(payload: UserSignalRequest):
         content=payload.content,
     )
     return {"ok": ok}
+
+
+# ── CARE-RAG skill graph routes ──────────────────────────────────────────────
+
+@app.post("/skills/adjacent")
+def skills_adjacent(payload: AdjacentSkillsRequest):
+    """Return skills adjacent to the known set, ordered by hop distance.
+
+    Used by wizard Step 3 (Recommend) to suggest skills to add:
+      "You know Python — consider adding Pandas (d=1) and SQL (d=1)."
+    """
+    results = get_adjacent_skills(
+        known_skills=payload.known_skills,
+        max_distance=payload.max_distance,
+        exclude=set(payload.exclude),
+        limit=payload.limit,
+    )
+    return {
+        "adjacent": [{"skill": s, "distance": d} for s, d in results],
+        "count": len(results),
+    }
+
+
+@app.post("/skills/gap-with-graph")
+def skills_gap_graph(payload: SkillGapGraphRequest):
+    """Enrich missing JD skills with graph-based reachability context.
+
+    Returns each missing skill with:
+      - distance: hop count from nearest known skill (None = unreachable)
+      - nearest_known: which of your skills is closest
+      - reachable: True if any known skill can reach it in the graph
+
+    Used to separate "skill gap" (you don't have it) from
+    "resume gap" (you can reach it from what you know but didn't mention it).
+    """
+    enriched = skill_gap_with_graph(
+        known_skills=payload.known_skills,
+        missing_jd_skills=payload.missing_skills,
+    )
+    return {"enriched_gaps": enriched, "count": len(enriched)}

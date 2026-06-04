@@ -11,14 +11,16 @@ from ....adapter.db.persistence.resume.resume_view import ResumeView
 from ....adapter.db.persistence.scorecard.scorecard_repo import ScorecardRepo
 from ....models.entities import User
 from ....services.clients import (
+    get_adjacent_skills,
     match_resume_to_jd,
     parse_jd_text,
+    skill_gap_with_graph,
     vector_index_jd,
     vector_index_resume,
 )
 import asyncio
 
-from ..dto.scorecard_dto import QualityClassInfo, ScoreComponents, ScorecardScoreRequest, ScorecardScoreResponse
+from ..dto.scorecard_dto import GraphGapItem, QualityClassInfo, ScoreComponents, ScorecardScoreRequest, ScorecardScoreResponse
 
 from careeros_scoring import (
     analyze_ats,
@@ -246,6 +248,13 @@ class ScoreResumeHandler:
             ats_issues=ats_report["issues"],
             vendor_simulation=detail["vendor_simulation"],
             keyword_gap=detail["keyword_gap"],
+            graph_gap=[
+                GraphGapItem(**item)
+                for item in await skill_gap_with_graph(
+                    known_skills=match.get("matched_skills", []),
+                    missing_skills=match.get("missing_required_skills", []),
+                )
+            ],
         ).model_dump()
 
     async def _background_index(

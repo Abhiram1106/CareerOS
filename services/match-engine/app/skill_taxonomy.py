@@ -238,3 +238,201 @@ def parse_required_skills_block(jd_text: str) -> list[str]:
         if capture:
             block.append(line)
     return extract_skills_from_text("\n".join(block)) if block else extract_skills_from_text(jd_text)
+
+
+# ── CARE-RAG Layer 3D: Skill Graph Index ──────────────────────────────────────
+#
+# Directed adjacency graph: skill → list of (neighbour, distance) pairs.
+# Distance semantics:
+#   1 = direct prerequisite or common co-occurrence ("React needs JavaScript")
+#   2 = same technology family ("React and Angular are both Frontend")
+#   3 = same broad domain ("React dev likely also does REST API integration")
+#
+# Asymmetric edges reflect learning direction:
+#   "You know Python" → suggest Pandas (d=1), SQL (d=1), Data Analyst role (d=2)
+#   "You know Docker" → suggest Kubernetes (d=1), CI/CD (d=1), AWS (d=2)
+
+SKILL_GRAPH: dict[str, list[tuple[str, int]]] = {
+    # ── Python ecosystem ──────────────────────────────────────────────────────
+    "python": [
+        ("django", 1), ("fastapi", 1), ("flask", 1),
+        ("pandas", 1), ("numpy", 1), ("scikit-learn", 1),
+        ("sql", 1), ("rest api", 1),
+        ("machine learning", 2), ("data structures", 2),
+        ("algorithms", 2), ("postgresql", 2),
+    ],
+    "django": [("python", 1), ("postgresql", 1), ("rest api", 1), ("sql", 2)],
+    "fastapi": [("python", 1), ("rest api", 1), ("postgresql", 2), ("docker", 2)],
+    "flask": [("python", 1), ("rest api", 1), ("sql", 2)],
+
+    # ── Data / ML ecosystem ───────────────────────────────────────────────────
+    "pandas": [("python", 1), ("numpy", 1), ("sql", 1), ("scikit-learn", 2), ("tableau", 2)],
+    "numpy": [("python", 1), ("pandas", 1), ("scikit-learn", 2)],
+    "scikit-learn": [("python", 1), ("pandas", 1), ("machine learning", 1), ("numpy", 2)],
+    "tensorflow": [("python", 1), ("keras", 1), ("deep learning", 1), ("machine learning", 2)],
+    "pytorch": [("python", 1), ("deep learning", 1), ("machine learning", 2), ("keras", 2)],
+    "keras": [("tensorflow", 1), ("pytorch", 1), ("deep learning", 1), ("python", 2)],
+    "machine learning": [("python", 1), ("scikit-learn", 1), ("pandas", 1), ("sql", 2)],
+    "deep learning": [("tensorflow", 1), ("pytorch", 1), ("python", 2), ("machine learning", 2)],
+    "tableau": [("sql", 1), ("pandas", 2), ("excel", 2), ("power bi", 2)],
+    "power bi": [("sql", 1), ("excel", 1), ("tableau", 2)],
+    "excel": [("sql", 1), ("power bi", 2), ("tableau", 2)],
+
+    # ── JavaScript ecosystem ──────────────────────────────────────────────────
+    "javascript": [
+        ("typescript", 1), ("react", 1), ("node.js", 1),
+        ("html", 1), ("css", 1), ("rest api", 2),
+    ],
+    "typescript": [("javascript", 1), ("react", 1), ("node.js", 1), ("angular", 2)],
+    "react": [("javascript", 1), ("typescript", 1), ("rest api", 1), ("node.js", 2)],
+    "react.js": [("javascript", 1), ("typescript", 1), ("rest api", 1)],
+    "angular": [("typescript", 1), ("javascript", 2), ("rest api", 2)],
+    "vue": [("javascript", 1), ("typescript", 2), ("rest api", 2)],
+    "next.js": [("react", 1), ("javascript", 1), ("typescript", 2)],
+    "node.js": [("javascript", 1), ("express", 1), ("rest api", 1), ("typescript", 2)],
+    "express": [("node.js", 1), ("javascript", 1), ("rest api", 1), ("mongodb", 2)],
+    "html": [("css", 1), ("javascript", 1), ("react", 2)],
+    "css": [("html", 1), ("javascript", 1), ("react", 2)],
+    "graphql": [("rest api", 1), ("javascript", 2), ("node.js", 2)],
+
+    # ── Java ecosystem ────────────────────────────────────────────────────────
+    "java": [
+        ("spring boot", 1), ("spring", 1), ("sql", 1),
+        ("object oriented programming", 1), ("oop", 1),
+        ("algorithms", 2), ("data structures", 2),
+    ],
+    "spring boot": [("java", 1), ("spring", 1), ("sql", 1), ("rest api", 1), ("docker", 2)],
+    "spring": [("java", 1), ("spring boot", 1), ("sql", 2)],
+    "kotlin": [("java", 1), ("spring boot", 2), ("android", 2)],
+
+    # ── DevOps / Cloud ecosystem ──────────────────────────────────────────────
+    "docker": [
+        ("kubernetes", 1), ("ci/cd", 1), ("linux", 1),
+        ("aws", 2), ("gcp", 2), ("azure", 2),
+    ],
+    "kubernetes": [("docker", 1), ("ci/cd", 1), ("aws", 2), ("terraform", 2)],
+    "aws": [("docker", 1), ("kubernetes", 2), ("terraform", 1), ("ci/cd", 2)],
+    "gcp": [("docker", 1), ("terraform", 1), ("kubernetes", 2)],
+    "azure": [("docker", 1), ("terraform", 1), ("kubernetes", 2)],
+    "terraform": [("aws", 1), ("gcp", 1), ("azure", 1), ("docker", 2)],
+    "ci/cd": [("docker", 1), ("jenkins", 1), ("github", 1), ("kubernetes", 2)],
+    "jenkins": [("ci/cd", 1), ("docker", 2), ("git", 2)],
+    "linux": [("bash", 1), ("docker", 2), ("git", 2)],
+    "bash": [("linux", 1), ("shell scripting", 1), ("git", 2)],
+    "shell scripting": [("bash", 1), ("linux", 1)],
+
+    # ── Databases ─────────────────────────────────────────────────────────────
+    "sql": [
+        ("postgresql", 1), ("mysql", 1), ("python", 2),
+        ("pandas", 2), ("tableau", 2), ("data structures", 3),
+    ],
+    "postgresql": [("sql", 1), ("python", 2), ("docker", 2)],
+    "mysql": [("sql", 1), ("php", 2)],
+    "mongodb": [("node.js", 1), ("express", 1), ("nosql", 2)],
+    "redis": [("docker", 2), ("python", 2), ("node.js", 2)],
+    "elasticsearch": [("kibana", 1), ("python", 2), ("docker", 2)],
+    "kafka": [("docker", 2), ("python", 2), ("java", 2)],
+
+    # ── Version control / collaboration ──────────────────────────────────────
+    "git": [("github", 1), ("gitlab", 1), ("ci/cd", 2)],
+    "github": [("git", 1), ("ci/cd", 1), ("gitlab", 2)],
+    "gitlab": [("git", 1), ("ci/cd", 1), ("github", 2)],
+
+    # ── Core CS concepts ──────────────────────────────────────────────────────
+    "data structures": [("algorithms", 1), ("python", 2), ("java", 2)],
+    "algorithms": [("data structures", 1), ("python", 2), ("java", 2)],
+    "object oriented programming": [("java", 1), ("python", 1), ("c++", 2), ("oop", 1)],
+    "oop": [("object oriented programming", 1), ("java", 1), ("python", 1)],
+    "system design": [("microservices", 1), ("docker", 2), ("rest api", 2)],
+    "microservices": [("docker", 1), ("kubernetes", 1), ("rest api", 1), ("system design", 2)],
+    "rest api": [("python", 2), ("javascript", 2), ("fastapi", 2), ("spring boot", 2)],
+
+    # ── Other ─────────────────────────────────────────────────────────────────
+    "agile": [("scrum", 1), ("jira", 1)],
+    "scrum": [("agile", 1), ("jira", 1)],
+    "jira": [("agile", 1), ("scrum", 1)],
+    "golang": [("docker", 2), ("kubernetes", 2), ("microservices", 2)],
+    "rust": [("golang", 2), ("c++", 2), ("algorithms", 2)],
+    "c++": [("algorithms", 1), ("data structures", 1), ("rust", 2), ("golang", 2)],
+    "c#": [(".net", 1), ("azure", 2), ("java", 2)],
+    ".net": [("c#", 1), ("azure", 2)],
+    "swift": [("ios", 1), ("kotlin", 2)],
+    "kotlin": [("java", 1), ("android", 2), ("swift", 2)],
+}
+
+
+def get_adjacent_skills(
+    known_skills: list[str],
+    max_distance: int = 1,
+    exclude: set[str] | None = None,
+    limit: int = 10,
+) -> list[tuple[str, int]]:
+    """Return skills adjacent to the known set, ordered by minimum distance.
+
+    Args:
+        known_skills: Skills the candidate already has.
+        max_distance: Maximum hop distance to consider (1=direct, 2=same family).
+        exclude: Skills already in resume or already suggested — skip these.
+        limit: Max results to return.
+
+    Returns:
+        List of (skill, min_distance) sorted by distance then alphabetically.
+    """
+    known = {s.lower() for s in known_skills}
+    blocked = (exclude or set()) | known
+    found: dict[str, int] = {}  # skill → best (minimum) distance seen
+
+    for skill in known:
+        neighbours = SKILL_GRAPH.get(skill, [])
+        for neighbour, dist in neighbours:
+            if dist > max_distance:
+                continue
+            if neighbour in blocked:
+                continue
+            if neighbour not in found or dist < found[neighbour]:
+                found[neighbour] = dist
+
+    results = sorted(found.items(), key=lambda x: (x[1], x[0]))
+    return results[:limit]
+
+
+def skill_gap_with_graph(
+    known_skills: list[str],
+    missing_jd_skills: list[str],
+) -> list[dict]:
+    """Enrich missing JD skills with graph-based adjacency context.
+
+    For each missing skill, compute the minimum hop distance from the
+    candidate's known skills. This distinguishes:
+      - "You don't have Docker" (you know Linux — it's 2 hops away)
+      - "You don't have Rust" (none of your skills are close)
+
+    Returns enriched dicts: {skill, distance, nearest_known, reachable}.
+    """
+    known = {s.lower() for s in known_skills}
+    results: list[dict] = []
+
+    for missing in missing_jd_skills:
+        m = missing.lower()
+        best_dist: int | None = None
+        nearest: str | None = None
+
+        # Check if any known skill can reach this missing skill
+        for known_skill in known:
+            neighbours = SKILL_GRAPH.get(known_skill, [])
+            for neighbour, dist in neighbours:
+                if neighbour == m:
+                    if best_dist is None or dist < best_dist:
+                        best_dist = dist
+                        nearest = known_skill
+
+        results.append({
+            "skill": missing,
+            "distance": best_dist,            # None = no path in graph
+            "nearest_known": nearest,          # which of your skills is closest
+            "reachable": best_dist is not None,
+        })
+
+    # Sort: reachable skills first (easier to add), then by distance, then alpha
+    results.sort(key=lambda x: (not x["reachable"], x["distance"] or 99, x["skill"]))
+    return results

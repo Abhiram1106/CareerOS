@@ -1,6 +1,6 @@
 "use client";
 
-import type { QualityClassInfo } from "../../../lib/api";
+import type { GraphGapItem, QualityClassInfo } from "../../../lib/api";
 import { AtsBreakdown } from "../../../components/workspace/AtsBreakdown";
 import { ScoreBreakdown } from "../../../components/workspace/ScoreBreakdown";
 import { ScoreBarsInline, SkillLists } from "../../../components/workspace/ScoreBarsInline";
@@ -214,7 +214,7 @@ export default function MatchPage() {
                 </div>
               </div>
 
-              {/* Missing keywords — colour by importance + size by frequency */}
+              {/* Missing keywords — colour by importance + size by frequency + graph distance */}
               {ws.keywordGap.missing.length > 0 && (
                 <div style={{ marginBottom: 20 }}>
                   <p style={{ fontSize: "0.82rem", fontWeight: 700, color: "#93000a", marginBottom: 10 }}>
@@ -227,19 +227,30 @@ export default function MatchPage() {
                       const bg = kw.importance === "high" ? "#fef2f2" : kw.importance === "medium" ? "#fff7ed" : "#f9fafb";
                       const border = kw.importance === "high" ? "#fca5a5" : kw.importance === "medium" ? "#fcd34d" : "#e5e7eb";
                       const color = kw.importance === "high" ? "#dc2626" : kw.importance === "medium" ? "#d97706" : "#6b7280";
+                      // Graph enrichment: find this keyword in graphGap
+                      const graphInfo = ws.graphGap?.find((g: GraphGapItem) => g.skill.toLowerCase() === kw.keyword.toLowerCase());
+                      const tooltipParts = [`Appears ${freq}× in JD · ${kw.importance} priority`];
+                      if (graphInfo?.reachable && graphInfo.nearest_known) {
+                        tooltipParts.push(`${graphInfo.distance} hop${graphInfo.distance !== 1 ? "s" : ""} from your ${graphInfo.nearest_known}`);
+                      }
                       return (
-                        <span key={kw.keyword} title={`Appears ${freq}× in JD · ${kw.importance} priority`}
-                          style={{ padding: "4px 10px", borderRadius: 9999, fontSize: size, fontWeight: 600, background: bg, border: `1.5px solid ${border}`, color, cursor: "default" }}>
+                        <span key={kw.keyword} title={tooltipParts.join(" · ")}
+                          style={{ padding: "4px 10px", borderRadius: 9999, fontSize: size, fontWeight: 600, background: bg, border: `1.5px solid ${border}`, color, cursor: "default", display: "inline-flex", alignItems: "center", gap: 4 }}>
                           {kw.keyword}
                           {freq > 1 && (
-                            <span style={{ marginLeft: 5, fontSize: "0.66rem", opacity: 0.75, fontWeight: 800 }}>×{freq}</span>
+                            <span style={{ fontSize: "0.66rem", opacity: 0.75, fontWeight: 800 }}>×{freq}</span>
+                          )}
+                          {graphInfo?.reachable && (
+                            <span style={{ fontSize: "0.62rem", background: "rgba(0,113,197,0.12)", color: "#0071c5", borderRadius: 4, padding: "0 4px", fontWeight: 700 }}>
+                              d{graphInfo.distance}
+                            </span>
                           )}
                         </span>
                       );
                     })}
                   </div>
                   <p style={{ fontSize: "0.72rem", color: "#8a95a2", marginTop: 8 }}>
-                    Chip size = keyword frequency in JD. Colour = priority (red = high, amber = medium, grey = low).
+                    Chip size = JD frequency. Colour = priority. <strong style={{ color: "#0071c5" }}>d1/d2</strong> = reachable from skills you already have.
                   </p>
                 </div>
               )}

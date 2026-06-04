@@ -149,6 +149,13 @@ export type KeywordGap = {
   total_jd_keywords: number;
 };
 
+export type GraphGapItem = {
+  skill: string;
+  distance: number | null;   // hop count from nearest known skill; null = unreachable
+  nearest_known: string | null;
+  reachable: boolean;
+};
+
 export type QualityClassInfo = {
   key: string;    // e.g. "impact_weak"
   label: string;  // e.g. "Impact Weak"
@@ -171,6 +178,7 @@ export type ScorecardResult = {
   ats_issues?: ATSIssue[];
   vendor_simulation?: VendorSimulation;
   keyword_gap?: KeywordGap;
+  graph_gap?: GraphGapItem[];  // CARE-RAG Layer 3D skill graph enrichment
 };
 
 export type RewriteSection = {

@@ -112,6 +112,7 @@ export function usePlacementWorkspace(initialTab: WorkspaceTab = "resume") {
   const [vendorSimulation, setVendorSimulation] = useState<import("../lib/api").VendorSimulation | null>(null);
   const [keywordGap, setKeywordGap] = useState<import("../lib/api").KeywordGap | null>(null);
   const [qualityClass, setQualityClass] = useState<import("../lib/api").QualityClassInfo | null>(null);
+  const [graphGap, setGraphGap] = useState<import("../lib/api").GraphGapItem[]>([]);
 
   const [rewriteBundle, setRewriteBundle] = useState<RewriteResult | null>(null);
   const [rewriting, setRewriting] = useState(false);
@@ -199,6 +200,7 @@ export function usePlacementWorkspace(initialTab: WorkspaceTab = "resume") {
     setVendorSimulation(res.vendor_simulation ?? null);
     setKeywordGap(res.keyword_gap ?? null);
     setQualityClass(res.quality_class ?? null);
+    setGraphGap(res.graph_gap ?? []);
   }, []);
 
   const hydrateResumeFromId = useCallback(
@@ -578,6 +580,7 @@ export function usePlacementWorkspace(initialTab: WorkspaceTab = "resume") {
     vendorSimulation,
     keywordGap,
     qualityClass,
+    graphGap,
     hasScore,
     template,
     setTemplate,
