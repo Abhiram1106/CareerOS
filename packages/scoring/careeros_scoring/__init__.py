@@ -2,8 +2,11 @@
 
 from .formula import (
     bucket_label,
+    classify_resume_quality,
     compute_jd_match,
     compute_placement_readiness,
+    QUALITY_CLASS_GUIDANCE,
+    QUALITY_CLASS_LABELS,
 )
 from .parse_safety import analyze_ats, ats_parse_safety_from_flags
 from .resume_components import (
@@ -19,6 +22,7 @@ __all__ = [
     "analyze_ats",
     "ats_parse_safety_from_flags",
     "bucket_label",
+    "classify_resume_quality",
     "compute_jd_match",
     "compute_placement_readiness",
     "evidence_quality_score",
@@ -26,6 +30,8 @@ __all__ = [
     "keyword_gap_analysis",
     "placement_hygiene_score",
     "profile_completeness_score",
+    "QUALITY_CLASS_GUIDANCE",
+    "QUALITY_CLASS_LABELS",
     "resume_text_from_sections",
     "simulate_vendors",
 ]

@@ -468,8 +468,13 @@ def keyword_gap_analysis(resume_text: str, jd_text: str) -> dict:
     matched: list[dict] = []
     missing: list[dict] = []
 
+    # Pre-compute JD keyword frequency for heatmap intensity
+    jd_lower = jd_text.lower()
+
     for kw in unique_jd:
         pattern = re.compile(rf"\b{re.escape(kw)}\b", re.IGNORECASE)
+        frequency = len(pattern.findall(jd_text))  # times keyword appears in JD
+
         if pattern.search(res_lower):
             # Find a short context snippet from the JD
             jd_match = pattern.search(jd_text)
@@ -478,7 +483,7 @@ def keyword_gap_analysis(resume_text: str, jd_text: str) -> dict:
                 start = max(0, jd_match.start() - 30)
                 end = min(len(jd_text), jd_match.end() + 30)
                 context = "…" + jd_text[start:end].strip() + "…"
-            matched.append({"keyword": kw, "context": context[:120]})
+            matched.append({"keyword": kw, "context": context[:120], "frequency": frequency})
         else:
             # Determine importance: keywords in first third of JD are "required"
             for i, line in enumerate(jd_lines):
@@ -488,7 +493,7 @@ def keyword_gap_analysis(resume_text: str, jd_text: str) -> dict:
                     break
             else:
                 importance = "medium"
-            missing.append({"keyword": kw, "importance": importance})
+            missing.append({"keyword": kw, "importance": importance, "frequency": frequency})
 
     total = len(unique_jd)
     match_rate = round(len(matched) / total * 100, 1) if total else 0.0

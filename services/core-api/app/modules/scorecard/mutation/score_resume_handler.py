@@ -11,16 +11,19 @@ from ....adapter.db.persistence.resume.resume_view import ResumeView
 from ....adapter.db.persistence.scorecard.scorecard_repo import ScorecardRepo
 from ....models.entities import User
 from ....services.clients import match_resume_to_jd, parse_jd_text
-from ..dto.scorecard_dto import ScoreComponents, ScorecardScoreRequest, ScorecardScoreResponse
+from ..dto.scorecard_dto import QualityClassInfo, ScoreComponents, ScorecardScoreRequest, ScorecardScoreResponse
 
 from careeros_scoring import (
     analyze_ats,
+    classify_resume_quality,
     compute_placement_readiness,
     evidence_quality_score,
     interview_readiness_score,
     keyword_gap_analysis,
     placement_hygiene_score,
     profile_completeness_score,
+    QUALITY_CLASS_GUIDANCE,
+    QUALITY_CLASS_LABELS,
     resume_text_from_sections,
     simulate_vendors,
 )
@@ -178,11 +181,28 @@ class ScoreResumeHandler:
             detail=detail,
         )
 
+        # CARE-RAG Layer 2: compute diagnostic quality class
+        qc_key = classify_resume_quality(
+            overall_score=placement.overall_score,
+            ats_parse_safety=placement.ats_parse_safety,
+            jd_match=placement.jd_match,
+            evidence_quality=placement.evidence_quality,
+            profile_completeness=placement.profile_completeness,
+            required_skill_recall=float(breakdown.required_skill_recall),
+            ats_flags=list(payload.ats_flags),
+        )
+        quality_class_info = QualityClassInfo(
+            key=qc_key,
+            label=QUALITY_CLASS_LABELS[qc_key],
+            guidance=QUALITY_CLASS_GUIDANCE[qc_key],
+        )
+
         return ScorecardScoreResponse(
             scorecard_id=row.id,
             jd_id=jd_id,
             overall_score=placement.overall_score,
             bucket=placement.bucket,
+            quality_class=quality_class_info,
             components=ScoreComponents(**weighted),
             raw={
                 "jd_match": placement.jd_match,

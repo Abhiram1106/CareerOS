@@ -139,8 +139,8 @@ export type VendorSimulation = {
   vendors: VendorScore[];
 };
 
-export type KeywordItem = { keyword: string; context: string };
-export type MissingKeyword = { keyword: string; importance: "high" | "medium" | "low" };
+export type KeywordItem = { keyword: string; context: string; frequency?: number };
+export type MissingKeyword = { keyword: string; importance: "high" | "medium" | "low"; frequency?: number };
 
 export type KeywordGap = {
   matched: KeywordItem[];
@@ -149,11 +149,18 @@ export type KeywordGap = {
   total_jd_keywords: number;
 };
 
+export type QualityClassInfo = {
+  key: string;    // e.g. "impact_weak"
+  label: string;  // e.g. "Impact Weak"
+  guidance: string; // actionable fix text
+};
+
 export type ScorecardResult = {
   scorecard_id: number;
   jd_id: number;
   overall_score: number;
   bucket: string;
+  quality_class?: QualityClassInfo;  // CARE-RAG Layer 2
   components: ScorecardComponents;
   raw: Record<string, number>;
   missing_required_skills: string[];

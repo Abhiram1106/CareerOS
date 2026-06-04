@@ -111,6 +111,7 @@ export function usePlacementWorkspace(initialTab: WorkspaceTab = "resume") {
   const [atsBucket, setAtsBucket] = useState<string | null>(null);
   const [vendorSimulation, setVendorSimulation] = useState<import("../lib/api").VendorSimulation | null>(null);
   const [keywordGap, setKeywordGap] = useState<import("../lib/api").KeywordGap | null>(null);
+  const [qualityClass, setQualityClass] = useState<import("../lib/api").QualityClassInfo | null>(null);
 
   const [rewriteBundle, setRewriteBundle] = useState<RewriteResult | null>(null);
   const [rewriting, setRewriting] = useState(false);
@@ -197,6 +198,7 @@ export function usePlacementWorkspace(initialTab: WorkspaceTab = "resume") {
     setAtsBucket(res.ats_bucket ?? null);
     setVendorSimulation(res.vendor_simulation ?? null);
     setKeywordGap(res.keyword_gap ?? null);
+    setQualityClass(res.quality_class ?? null);
   }, []);
 
   const hydrateResumeFromId = useCallback(
@@ -575,6 +577,7 @@ export function usePlacementWorkspace(initialTab: WorkspaceTab = "resume") {
     atsBucket,
     vendorSimulation,
     keywordGap,
+    qualityClass,
     hasScore,
     template,
     setTemplate,

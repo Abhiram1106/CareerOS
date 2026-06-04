@@ -54,11 +54,13 @@ class VendorSimulation(BaseModel):
 class KeywordItem(BaseModel):
     keyword: str
     context: str = ""
+    frequency: int = 1  # times keyword appears in JD
 
 
 class MissingKeyword(BaseModel):
     keyword: str
     importance: str  # "high" | "medium" | "low"
+    frequency: int = 1  # times keyword appears in JD
 
 
 class KeywordGap(BaseModel):
@@ -68,11 +70,19 @@ class KeywordGap(BaseModel):
     total_jd_keywords: int = 0
 
 
+class QualityClassInfo(BaseModel):
+    """CARE-RAG Layer 2: diagnostic resume quality classification."""
+    key: str        # machine key e.g. "impact_weak"
+    label: str      # human label e.g. "Impact Weak"
+    guidance: str   # actionable fix e.g. "Add numbers and outcomes..."
+
+
 class ScorecardScoreResponse(BaseModel):
     scorecard_id: int
     jd_id: int
     overall_score: float
     bucket: str
+    quality_class: QualityClassInfo | None = None   # CARE-RAG Layer 2
     components: ScoreComponents
     raw: dict
     missing_required_skills: list[str]
