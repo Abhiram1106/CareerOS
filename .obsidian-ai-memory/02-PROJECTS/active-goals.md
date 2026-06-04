@@ -125,7 +125,7 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 - [ ] Inject retrieved patterns into proof_linked_rewrite_handler as context
 - [ ] Add provenance to suggestions: "Based on 12 strong {role} resumes in our knowledge base"
 
-### M10 — Skill Graph Index (MEDIUM)
+### M10 — Skill Graph Index ✅ DONE
 > CARE-RAG Layer 3D: skill relationships for smarter gap analysis.
 
 - [ ] Define skill graph: `React → JavaScript → Frontend → REST API → UI Components`
