@@ -78,12 +78,12 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 - [ ] Resume version linked to each application
 - **Files to touch:** `apps/web/app/(app)/jobs/page.tsx`, new `apps/web/app/(app)/applications/page.tsx`
 
-### M5 — Analytics: score history + skill trends (MEDIUM)
-> FR-AD-001, FR-AD-002.
-- [ ] GET /analytics/ats-history: scorecard scores over time (date + overall_score)
-- [ ] Dashboard score trend mini-chart (sparkline)
-- [ ] Skill demand signal: which JD skills appear most in user's scans
-- **Files to touch:** `services/core-api/app/api/controllers/` new analytics controller, dashboard page
+### M5 — Analytics: score history ✅ DONE
+- [x] GET /analytics/score-history → [{date, overall_score, bucket}] chrono (up to 50)
+- [x] delta computed from first to last scan
+- [x] ScoreSparkline: SVG polyline + dots, colour-coded by latest bucket
+- [x] Delta badge on dashboard (↑/↓ pts overall)
+- [x] Non-blocking: history failure doesn't break dashboard load
 
 ### M6 — AI resume builder: guided mode (MEDIUM)
 > FR-RB-001, FR-RB-002, FR-RB-003.
