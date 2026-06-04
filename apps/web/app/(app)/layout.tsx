@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Bot,
   BriefcaseBusiness,
+  ClipboardList,
   LayoutDashboard,
   PenLine,
   Settings,
@@ -26,6 +27,7 @@ const PRIMARY_NAV: NavItem[] = [
   { href: "/match", label: "JD Match", icon: <Sparkles size={16} /> },
   { href: "/rewrite", label: "Rewrite", icon: <PenLine size={16} /> },
   { href: "/jobs", label: "Jobs", icon: <BriefcaseBusiness size={16} /> },
+  { href: "/applications", label: "Applications", icon: <ClipboardList size={16} /> },
   { href: "/assistant", label: "Assistant", icon: <Bot size={16} /> },
 ];
 

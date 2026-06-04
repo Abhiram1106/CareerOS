@@ -191,6 +191,7 @@ export type JobSearchItem = {
   location: string;
   skills_required: string[];
   raw_jd_text: string;
+  apply_url?: string;
 };
 
 export type JobsSearchResult = {
