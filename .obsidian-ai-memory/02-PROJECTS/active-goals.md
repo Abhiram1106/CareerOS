@@ -41,16 +41,15 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 
 ## 🔴 Next: MVP build (mapped to CareerOS_Complete_Documentation.md)
 
-### M1 — Settings page: structured profile editor (IMMEDIATE)
-> Replaces current flat-text settings form.
-- [ ] Multi-section editor: add/edit/delete WorkExperience entries (company, title, bullets)
-- [ ] Education entries (institution, degree, CGPA)
-- [ ] Skills: tag-based input with category + proficiency
-- [ ] Projects: title, description, tech stack tags, GitHub URL
-- [ ] Certifications: name, issuer, date, credential URL
-- [ ] Social links: phone, LinkedIn, GitHub, portfolio
-- [ ] Profile completeness meter updates live as sections are filled
-- **Files to touch:** `apps/web/app/(app)/settings/page.tsx`, `apps/web/hooks/useProfileSections.ts` (new)
+### M1 — Settings page: structured profile editor ✅ DONE
+- [x] WorkSection: add/delete, up to 8 bullets per entry
+- [x] EducationSection: institution/degree/field/years/CGPA
+- [x] SkillsSection: tag chips with category + proficiency, bulk replace
+- [x] ProjectsSection: tech stack array, GitHub/live URLs
+- [x] CertificationsSection: name/issuer/date/credential URL
+- [x] LinksSection: phone, LinkedIn, GitHub, portfolio
+- [x] CompletenessRing: SVG progress + 5-item live checklist
+- [x] `useProfileSections.ts` hook: per-action saving state, auto-reload
 
 ### M2 — Resume builder: read from structured profile (HIGH)
 > FR-RB-001 to FR-RB-010 from the doc.
