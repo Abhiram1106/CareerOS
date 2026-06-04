@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from ...database import get_db
 from ...dependencies import get_dashboard_query_service, require_student
 from ...models.entities import Resume, Scorecard, User
 from ...modules.dashboard.query.dashboard_query_service import DashboardQueryService
+from ...services.clients import vector_similar_resumes
 
 router = APIRouter()
 
@@ -49,3 +50,22 @@ def score_history(
         delta = round(history[-1]["overall_score"] - history[0]["overall_score"], 1)
 
     return {"history": history, "delta": delta, "total": len(history)}
+
+
+@router.get("/analytics/similar-resumes")
+async def similar_resumes(
+    role_family: str = Query(default="", description="Role family: backend, frontend, data, devops"),
+    n: int = Query(default=3, ge=1, le=10),
+    user: User = Depends(require_student),
+):
+    """Retrieve similar Interview Ready resumes from the CARE-RAG knowledge base.
+    Used by the wizard Step 2 (Compare) to show real patterns instead of static examples.
+    """
+    # Use the student's latest resume text as query context (best available)
+    # For now, query by role family without text — patterns are returned by role
+    result = await vector_similar_resumes(
+        query_text=f"Interview Ready {role_family} software engineer resume with strong technical skills",
+        role_family=role_family,
+        n_results=n,
+    )
+    return result

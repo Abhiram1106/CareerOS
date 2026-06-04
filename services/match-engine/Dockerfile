@@ -23,5 +23,9 @@ cache_folder='/app/.cache/huggingface')" \
 
 COPY app ./app
 
+# ChromaDB persists to /app/chroma_data — mount a volume in compose for durability
+ENV CHROMA_DATA_DIR=/app/chroma_data
+RUN mkdir -p /app/chroma_data
+
 EXPOSE 8005
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8005"]

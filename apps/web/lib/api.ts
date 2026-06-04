@@ -430,6 +430,14 @@ export const api = {
   assistantChat: (token: string, message: string) =>
     request<AssistantChatResult>("/assistant/chat", "POST", { message }, token),
 
+  // CARE-RAG vector knowledge base
+  similarResumes: (token: string, roleFamily?: string, n?: number) =>
+    request<{
+      patterns: { text: string; similarity: number; overall_score: number; evidence_score: number; role_family: string }[];
+      count: number;
+      source: string;
+    }>(`/analytics/similar-resumes?role_family=${encodeURIComponent(roleFamily ?? "")}&n=${n ?? 3}`, "GET", undefined, token),
+
   scoreHistory: (token: string) =>
     request<{
       history: { scorecard_id: number; overall_score: number; bucket: string; date: string; timestamp: string }[];

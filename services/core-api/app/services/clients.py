@@ -33,6 +33,55 @@ async def generate_resume_from_profile(template_name: str, profile_data: dict) -
             raise HTTPException(status_code=503, detail="AI rewriter unavailable") from exc
 
 
+# ── CARE-RAG vector store (match-engine) ─────────────────────────────────────
+
+async def vector_index_resume(payload: dict) -> dict:
+    """Index a scored resume into the CARE-RAG Resume Pattern Index (fire-and-forget)."""
+    async with httpx.AsyncClient(timeout=10) as client:
+        try:
+            resp = await client.post(f"{MATCH_ENGINE_URL}/vector/index-resume", json=payload)
+            return resp.json() if resp.is_success else {"ok": False}
+        except Exception:
+            return {"ok": False}  # non-blocking — never raise
+
+
+async def vector_similar_resumes(query_text: str, role_family: str = "", n_results: int = 5) -> dict:
+    """Retrieve similar Interview Ready resumes from the CARE-RAG knowledge base."""
+    async with httpx.AsyncClient(timeout=8) as client:
+        try:
+            resp = await client.post(
+                f"{MATCH_ENGINE_URL}/vector/similar-resumes",
+                json={"query_text": query_text, "role_family": role_family, "n_results": n_results},
+            )
+            return resp.json() if resp.is_success else {"patterns": [], "count": 0, "source": "unavailable"}
+        except Exception:
+            return {"patterns": [], "count": 0, "source": "unavailable"}
+
+
+async def vector_index_jd(jd_id: int, jd_text: str, role: str, required_skills: list) -> None:
+    """Index a JD into the CARE-RAG JD Intelligence Index (fire-and-forget)."""
+    async with httpx.AsyncClient(timeout=8) as client:
+        try:
+            await client.post(
+                f"{MATCH_ENGINE_URL}/vector/index-jd",
+                json={"jd_id": jd_id, "jd_text": jd_text, "role": role, "required_skills": required_skills},
+            )
+        except Exception:
+            pass  # non-blocking
+
+
+async def vector_user_signal(user_id: int, signal_type: str, scorecard_id: int, content: str) -> None:
+    """Log a user outcome signal to the CARE-RAG User Memory Index."""
+    async with httpx.AsyncClient(timeout=8) as client:
+        try:
+            await client.post(
+                f"{MATCH_ENGINE_URL}/vector/user-signal",
+                json={"user_id": user_id, "signal_type": signal_type, "scorecard_id": scorecard_id, "content": content},
+            )
+        except Exception:
+            pass  # non-blocking
+
+
 async def proof_linked_rewrite(payload: dict) -> dict:
     async with httpx.AsyncClient(timeout=30) as client:
         try:

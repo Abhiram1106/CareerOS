@@ -122,6 +122,8 @@ services:
   match-engine:
     build:
       context: ./services/match-engine
+    volumes:
+      - chroma_data:/app/chroma_data
     ports:
       - "8005:8005"
     healthcheck:
@@ -152,3 +154,4 @@ services:
 volumes:
   pg_data:
   export_data:
+  chroma_data:      # CARE-RAG vector knowledge base (ChromaDB)

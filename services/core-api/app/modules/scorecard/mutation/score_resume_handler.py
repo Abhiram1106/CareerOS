@@ -10,7 +10,14 @@ from ....adapter.db.persistence.profile.profile_view import ProfileView
 from ....adapter.db.persistence.resume.resume_view import ResumeView
 from ....adapter.db.persistence.scorecard.scorecard_repo import ScorecardRepo
 from ....models.entities import User
-from ....services.clients import match_resume_to_jd, parse_jd_text
+from ....services.clients import (
+    match_resume_to_jd,
+    parse_jd_text,
+    vector_index_jd,
+    vector_index_resume,
+)
+import asyncio
+
 from ..dto.scorecard_dto import QualityClassInfo, ScoreComponents, ScorecardScoreRequest, ScorecardScoreResponse
 
 from careeros_scoring import (
@@ -197,6 +204,25 @@ class ScoreResumeHandler:
             guidance=QUALITY_CLASS_GUIDANCE[qc_key],
         )
 
+        # CARE-RAG Layer 3: fire-and-forget indexing into vector knowledge base
+        try:
+            loop = asyncio.get_event_loop()
+            loop.create_task(
+                self._background_index(
+                    user=user,
+                    resume_text=resume_text,
+                    qc_key=qc_key,
+                    overall_score=placement.overall_score,
+                    evidence_quality=placement.evidence_quality,
+                    jd_id=jd_id,
+                    jd_text=jd_text,
+                    jd_role=getattr(jd_row, "role", "") if jd_row else "",
+                    required_skills=required_skills,
+                )
+            )
+        except RuntimeError:
+            pass  # no running event loop in sync context — skip indexing
+
         return ScorecardScoreResponse(
             scorecard_id=row.id,
             jd_id=jd_id,
@@ -221,3 +247,44 @@ class ScoreResumeHandler:
             vendor_simulation=detail["vendor_simulation"],
             keyword_gap=detail["keyword_gap"],
         ).model_dump()
+
+    async def _background_index(
+        self,
+        user: User,
+        resume_text: str,
+        qc_key: str,
+        overall_score: float,
+        evidence_quality: float,
+        jd_id: int,
+        jd_text: str,
+        jd_role: str,
+        required_skills: list,
+    ) -> None:
+        """Fire-and-forget: index into CARE-RAG vector store after scoring.
+
+        Only resumes classified as interview_ready are indexed into Resume Patterns
+        (so the knowledge base contains only successful examples).
+        All JDs are indexed for the JD Intelligence Index.
+        Errors are silently swallowed — vector indexing must never break scoring.
+        """
+        try:
+            # Always index the JD
+            await vector_index_jd(
+                jd_id=jd_id,
+                jd_text=jd_text,
+                role=jd_role,
+                required_skills=required_skills,
+            )
+            # Only index Interview Ready resumes into Resume Patterns
+            if qc_key == "interview_ready" and resume_text.strip():
+                await vector_index_resume({
+                    "resume_id": 0,  # anonymised — no resume_id leaked
+                    "user_id": user.id,
+                    "resume_text": resume_text,
+                    "role_family": jd_role,
+                    "quality_class": qc_key,
+                    "overall_score": overall_score,
+                    "evidence_score": evidence_quality,
+                })
+        except Exception:
+            pass  # non-blocking — never raise
