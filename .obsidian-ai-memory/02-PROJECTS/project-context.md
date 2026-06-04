@@ -1,168 +1,173 @@
 ---
-tags: [project, context, bootcamp]
+tags: [project, context, care-rag, platform]
 type: project
-updated: 2026-05-21
-links: [_INDEX, MASTER_PLAN, scoring-knowledge, architecture-index]
+updated: 2026-06-04
+links: [_INDEX, MASTER_PLAN, scoring-knowledge, architecture-index, care-rag-architecture]
 ---
 
-# Project Context
+# Project Context — CareerOS: CARE-RAG Career Intelligence Platform
 
-← [[_INDEX]] · [[MASTER_PLAN]] · [[02-PROJECTS/bootcamp-brief]]
-
-- **Project Name**: CareerOS Campus AI
-- **Submission context**: Intel AI Bootcamp — final project. Scored on problem clarity, demo impact, Intel relevance, technical depth, social impact, and pitch quality. Target: 9+/10.
-- **Deadline**: 5-week build from 2026-05-19. Week 1 complete. Week 2 in progress.
-- **Current Goal**: Ship a demoable, Intel-optimized placement-readiness platform for Indian colleges. Score 9+/10 at the Intel AI Bootcamp.
+← [[_INDEX]] · [[MASTER_PLAN]] · [[care-rag-architecture]]
 
 ---
 
-## What the Intel judges care about
+## What CareerOS is
 
-1. **Real Intel hardware usage** — OpenVINO for NLP inference, sklearnex for analytics. Benchmarks must be *measured on real hardware*, not vendor slides.
-2. **Technically impressive but explainable** — judges can be non-technical. The demo must show a before/after story in under 3 minutes.
-3. **Socially relevant** — Indian college placement is a real, evidence-backed problem (42.6% employability rate, ILO India Employment Report 2024).
-4. **Demoable end-to-end** — upload resume → score → rewrite → officer dashboard → Intel panel. All visible in one session.
-5. **Not a toy** — must feel production-grade. Real DB, real parsing, real scoring formula, real benchmarks.
+**CareerOS** is a continuously improving AI career intelligence platform powered by **CARE-RAG** (Continuous Adaptive Resume Enhancement using Retrieval-Augmented Generation).
 
----
+It is **not** a resume builder. It is **not** an ATS checker. It is a learning career operating system that gets smarter with every resume uploaded, every JD matched, every suggestion accepted, and every placement outcome recorded.
 
-## Stack
+**One-line pitch:**
+> CareerOS is a self-improving AI career platform that learns from resumes, job descriptions, and hiring outcomes to help candidates build better resumes, pass ATS filters, and find the right jobs.
 
-- **Web**: Next.js 14 (apps/web) — app router, TypeScript strict, no Tailwind, Motion animations
-- **APIs**: FastAPI 0.115 (services/core-api, ats-engine, ai-rewriter, resume-parser)
-- **Database**: PostgreSQL 16 + SQLAlchemy 2.0 + Alembic migrations
-- **Queue**: Redis 7 + Celery (PDF export async task)
-- **AI — Intel layer**:
-  - OpenVINO: optimize sentence-transformer model for embedding inference
-  - Intel Extension for Scikit-learn (sklearnex): patch TF-IDF, cosine, KMeans
-  - Benchmarks: `services/intel-bench/` — p50/p95 latency, throughput, accuracy delta
-- **AI — LLM layer**: proof-linked rewriter via LLM API (Claude/OpenAI) with strict JSON schema guardrails
-- **Package manager**: pnpm 9 (JS) + pip per Python service
+**Primary market:** Indian students, freshers, early-career professionals.
 
 ---
 
-## Architecture
+## The Problem
 
-### Student loop (Weeks 1–3)
-```
-Upload PDF/DOCX
-  → services/resume-parser  (pdfplumber + python-docx + spaCy section extractor)
-  → structured JSON with sections + ATS flags
-  → services/match-engine   (TF-IDF cosine + embedding cosine + skill recall + eligibility)
-  → 6-component PlacementReadinessScore (packages/scoring/)
-  → services/ai-rewriter    (proof-linked LLM rewrite, JSON schema, no fabrication)
-  → WeasyPrint PDF export via Celery
-```
+Every year, millions of qualified candidates in India are rejected not because they lack skills — but because their resumes fail automated screening software before a human ever reads them. 75–88% of resumes submitted to large employers are filtered out by ATS before review.
 
-### Officer loop (Week 4)
-```
-Create batch (college + dept + grad_year)
-  → bulk upload resumes → all go through student loop
-  → apps/web/(officer)/dashboard
-    → readiness heatmap by department
-    → top missing skills bar chart
-    → review queue (approve / return with note)
-    → company fit columns
-    → export readiness PDF report
-```
-
-### Intel benchmark loop (Week 5)
-```
-services/intel-bench/run.py --workload all --size medium
-  → baseline: PyTorch CPU + stock sklearn
-  → Intel path: OpenVINO IR (FP16) + sklearnex patched
-  → measures: p50 latency, p95 latency, throughput (resumes/hr), accuracy delta, memory MB
-  → outputs: benchmark_runs.json → consumed by apps/web/app/lab/intel/
-```
+The gap competitors miss: not just resume improvement, but **career intelligence that compounds over time**.
 
 ---
 
-## PlacementReadinessScore formula (single source: packages/scoring/)
+## The CARE-RAG Advantage
+
+Most tools solve: *"Here is your resume. Here is a JD. Improve keywords."*
+
+CareerOS solves: *"Across thousands of resumes, job descriptions, edits, and placement outcomes — what actually makes a candidate visible, shortlisted, and interview-ready for a specific role?"*
+
+---
+
+## Architecture: 7-Layer CARE-RAG Pipeline
 
 ```
-Score =
+Resume + JD Upload
+    ↓ Layer 1: Structured Ingestion
+    ↓ Layer 2: 7-Class Quality Classification
+    ↓ Layer 3: Multi-Index Knowledge Base (vector store)
+    ↓ Layer 4: Hybrid Retrieval (semantic + BM25 + skill graph + outcome)
+    ↓ Layer 5: RAG Reasoning: Diagnose → Compare → Recommend → Rewrite → Verify
+    ↓ Layer 6: Feedback Learning Loop
+    ↓ Layer 7: Evaluation + Guardrail (confidence, provenance, truthfulness)
+    ↓
+Job Search → Outcome Tracking → Knowledge Base Improvement
+```
+
+See [[care-rag-architecture]] for the full layer-by-layer breakdown.
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js 14, TypeScript strict, CSS variables |
+| API | FastAPI 0.115, SQLAlchemy 2.0, Pydantic v2, Celery |
+| Database | PostgreSQL 16 + Redis 7 |
+| Embeddings | MiniLM all-MiniLM-L6-v2 (384-dim, 24ms p50, 148K pairs/hr) |
+| Vector store | ChromaDB (planned M9 — embedded, no external API) |
+| ATS simulation | 7-vendor weighted simulation (Taleo, Workday, Naukri RMS, Greenhouse, PeopleStrong, Darwinbox, Lever) |
+| Intel layer | sklearnex TF-IDF acceleration; OpenVINO path wired for embeddings |
+| PDF export | WeasyPrint (ATS-safe, text-selectable) |
+| Auth | JWT + SessionTokens + bcrypt + password reset |
+
+---
+
+## Scoring Formula (single source: packages/scoring/)
+
+```
+PlacementReadinessScore =
   0.35 × JD_Match
-  0.20 × ATS_Parse_Safety
-  0.20 × Evidence_Quality
-  0.10 × Profile_Completeness
-  0.10 × Interview_Readiness
-  0.05 × Placement_Hygiene
++ 0.20 × ATS_Parse_Safety
++ 0.20 × Evidence_Quality
++ 0.10 × Profile_Completeness
++ 0.10 × Interview_Readiness
++ 0.05 × Placement_Hygiene
 
 JD_Match =
-  0.35 × TFIDF_Cosine
-  0.35 × Embedding_Cosine
-  0.20 × Required_Skill_Recall
-  0.10 × Eligibility_Rule_Score
+  0.35 × TFIDF_Cosine           (sklearnex-accelerated)
++ 0.35 × Semantic_Cosine        (MiniLM embeddings)
++ 0.20 × Required_Skill_Recall  (70-skill taxonomy + 50 aliases)
++ 0.10 × Eligibility_Rule_Score (CGPA, backlogs, branch, grad year)
 ```
 
-Buckets: 0–49 🔴 High Risk | 50–69 🟡 Borderline | 70–84 🟢 Ready | 85–100 🏆 Strong
+**7-Class quality classifier (planned M6):**
+
+| Class | Meaning |
+|---|---|
+| ATS Broken | Parser cannot read the resume |
+| Structurally Weak | Sections incomplete or missing |
+| Keyword Weak | Skills present but not in resume text |
+| Impact Weak | No measurable outcomes in bullets |
+| Role Misaligned | Good resume, wrong role for this JD |
+| High Potential, Underwritten | Has skills but resume doesn't show it |
+| Interview Ready | ATS-safe, role-aligned, evidence-backed |
 
 ---
 
-## Important constraints
+## What's Built vs Planned
 
-- No job board, no LinkedIn scraping, no recruiter marketplace — cut.
-- No billing — cut.
-- No fabrication in AI rewriter — unsupported claims go in `unsupported_claims[]`, never in `section_rewrites[]`.
-- Real measured Intel benchmarks only — no vendor headline numbers.
-- DPDP-aware design: RBAC + audit logs + retention hooks. Legal review deferred post-bootcamp.
-- Score formula lives only in `packages/scoring/` — never duplicated in service code.
+### ✅ Built
+- 9-container Docker stack (all services healthy)
+- Resume parser (PDF/DOCX + OCR + structured sections)
+- JD parser (skills + eligibility extraction)
+- 7-dimension ATS analyzer + 7-vendor ATS simulation
+- Keyword gap analysis with importance weights
+- TF-IDF + MiniLM embedding JD match scoring
+- Real eligibility scoring (CGPA/backlogs/branch/grad year vs JD)
+- Proof-linked rule-based rewriter (anti-fabrication)
+- 3 ATS-safe resume templates (classic/technical/fresher)
+- Structured career profile (WorkExp/Education/Skills/Projects/Certs/JobApplications)
+- Application tracker (kanban + list view)
+- Score history sparkline + delta analytics
+- Full profile editor UI
+- CI workflow + discrimination gate 5/5
 
----
+### 🔴 Building Now (M6–M8)
+- 7-class resume quality classifier (deterministic, no new infra)
+- JD intelligence heatmap UI (frontend only)
+- Guided AI resume wizard (rule-based, 5-step flow)
 
-## Security architecture (Kirito roadmap — all future phases)
+### 🟡 Planned (M9–M12)
+- ChromaDB vector store + multi-index knowledge base
+- Hybrid retrieval + provenance-based suggestions
+- Skill graph relationships
+- Feedback loop wiring (outcome → knowledge base)
+- Resume evolution timeline UI
 
-**Agents must read:** [[05-ARCHITECTURE/security-architecture]] before auth, officer, assistant, or infra work.
-
-| Domain | Requirement |
-|--------|-------------|
-| **CIA** | Every phase maps features to confidentiality, integrity, availability controls |
-| **AuthN** | JWT Bearer + `session_tokens`; bcrypt/argon2 passwords; prod TLS |
-| **AuthZ** | `require_student` / `require_officer` / `require_admin` + resource ownership (Phase 4+) |
-| **API** | Pydantic v2 validation; OpenAPI/Swagger (`/docs` + committed export under `packages/contracts/openapi/`) |
-| **Crypto & network** | TLS termination, private service network, secrets outside git |
-| **DI** | FastAPI `Depends()` factories for handlers/DB (maintainability + tests) |
-| **Phase 6 assistant** | RAG over docs + user-owned context; LLM keys server-side; optional TensorFlow retrieval; Surf-like tooling dev-only |
-| **Phase 7** | OAuth/OIDC, mTLS, field encryption, DPDP pack |
-
-Repo ADR: `docs/adr/0007-security-first-future-phases.md` · Threat model: `docs/security/threat-model.md`
-
----
-
-## Known risks
-
-- PDF parsing fragility on Indian fresher Canva templates, two-column layouts, scanned resumes.
-- OpenVINO INT8 may degrade match accuracy — fall back to FP16 if accuracy delta > 1%.
-- No real pilot data — demo uses synthetic + hand-labeled corpus. Outcome lift framed as next step.
-
----
-
-## Active decisions
-
-- Hybrid monorepo (small-team variant) — ADR 0002.
-- Pivoted from broad "AI careers platform" to placement-readiness layer — ADR 0001.
-- All work on `main`; `origin/archive/pre-campus-ai` preserves pre-cut MVP.
-- Omnix runtime stays at `.omnix/`; `platform/omnix/` is the documented future target.
+### Post-MVP
+- B2B college placement dashboard
+- LinkedIn OAuth
+- OpenVINO IR embeddings
+- Interview preparation module
+- Learning-to-rank model
 
 ---
 
-## Known errors + anti-patterns
+## Constraints (always enforced)
 
-See [[03-ERRORS/error-memory]] and [[03-ERRORS/anti-patterns]] — hub: [[errors-index]]
+- No fabrication — `unsupported_claims[]` gate on every rewrite
+- Score formula only in `packages/scoring/` — never duplicated
+- Real measured benchmarks only — no vendor headline numbers
+- RBAC on every endpoint (`require_student`)
+- tsc --noEmit + Python AST-parse clean before every commit
+- Discrimination gate 5/5 before any scoring change
+- Every AI suggestion must include confidence + evidence source
+
+---
+
+## Key Documents
+
+- `CareerOS_Complete_Documentation.md` — full SRS/PRD/FRD/BRD
+- `CareerOS_CARE_RAG_Project_Idea.md` — CARE-RAG full specification
+- `docs/handoff/` — teammate onboarding (10 documents)
+- [[care-rag-architecture]] — layer-by-layer CARE-RAG implementation map
+- [[active-goals]] — current milestone tracker
 
 ---
 
-## Next steps (Kirito roadmap)
+_Updated: 2026-06-04 — Integrated CARE-RAG pipeline as the platform's AI architecture._
 
-**Phase 4 (current):** Officer dashboard + **security hardening gate** — IDOR tests, OpenAPI export, rate limits, audit log, threat model. See [[02-PROJECTS/active-goals]].
-
-**Phase 5:** Intel lab UI + CI security audits + production compose profile.
-
-**Phase 6:** Campus assistant — scoped chatbot, RAG, optional external LLM (Claude/DeepSeek/etc.), optional TensorFlow embeddings for retrieval.
-
-**Phase 7:** Enterprise SSO, encryption, compliance.
-
----
-_Last updated: 2026-05-23 — security-first future phases (Kirito roadmap)._
-
-*Related: [[_INDEX]] · [[MASTER_PLAN]] · [[architecture-index]] · [[scoring-knowledge]] · [[api-index]] · [[02-PROJECTS/active-goals]] · [[02-PROJECTS/current-state]] · [[session-index]]*
+*Related: [[_INDEX]] · [[MASTER_PLAN]] · [[care-rag-architecture]] · [[active-goals]] · [[scoring-knowledge]]*
