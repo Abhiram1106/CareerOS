@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { ResumeDropzone } from "../../../components/workspace/ResumeDropzone";
 import { usePlacementWorkspace } from "../../../hooks/usePlacementWorkspace";
 import { type TemplateName } from "../../../lib/placement";
@@ -46,6 +47,13 @@ export default function ResumePage() {
           <h1 className="page-title">Resume</h1>
           <p className="page-subtitle">Upload an existing resume or generate one from your profile.</p>
         </div>
+        <Link
+          href="/resume/wizard"
+          className="btn-primary"
+          style={{ alignSelf: "center", textDecoration: "none", whiteSpace: "nowrap" }}
+        >
+          🧙 Improvement Wizard
+        </Link>
       </div>
 
       <div className="workspace-grid">
