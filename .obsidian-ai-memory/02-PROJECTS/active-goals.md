@@ -61,7 +61,7 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 
 ## 🔴 Active — CARE-RAG Adaptation Sprint
 
-### M6 — 7-Class Resume Quality Classifier (IMMEDIATE — zero new infra)
+### M6 — 7-Class Resume Quality Classifier ✅ DONE
 > CARE-RAG Layer 2: replaces 4-bucket labels with diagnostic classifications.
 > Computed deterministically from existing scores — no new services needed.
 
@@ -82,7 +82,7 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 - [ ] Add class to GET /analytics/score-history for evolution timeline
 - **Files:** `packages/scoring/careeros_scoring/formula.py`, `services/core-api/app/modules/scorecard/mutation/score_resume_handler.py`, `apps/web/app/(app)/match/page.tsx`
 
-### M7 — JD Intelligence Heatmap UI (IMMEDIATE — frontend only)
+### M7 — JD Intelligence Heatmap UI ✅ DONE
 > CARE-RAG Layer 5: surface the JD keyword analysis as a visual heatmap.
 > Keyword gap analysis already returns data — just needs better UI.
 
