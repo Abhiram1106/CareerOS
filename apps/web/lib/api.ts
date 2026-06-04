@@ -454,7 +454,7 @@ export const api = {
 
   scoreHistory: (token: string) =>
     request<{
-      history: { scorecard_id: number; overall_score: number; bucket: string; date: string; timestamp: string }[];
+      history: { scorecard_id: number; version: number; overall_score: number; bucket: string; quality_class: string; date: string; timestamp: string }[];
       delta: number | null;
       total: number;
     }>("/analytics/score-history", "GET", undefined, token),

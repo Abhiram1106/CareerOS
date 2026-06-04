@@ -9,6 +9,8 @@ from ...models.entities import Resume, Scorecard, User
 from ...modules.dashboard.query.dashboard_query_service import DashboardQueryService
 from ...services.clients import vector_similar_resumes
 
+from careeros_scoring import classify_resume_quality
+
 router = APIRouter()
 
 
@@ -27,23 +29,39 @@ def score_history(
 ):
     """Return the user's scorecard history newest-first (up to 50 entries)."""
     rows = (
-        db.query(Scorecard.id, Scorecard.overall_score, Scorecard.bucket, Scorecard.created_at)
+        db.query(
+            Scorecard.id, Scorecard.overall_score, Scorecard.bucket,
+            Scorecard.ats_safety, Scorecard.evidence_quality,
+            Scorecard.profile_completeness, Scorecard.jd_match,
+            Scorecard.created_at,
+        )
         .join(Resume, Resume.id == Scorecard.resume_id)
         .filter(Resume.user_id == user.id)
         .order_by(Scorecard.created_at.asc())
         .limit(50)
         .all()
     )
-    history = [
-        {
+
+    # Derive quality_class for each historical scorecard
+    history = []
+    for i, r in enumerate(rows):
+        qc = classify_resume_quality(
+            overall_score=r.overall_score,
+            ats_parse_safety=getattr(r, "ats_safety", 0) or 0,
+            jd_match=getattr(r, "jd_match", 0) or 0,
+            evidence_quality=getattr(r, "evidence_quality", 0) or 0,
+            profile_completeness=getattr(r, "profile_completeness", 0) or 0,
+            required_skill_recall=50.0,  # not stored per-scan; use neutral default
+        )
+        history.append({
             "scorecard_id": r.id,
+            "version": i + 1,
             "overall_score": round(r.overall_score, 1),
             "bucket": r.bucket,
+            "quality_class": qc,
             "date": r.created_at.strftime("%Y-%m-%d"),
             "timestamp": r.created_at.isoformat(),
-        }
-        for r in rows
-    ]
+        })
     # Compute delta from first to last
     delta = None
     if len(history) >= 2:

@@ -55,6 +55,69 @@ function ScoreSparkline({ history }: { history: { overall_score: number; date: s
   );
 }
 
+// CARE-RAG M12: Resume Evolution Timeline
+const QC_COLOR: Record<string, string> = {
+  ats_broken: "#dc2626", structurally_weak: "#d97706", keyword_weak: "#b45309",
+  impact_weak: "#0284c7", role_misaligned: "#7c3aed", high_potential_underwritten: "#9333ea",
+  interview_ready: "#16a34a",
+};
+const QC_ICON: Record<string, string> = {
+  ats_broken: "⛔", structurally_weak: "⚠️", keyword_weak: "🔍",
+  impact_weak: "📉", role_misaligned: "🎯", high_potential_underwritten: "💎",
+  interview_ready: "✅",
+};
+const QC_LABEL: Record<string, string> = {
+  ats_broken: "ATS Broken", structurally_weak: "Structurally Weak",
+  keyword_weak: "Keyword Weak", impact_weak: "Impact Weak",
+  role_misaligned: "Role Misaligned", high_potential_underwritten: "High Potential",
+  interview_ready: "Interview Ready",
+};
+
+function EvolutionTimeline({ history }: {
+  history: { version: number; overall_score: number; quality_class: string; date: string }[];
+}) {
+  if (history.length < 2) return null;
+  return (
+    <div style={{ marginTop: 20 }}>
+      <p style={{ fontSize: "0.82rem", fontWeight: 700, color: "#414752", marginBottom: 12 }}>
+        Resume evolution ({history.length} versions)
+      </p>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 0, overflowX: "auto", paddingBottom: 4 }}>
+        {history.map((h, i) => {
+          const color = QC_COLOR[h.quality_class] ?? "#5c6570";
+          const icon = QC_ICON[h.quality_class] ?? "•";
+          const label = QC_LABEL[h.quality_class] ?? h.quality_class;
+          const isLast = i === history.length - 1;
+          return (
+            <div key={h.version} style={{ display: "flex", alignItems: "flex-start", minWidth: 0 }}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <div title={`v${h.version}: ${label} (${h.overall_score})`}
+                  style={{ width: 32, height: 32, borderRadius: "50%", background: `${color}18`, border: `2px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", flexShrink: 0 }}>
+                  {icon}
+                </div>
+                <p style={{ fontSize: "0.68rem", color, fontWeight: 700, margin: "4px 0 0", textAlign: "center", whiteSpace: "nowrap" }}>
+                  {Math.round(h.overall_score)}
+                </p>
+                <p style={{ fontSize: "0.62rem", color: "#8a95a2", margin: 0, textAlign: "center", whiteSpace: "nowrap" }}>
+                  v{h.version}
+                </p>
+              </div>
+              {!isLast && (
+                <div style={{ height: 2, background: "#e8ecf2", flex: 1, marginTop: 15, minWidth: 20, maxWidth: 40 }} />
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {history[history.length - 1].quality_class === "interview_ready" && (
+        <p style={{ fontSize: "0.75rem", color: "#16a34a", fontWeight: 700, marginTop: 8 }}>
+          🏆 You reached Interview Ready status!
+        </p>
+      )}
+    </div>
+  );
+}
+
 function ProgressRing({ value }: { value: number }) {
   const clamped = Math.max(0, Math.min(100, value));
   const r = 28;
@@ -90,7 +153,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [snapshot, setSnapshot] = useState<StoredSnapshot["score_snapshot"]>(null);
-  const [history, setHistory] = useState<{ overall_score: number; date: string }[]>([]);
+  const [history, setHistory] = useState<{ scorecard_id: number; version: number; overall_score: number; bucket: string; quality_class: string; date: string }[]>([]);
   const [historyDelta, setHistoryDelta] = useState<number | null>(null);
 
   useEffect(() => {
@@ -224,6 +287,9 @@ export default function DashboardPage() {
                   <ScoreSparkline history={history} />
                 </div>
               ) : null}
+
+              {/* CARE-RAG M12: Resume Evolution Timeline */}
+              <EvolutionTimeline history={history} />
             </div>
           </section>
 
