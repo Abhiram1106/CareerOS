@@ -51,15 +51,15 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 - [x] CompletenessRing: SVG progress + 5-item live checklist
 - [x] `useProfileSections.ts` hook: per-action saving state, auto-reload
 
-### M2 — Resume builder: read from structured profile (HIGH)
-> FR-RB-001 to FR-RB-010 from the doc.
-- [ ] Resume generator reads WorkExperience, Education, Skills, Projects from structured DB
-- [ ] 3 ATS-safe templates: single-column-clean, technical-dev, fresher-optimised
-- [ ] Template HTML/CSS rendered by WeasyPrint → ATS-safe PDF
-- [ ] Template selector UI in `/resume` page with ATS compatibility badge per template
-- [ ] Live text preview (rendered from structured profile)
-- [ ] Professional summary auto-generator from target_role + skills + experience
-- **Files to touch:** `services/ai-rewriter/app/modules/rewrite/mutation/generate_resume_handler.py`, `apps/web/app/(app)/resume/page.tsx`
+### M2 — Resume builder: read from structured profile ✅ DONE
+- [x] 3 template renderers: classic, technical (GitHub-first), fresher (education-first)
+- [x] Reads WorkExperience bullets, Education CGPA, Skills by category, Projects tech_stack, Certifications
+- [x] Contact header uses user.phone/linkedin/github from DB (not flat fields)
+- [x] [Bracketed placeholders] only when sections empty — no silent boilerplate
+- [x] POST /generate/from-profile endpoint in ai-rewriter
+- [x] core-api GenerateResumeHandler loads all structured repos
+- [x] Template gallery UI with ATS badge + description per template
+- [x] Live text preview in scrollable pre block
 
 ### M3 — Multi-vendor ATS simulation (HIGH)
 > FR-ATS-006: simulate Taleo, Workday, Naukri RMS, Greenhouse, PeopleStrong, Darwinbox, Lever.
