@@ -103,7 +103,7 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 - [ ] Step 5 Verify: re-score and show before/after delta
 - **Files:** `apps/web/app/(app)/resume/wizard/page.tsx` (new), `services/ai-rewriter/`
 
-### M9 — Vector Store + Resume Pattern Retrieval (HIGH — CARE-RAG core)
+### M9 — Vector Store + Resume Pattern Retrieval ✅ DONE
 > CARE-RAG Layers 3+4: persistent knowledge base + hybrid retrieval.
 > This is the structural core that enables evidence-grounded suggestions.
 
