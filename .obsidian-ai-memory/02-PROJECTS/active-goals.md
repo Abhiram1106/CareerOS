@@ -92,7 +92,7 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 - [ ] Role alignment indicator: which role family this JD belongs to
 - **Files:** `apps/web/app/(app)/match/page.tsx`, `apps/web/components/workspace/KeywordHeatmap.tsx` (new)
 
-### M8 — Guided AI Resume Wizard (MEDIUM)
+### M8 — Guided AI Resume Wizard ✅ DONE
 > CARE-RAG Layer 5: conversational Diagnose→Compare→Recommend→Rewrite flow.
 > Rule-based wizard using existing scores + structured profile. No LLM required for MVP.
 
