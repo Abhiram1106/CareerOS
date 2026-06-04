@@ -135,7 +135,7 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 - [ ] Use graph to suggest adjacent skills: "You know Python — consider adding Pandas/SQL"
 - [ ] Weight missing skills by graph distance from known skills
 
-### M11 — Feedback Loop Wiring (MEDIUM)
+### M11 — Feedback Loop Wiring ✅ DONE
 > CARE-RAG Layer 6: close the learning loop.
 
 - [ ] When recommendation is accepted → log to EventAudit with `care_rag.suggestion.accepted`
@@ -144,7 +144,7 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 - [ ] Use positive outcome scorecards to populate Resume Pattern Index (M9) preferentially
 - [ ] Surface: "X students with similar profiles got interviews after making this change"
 
-### M12 — Resume Evolution Timeline UI (LOW)
+### M12 — Resume Evolution Timeline UI ✅ DONE
 > CARE-RAG §7.3: show score trajectory across resume versions.
 
 - [ ] Version each generated resume with a label (v1, v2, v3)
