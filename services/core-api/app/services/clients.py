@@ -19,6 +19,20 @@ async def generate_resume_content(profile: dict) -> dict:
         return resp.json()
 
 
+async def generate_resume_from_profile(template_name: str, profile_data: dict) -> dict:
+    """Generate resume from structured profile data using the chosen template."""
+    async with httpx.AsyncClient(timeout=20) as client:
+        try:
+            resp = await client.post(
+                f"{AI_REWRITER_URL}/generate/from-profile",
+                json={"template_name": template_name, "profile_data": profile_data},
+            )
+            resp.raise_for_status()
+            return resp.json()
+        except httpx.RequestError as exc:
+            raise HTTPException(status_code=503, detail="AI rewriter unavailable") from exc
+
+
 async def proof_linked_rewrite(payload: dict) -> dict:
     async with httpx.AsyncClient(timeout=30) as client:
         try:
