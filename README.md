@@ -1,146 +1,108 @@
-# CareerOS Student AI
+# CareerOS — Career Intelligence Platform
 
-Student-first placement-readiness workspace for Indian job seekers.
+An AI-powered career platform for Indian students and freshers: resume parsing, multi-system ATS scoring, JD matching with sentence embeddings, proof-linked rewrites, job search, and a structured career profile.
 
-CareerOS helps a single user journey:
+**Product doc:** `CareerOS_Complete_Documentation.md` — full SRS/PRD/FRD/BRD.
+**Teammate onboarding:** `docs/handoff/` — start with `README.md`.
 
-1. Upload resume
-2. Parse sections
-3. Run ATS parse-safety
-4. Score resume against JD
-5. Generate proof-linked rewrite suggestions
-6. Export polished resume
-7. Track jobs and run agent loop
+---
 
-## Scope
+## Quick start
 
-This repository is intentionally student-only.
+```bash
+git clone <repo> && cd CareerOS
+docker compose up -d --build     # all 9 backend services
+cd apps/web && pnpm install && pnpm dev   # frontend :3000
+```
 
-- No non-student dashboards
-- No institutional batch workflows
-- No recruiter marketplace features
+App: http://localhost:3000 · API docs: http://localhost:8000/docs
+
+---
+
+## Repo layout
+
+```
+apps/
+  web/                  Next.js 14 — student UI
+services/
+  core-api/             FastAPI — auth, profile, scoring, orchestration
+  resume-parser/        PDF/DOCX → structured sections + ATS flags
+  match-engine/         TF-IDF + MiniLM embeddings + skill matching
+  ats-engine/           7-dimension ATS parse-safety analyzer
+  ai-rewriter/          Proof-linked rule-based resume rewriter
+  jobs-feed/            Adzuna API + seed fallback
+    seed/               jobs.seed.json — 12 seed job listings
+  intel-bench/          Performance benchmark harness
+packages/
+  scoring/              PlacementReadinessScore formula (single source of truth)
+tests/
+  golden/               Discrimination gate corpus + runner
+docs/
+  handoff/              Teammate knowledge-transfer (10 documents)
+  benchmarks/           Intel performance measurements
+  adr/                  Architecture decision records
+.claude/                Claude Code config + rules
+.cursor/                Cursor AI config + rules
+.obsidian-ai-memory/    Engineering memory vault (sessions, errors, decisions)
+.github/workflows/      CI (temporarily disabled — workflow_dispatch only)
+```
+
+---
 
 ## Tech stack
 
-- Frontend: Next.js 14 (`apps/web`)
-- API: FastAPI (`services/core-api`)
-- Supporting services: `resume-parser`, `ats-engine`, `ai-rewriter`, `jobs-feed`
-- Data: PostgreSQL + Redis
-- Worker: Celery (core worker)
-- Bench: Intel/OpenVINO + sklearnex harness
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js 14, TypeScript strict, CSS variables |
+| API | FastAPI 0.115, SQLAlchemy 2.0, Pydantic v2, Celery |
+| Database | PostgreSQL 16 + Redis 7 |
+| Embeddings | sentence-transformers all-MiniLM-L6-v2 (384-dim, 24ms p50) |
+| Intel layer | sklearnex TF-IDF acceleration, OpenVINO path wired |
+| PDF export | WeasyPrint (ATS-safe, text-selectable) |
+| Auth | JWT + SessionTokens, bcrypt, password reset |
 
-## Monorepo layout
+---
 
-```text
-apps/
-  web/                  # Student UI
-services/
-  core-api/             # Main API and orchestration
-  resume-parser/        # Resume extraction
-  ats-engine/           # Parse-safety scoring
-  ai-rewriter/          # Rewrite suggestions
-  jobs-feed/            # Job ingestion and seed
-packages/
-  scoring/              # Single source of truth for score formula
-docs/                   # Product, security, deployment, ADR docs
-infra/                  # Seed artifacts and infra config
-```
+## What's implemented
 
-## Quick start (local)
+- ✅ Structured career profile (WorkExperience, Education, Skills, Projects, Certifications, JobApplications)
+- ✅ Resume upload → parse → ATS flags → 7-dimension safety score
+- ✅ JD matching (TF-IDF + MiniLM semantic cosine + skill recall + eligibility)
+- ✅ 6-component PlacementReadinessScore with discrimination gate 5/5 PASS
+- ✅ Proof-linked rewriter (STAR verb upgrade, filler removal, anti-fabrication)
+- ✅ Job search (Adzuna API + 12-job seed fallback)
+- ✅ Full profile editor UI (all structured sections with add/edit/delete)
+- ✅ Password reset, CI workflow, Intel benchmarks
 
-### 1) Prerequisites
+**Next:** Resume builder (3 ATS-safe templates), multi-vendor ATS simulation, application tracker UI.
 
-- Node 20+
-- pnpm
-- Python 3.11+
-- Docker Desktop
+---
 
-### 2) Install dependencies
+## Validation
 
 ```bash
-pnpm install
+# TypeScript
+cd apps/web && npx tsc --noEmit
+
+# Discrimination gate (runs inside core-api container)
+docker compose cp tests/golden/corpus.py core-api:/tmp/corpus.py
+docker compose cp tests/golden/_runner.py core-api:/tmp/_runner.py
+docker compose exec core-api python /tmp/_runner.py
+
+# Python syntax
+find services packages -name "*.py" -exec python -c "import ast; ast.parse(open('{}').read())" \;
 ```
 
-### 3) Configure environment
+---
 
-Create env files from examples where applicable:
+## Database migrations
 
-- `apps/web/.env.local`
-- service-level `.env` files if required
-
-### 4) Start stack
+| File | What |
+|---|---|
+| `0001_student_baseline.py` | Core tables (users, resumes, scorecards, etc.) |
+| `0002_profile_eligibility_fields.py` | cgpa, active_backlogs, branch, grad_year |
+| `0003_structured_profile.py` | WorkExperience, Education, Skills, Projects, Certifications, JobApplications |
 
 ```bash
-docker compose up --build
+docker compose exec core-api alembic upgrade head
 ```
-
-### 5) Start frontend
-
-```bash
-cd apps/web
-pnpm dev
-```
-
-## API capabilities (student)
-
-- Auth: register/login
-- Profile: career profile create/update
-- Resume: upload + parse
-- ATS: parse-safety scoring
-- JD: parse job descriptions
-- Scorecard: student-to-JD scoring
-- Recommendations: rewrite suggestions
-- Jobs: browse seed/live feed
-- Agent: deterministic student workflow run
-- Export: resume PDF export jobs
-- Assistant: FAQ/LLM student assistant
-
-## Data model baseline
-
-Alembic migration history is squashed to one clean student-only baseline:
-
-- `services/core-api/migrations/versions/0001_student_baseline.py`
-
-This baseline includes:
-
-- auth/session (`users`, `session_tokens`)
-- profile/resume (`career_profiles`, `resumes`, `resume_sections`, `resume_evidence`, `resume_export_jobs`, `ats_scans`)
-- scoring (`job_descriptions`, `scorecards`, `recommendations`)
-- jobs/orchestration (`jobs`, `agent_runs`)
-- security/benchmark (`events_audit`, `benchmark_runs`)
-
-## Validation commands
-
-### Frontend typecheck
-
-```bash
-cd apps/web
-pnpm exec tsc --noEmit
-```
-
-### Core API tests
-
-```bash
-cd services/core-api
-python -m pytest -q
-```
-
-### Python AST sanity (touched services)
-
-```bash
-python -c "import ast, pathlib; [ast.parse(p.read_text(encoding='utf-8')) for p in pathlib.Path('services').rglob('*.py')]"
-```
-
-## Design rules (important)
-
-- Keep feature folders only when they contain active code.
-- No placeholder module directories.
-- Keep API calls centralized in `apps/web/lib/api.ts`.
-- Keep score formula centralized in `packages/scoring`.
-- Do not reintroduce non-student product logic unless intentionally scoped and approved.
-
-## Status
-
-- Product direction: student-first, standalone.
-- Migrations: clean student-only baseline.
-- Module structure: flattened to real-code feature slices.
