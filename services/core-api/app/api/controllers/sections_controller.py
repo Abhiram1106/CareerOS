@@ -11,6 +11,8 @@ from sqlalchemy.orm import Session
 from ...database import get_db
 from ...dependencies import require_student
 from ...models.entities import User
+from ...services.clients import vector_user_signal
+from ...services.audit import record_audit
 from ...adapter.db.persistence.profile.sections_repo import (
     CertificationRepo,
     EducationRepo,
@@ -270,10 +272,45 @@ def save_application(payload: JobApplicationCreate, user: User = Depends(require
 
 
 @router.put("/applications/{item_id}")
-def update_application(item_id: int, payload: JobApplicationUpdate, user: User = Depends(require_student), db: Session = Depends(get_db)):
+async def update_application(item_id: int, payload: JobApplicationUpdate, user: User = Depends(require_student), db: Session = Depends(get_db)):
     row = JobApplicationRepo(db).update(item_id, user.id, payload.model_dump())
     if not row:
         raise HTTPException(status_code=404, detail="Application not found")
+
+    # CARE-RAG Layer 6: log positive outcome signal when application reaches interview or offer
+    new_status = payload.status
+    if new_status in ("interview", "offer"):
+        content = (
+            f"outcome_{new_status}: job={row.job_title} company={row.company} "
+            f"application_id={row.id}"
+        )
+        # Find the most recent scorecard for this user to tag as a positive outcome
+        from sqlalchemy import text as sql_text
+        latest_sc = db.execute(
+            sql_text(
+                "SELECT sc.id FROM scorecards sc "
+                "JOIN resumes r ON r.id = sc.resume_id "
+                "WHERE r.user_id = :uid ORDER BY sc.created_at DESC LIMIT 1"
+            ),
+            {"uid": user.id},
+        ).fetchone()
+        scorecard_id = latest_sc[0] if latest_sc else 0
+
+        await vector_user_signal(
+            user_id=user.id,
+            signal_type=f"outcome_{new_status}",
+            scorecard_id=scorecard_id,
+            content=content,
+        )
+        record_audit(
+            db,
+            actor_id=user.id,
+            action=f"application.{new_status}",
+            target_type="job_application",
+            target_id=row.id,
+            payload={"job_title": row.job_title, "company": row.company},
+        )
+
     return _app_out(row)
 
 

@@ -438,6 +438,12 @@ export const api = {
   assistantChat: (token: string, message: string) =>
     request<AssistantChatResult>("/assistant/chat", "POST", { message }, token),
 
+  // CARE-RAG Layer 6: feedback loop
+  recordRecommendationFeedback: (token: string, recId: number, accepted: boolean) =>
+    request<{ ok: boolean; rec_id: number; accepted: boolean; signal: string }>(
+      `/recommendations/feedback/${recId}`, "PUT", { accepted }, token
+    ),
+
   // CARE-RAG vector knowledge base
   similarResumes: (token: string, roleFamily?: string, n?: number) =>
     request<{

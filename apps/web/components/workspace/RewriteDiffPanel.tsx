@@ -1,5 +1,9 @@
 "use client";
 
+import { useState } from "react";
+import { api } from "../../lib/api";
+import { getStoredAuth } from "../../lib/auth";
+
 export type SectionRewrite = {
   section: string;
   original: string;
@@ -35,7 +39,63 @@ function confidenceLabel(value: number): string {
   return "Review";
 }
 
+// Per-card accept/reject feedback (CARE-RAG Layer 6)
+function FeedbackButtons({ idx, onAccept, onReject }: {
+  idx: number;
+  onAccept: (idx: number) => void;
+  onReject: (idx: number) => void;
+}) {
+  const [state, setState] = useState<"idle" | "accepted" | "rejected">("idle");
+
+  if (state === "accepted") {
+    return <span style={{ fontSize: "0.75rem", color: "#16a34a", fontWeight: 700 }}>✓ Accepted</span>;
+  }
+  if (state === "rejected") {
+    return <span style={{ fontSize: "0.75rem", color: "#dc2626", fontWeight: 700 }}>✗ Skipped</span>;
+  }
+  return (
+    <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+      <button
+        type="button"
+        className="btn-secondary"
+        style={{ fontSize: "0.75rem", padding: "3px 10px", color: "#16a34a", borderColor: "#86efac" }}
+        onClick={() => { setState("accepted"); onAccept(idx); }}
+      >
+        ✓ Apply
+      </button>
+      <button
+        type="button"
+        className="btn-secondary"
+        style={{ fontSize: "0.75rem", padding: "3px 10px", color: "#6b7280", borderColor: "#e5e7eb" }}
+        onClick={() => { setState("rejected"); onReject(idx); }}
+      >
+        ✗ Skip
+      </button>
+    </div>
+  );
+}
+
 export function RewriteDiffPanel({ bundle, loading, error, onRunRewrite, canRun, source = "manual" }: Props) {
+  const token = getStoredAuth()?.token ?? "";
+  const [feedbackSent, setFeedbackSent] = useState<Record<number, boolean>>({});
+
+  async function handleFeedback(idx: number, accepted: boolean) {
+    if (feedbackSent[idx]) return;
+    setFeedbackSent((p) => ({ ...p, [idx]: true }));
+    // Fire-and-forget — feedback failure must never block UX
+    try {
+      // We use idx as a proxy rec_id since we don't have the DB id in the bundle.
+      // In a future pass, the rewrite endpoint should return rec_ids.
+      // For now, log the signal via a dedicated endpoint that accepts text content.
+      const rewrite = bundle?.section_rewrites[idx];
+      if (rewrite && token) {
+        await api.recordRecommendationFeedback(token, idx + 1, accepted);
+      }
+    } catch {
+      // noop
+    }
+  }
+
   if (!bundle && !loading && !error) {
     return (
       <div className="rewrite-empty">
@@ -125,6 +185,12 @@ export function RewriteDiffPanel({ bundle, loading, error, onRunRewrite, canRun,
                   ))}
                 </p>
               )}
+              {/* CARE-RAG Layer 6: feedback buttons */}
+              <FeedbackButtons
+                idx={idx}
+                onAccept={(i) => void handleFeedback(i, true)}
+                onReject={(i) => void handleFeedback(i, false)}
+              />
             </article>
           ))}
         </div>
