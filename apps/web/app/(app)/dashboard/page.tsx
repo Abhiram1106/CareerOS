@@ -22,6 +22,39 @@ type StoredSnapshot = {
   } | null;
 };
 
+function ScoreSparkline({ history }: { history: { overall_score: number; date: string }[] }) {
+  if (history.length < 2) return null;
+  const W = 280, H = 56, PAD = 6;
+  const scores = history.map((h) => h.overall_score);
+  const min = Math.max(0, Math.min(...scores) - 5);
+  const max = Math.min(100, Math.max(...scores) + 5);
+  const range = max - min || 1;
+  const xStep = (W - PAD * 2) / (scores.length - 1);
+
+  const pts = scores.map((s, i) => {
+    const x = PAD + i * xStep;
+    const y = H - PAD - ((s - min) / range) * (H - PAD * 2);
+    return `${x},${y}`;
+  });
+  const polyline = pts.join(" ");
+  const lastPt = pts[pts.length - 1].split(",");
+  const lastScore = scores[scores.length - 1];
+  const color = lastScore >= 70 ? "#16a34a" : lastScore >= 50 ? "#d97706" : "#0071c5";
+
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} aria-label="Score trend sparkline" style={{ overflow: "visible" }}>
+      <polyline points={polyline} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      {scores.map((s, i) => {
+        const [x, y] = pts[i].split(",");
+        return <circle key={i} cx={x} cy={y} r="3" fill={color} />;
+      })}
+      <text x={Number(lastPt[0]) + 6} y={Number(lastPt[1]) + 4} fontSize="11" fontWeight="700" fill={color}>
+        {Math.round(lastScore)}
+      </text>
+    </svg>
+  );
+}
+
 function ProgressRing({ value }: { value: number }) {
   const clamped = Math.max(0, Math.min(100, value));
   const r = 28;
@@ -57,6 +90,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [snapshot, setSnapshot] = useState<StoredSnapshot["score_snapshot"]>(null);
+  const [history, setHistory] = useState<{ overall_score: number; date: string }[]>([]);
+  const [historyDelta, setHistoryDelta] = useState<number | null>(null);
 
   useEffect(() => {
     if (!token) return;
@@ -66,6 +101,13 @@ export default function DashboardPage() {
       .then((res) => setData(res as DashboardData))
       .catch((err) => setError(toErrorMessage(err, "Could not load dashboard")))
       .finally(() => setLoading(false));
+    void api
+      .scoreHistory(token)
+      .then((res) => {
+        setHistory(res.history);
+        setHistoryDelta(res.delta);
+      })
+      .catch(() => { /* non-blocking */ });
   }, [token]);
 
   useEffect(() => {
@@ -161,6 +203,25 @@ export default function DashboardPage() {
                   <Link href="/rewrite" className="dashboard-inline-link">
                     Fix now <ArrowRight size={14} />
                   </Link>
+                </div>
+              ) : null}
+
+              {/* ── Score trend sparkline ── */}
+              {history.length >= 2 ? (
+                <div style={{ marginTop: 16 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                    <p style={{ fontSize: "0.8rem", fontWeight: 600, color: "#414752" }}>Score trend ({history.length} scans)</p>
+                    {historyDelta !== null && (
+                      <span style={{
+                        fontSize: "0.78rem", fontWeight: 700, padding: "2px 8px", borderRadius: 9999,
+                        color: historyDelta >= 0 ? "#16a34a" : "#dc2626",
+                        background: historyDelta >= 0 ? "#f0fdf4" : "#fef2f2",
+                      }}>
+                        {historyDelta >= 0 ? "↑" : "↓"}{Math.abs(historyDelta)} pts overall
+                      </span>
+                    )}
+                  </div>
+                  <ScoreSparkline history={history} />
                 </div>
               ) : null}
             </div>

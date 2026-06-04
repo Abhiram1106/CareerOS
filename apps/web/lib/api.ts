@@ -423,6 +423,13 @@ export const api = {
   assistantChat: (token: string, message: string) =>
     request<AssistantChatResult>("/assistant/chat", "POST", { message }, token),
 
+  scoreHistory: (token: string) =>
+    request<{
+      history: { scorecard_id: number; overall_score: number; bucket: string; date: string; timestamp: string }[];
+      delta: number | null;
+      total: number;
+    }>("/analytics/score-history", "GET", undefined, token),
+
   requestPasswordReset: (email: string) =>
     request<{ ok: boolean; note: string }>("/auth/reset-request", "POST", { email }),
 
