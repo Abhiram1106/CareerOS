@@ -135,9 +135,9 @@ services:
       context: ./services/jobs-feed
     environment:
       REDIS_URL: redis://redis:6379/0
-      JOBS_SEED_PATH: /app/infra/seed/jobs.seed.json
+      JOBS_SEED_PATH: /app/seed/jobs.seed.json
     volumes:
-      - ./infra/seed:/app/infra/seed:ro
+      - ./services/jobs-feed/seed:/app/seed:ro
     ports:
       - "8006:8006"
     depends_on:

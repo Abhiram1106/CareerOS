@@ -11,8 +11,7 @@ from .clients.adzuna import search_adzuna_jobs
 
 app = FastAPI(title="CareerOS Jobs Feed", version="0.1.0")
 
-# Default matches docker-compose volume: ./infra/seed → /app/infra/seed
-SEED_PATH = Path(os.getenv("JOBS_SEED_PATH", "/app/infra/seed/jobs.seed.json"))
+SEED_PATH = Path(os.getenv("JOBS_SEED_PATH", "/app/seed/jobs.seed.json"))
 
 
 def _seed_jobs() -> list[dict]:
