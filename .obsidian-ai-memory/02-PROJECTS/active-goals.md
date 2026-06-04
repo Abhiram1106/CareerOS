@@ -61,14 +61,14 @@ links: [MASTER_PLAN, _INDEX, scoring-knowledge, security-architecture]
 - [x] Template gallery UI with ATS badge + description per template
 - [x] Live text preview in scrollable pre block
 
-### M3 — Multi-vendor ATS simulation (HIGH)
-> FR-ATS-006: simulate Taleo, Workday, Naukri RMS, Greenhouse, PeopleStrong, Darwinbox, Lever.
-- [ ] ATS vendor rule engine: per-vendor weight map + parsing quirks
-- [ ] Composite score = weighted average across simulated vendors
-- [ ] Keyword gap analysis: JD keywords vs resume, missing + present table
-- [ ] Score history endpoint: GET /ats/history?resume_id=N (time-series)
-- [ ] Radar chart data in scorecard response
-- **Files to touch:** `services/ats-engine/app/`, new vendor rule files
+### M3 — Multi-vendor ATS simulation ✅ DONE
+- [x] 7 vendor scorers: Taleo (18%), Workday (16%), Naukri RMS (15%), Greenhouse (12%), PeopleStrong (10%), Darwinbox (9%), Lever (8%)
+- [x] Each vendor has distinct rule set (section headers, keywords, CGPA, GitHub, metrics)
+- [x] simulate_vendors() returns composite (normalised) + per-vendor breakdown
+- [x] keyword_gap_analysis() extracts JD keywords, scores presence with importance
+- [x] Both injected into every scorecard response automatically
+- [x] Standalone: POST /ats/vendor-simulation, POST /ats/keyword-gap
+- [x] Frontend: vendor bar chart + keyword gap chips in /match page
 
 ### M4 — Application tracker UI (MEDIUM)
 > FR-JI-006: per-job save/track workflow.
