@@ -61,20 +61,20 @@ export default function JobsPage() {
           <h2 className="content-card-title">Search</h2>
         </div>
         <div className="content-card-body">
-          <div className="scan-grid">
+          <div className="scan-grid scan-grid--search">
             <input
-              className="auth-input"
+              className="field-input"
               value={jobsQuery}
               onChange={(e) => setJobsQuery(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") void ws.searchJobs(jobsQuery, jobsLoc, 1); }}
-              placeholder="Role keyword"
+              placeholder="Role keyword (e.g. software engineer)"
             />
             <input
-              className="auth-input"
+              className="field-input"
               value={jobsLoc}
               onChange={(e) => setJobsLoc(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") void ws.searchJobs(jobsQuery, jobsLoc, 1); }}
-              placeholder="Location"
+              placeholder="Location (e.g. India)"
             />
           </div>
           <button

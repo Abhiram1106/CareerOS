@@ -67,7 +67,7 @@ function AppCard({
             </label>
             <select
               id={`status-${app.id}`}
-              className="auth-input workspace-select"
+              className="workspace-select"
               style={{ minWidth: 140 }}
               value={app.status}
               onChange={handleStatus}

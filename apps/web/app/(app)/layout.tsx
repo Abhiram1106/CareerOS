@@ -158,7 +158,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="app-shell-content">{children}</main>
+        <main className="app-shell-content">
+          {children}
+        </main>
       </div>
 
       <nav className="app-bottom-nav" aria-label="Mobile navigation">
