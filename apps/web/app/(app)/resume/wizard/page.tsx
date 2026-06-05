@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { usePlacementWorkspace } from "../../../../hooks/usePlacementWorkspace";
 import { ScoreBreakdown } from "../../../../components/workspace/ScoreBreakdown";
 import { RewriteDiffPanel } from "../../../../components/workspace/RewriteDiffPanel";
 import type { QualityClassInfo } from "../../../../lib/api";
+import { api } from "../../../../lib/api";
+import { getStoredAuth } from "../../../../lib/auth";
 
 // ── Role-based success patterns (CARE-RAG Layer 3 stub — rule-based for MVP) ─
 
@@ -209,25 +211,71 @@ function StepDiagnose({ qc, barScores, overallScore, recs }: {
   );
 }
 
-function StepCompare({ pattern, barScores }: { pattern: RolePattern; barScores: Record<string, number> }) {
+type RetrievedPattern = {
+  text: string;
+  similarity: number;
+  overall_score: number;
+  evidence_score: number;
+  role_family: string;
+};
+
+function StepCompare({
+  pattern,
+  barScores,
+  retrievedPatterns,
+  patternsLoading,
+}: {
+  pattern: RolePattern;
+  barScores: Record<string, number>;
+  retrievedPatterns: RetrievedPattern[];
+  patternsLoading: boolean;
+}) {
+  const hasReal = retrievedPatterns.length > 0;
+  // Compute "typical" from retrieved patterns when available, else use static
+  const typicalEvidence = hasReal
+    ? Math.round(retrievedPatterns.reduce((s, p) => s + p.evidence_score, 0) / retrievedPatterns.length)
+    : pattern.typical_scores.evidence;
+  const typicalScore = hasReal
+    ? Math.round(retrievedPatterns.reduce((s, p) => s + p.overall_score, 0) / retrievedPatterns.length)
+    : 74;
+
   const gaps = [
-    { label: "Evidence Quality", yours: barScores.evidence ?? 0, typical: pattern.typical_scores.evidence },
+    { label: "Evidence Quality", yours: barScores.evidence ?? 0, typical: typicalEvidence },
     { label: "JD Match", yours: barScores.jd_match ?? 0, typical: pattern.typical_scores.jd_match },
     { label: "Profile Completeness", yours: barScores.completeness ?? 0, typical: pattern.typical_scores.completeness },
   ];
+
   return (
     <div>
+      {/* Source badge */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+        <span style={{
+          fontSize: "0.72rem", fontWeight: 700, padding: "2px 10px", borderRadius: 9999,
+          background: hasReal ? "#f0fdf4" : "#f4f6f9",
+          border: `1px solid ${hasReal ? "#86efac" : "#e8ecf2"}`,
+          color: hasReal ? "#15803d" : "#8a95a2",
+        }}>
+          {patternsLoading ? "Loading knowledge base…" : hasReal
+            ? `✓ ${retrievedPatterns.length} real Interview Ready ${pattern.role} resume${retrievedPatterns.length > 1 ? "s" : ""} retrieved`
+            : "Using reference patterns (knowledge base not yet populated)"}
+        </span>
+      </div>
+
       <p style={{ fontSize: "0.87rem", color: "#414752", lineHeight: 1.65, marginBottom: 18 }}>
-        Here is how <strong>Interview Ready {pattern.role} resumes</strong> typically look in our knowledge base.
-        The gaps show where you have the most room to improve.
+        {hasReal
+          ? <>Here is how <strong>{retrievedPatterns.length} Interview Ready {pattern.role} resume{retrievedPatterns.length > 1 ? "s" : ""}</strong> in the CARE-RAG knowledge base compare to yours. These are real resumes from students who reached the Interview Ready threshold.</>
+          : <>Here is how <strong>Interview Ready {pattern.role} resumes</strong> typically look. These are reference patterns — the knowledge base will show real examples as more students reach Interview Ready status.</>
+        }
       </p>
+
+      {/* Gap bars */}
       <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 24 }}>
         {gaps.map((g) => (
           <div key={g.label}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
               <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "#1a1c20" }}>{g.label}</span>
               <span style={{ fontSize: "0.75rem", color: "#5c6570" }}>
-                You: <strong>{Math.round(g.yours)}</strong> · Typical: <strong>{g.typical}</strong>
+                You: <strong>{Math.round(g.yours)}</strong> · {hasReal ? "KB avg" : "Typical"}: <strong>{g.typical}</strong>
               </span>
             </div>
             <div style={{ height: 8, background: "#e8ecf2", borderRadius: 9999, overflow: "hidden", position: "relative" }}>
@@ -237,15 +285,40 @@ function StepCompare({ pattern, barScores }: { pattern: RolePattern; barScores: 
           </div>
         ))}
       </div>
-      <div style={{ background: "#f4f6f9", borderRadius: 10, padding: "14px 16px" }}>
-        <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#414752", marginBottom: 6 }}>
-          Example bullet from a strong {pattern.role} resume:
-        </p>
-        <p style={{ fontSize: "0.84rem", color: "#1a1c20", lineHeight: 1.6, fontStyle: "italic", margin: 0 }}>
-          "{pattern.bullet_example}"
-        </p>
-      </div>
-      <div style={{ marginTop: 16 }}>
+
+      {/* Real retrieved excerpts */}
+      {hasReal ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
+          <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#414752", marginBottom: 4 }}>
+            Excerpts from retrieved Interview Ready resumes (avg score: {typicalScore}/100):
+          </p>
+          {retrievedPatterns.slice(0, 3).map((p, i) => (
+            <div key={i} style={{ background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 10, padding: "12px 14px" }}>
+              <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 6 }}>
+                <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#15803d", background: "#dcfce7", borderRadius: 9999, padding: "1px 8px" }}>
+                  {Math.round(p.similarity)}% similar · score {Math.round(p.overall_score)}
+                </span>
+              </div>
+              <p style={{ fontSize: "0.82rem", color: "#1a1c20", lineHeight: 1.6, margin: 0, fontStyle: "italic" }}>
+                "{p.text.slice(0, 220)}{p.text.length > 220 ? "…" : ""}"
+              </p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        /* Static fallback */
+        <div style={{ background: "#f4f6f9", borderRadius: 10, padding: "14px 16px", marginBottom: 16 }}>
+          <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#414752", marginBottom: 6 }}>
+            Example bullet from a strong {pattern.role} resume:
+          </p>
+          <p style={{ fontSize: "0.84rem", color: "#1a1c20", lineHeight: 1.6, fontStyle: "italic", margin: 0 }}>
+            "{pattern.bullet_example}"
+          </p>
+        </div>
+      )}
+
+      {/* Keywords */}
+      <div>
         <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "#414752", marginBottom: 8 }}>
           Keywords strong {pattern.role} resumes typically include:
         </p>
@@ -410,8 +483,11 @@ const STEPS = [
 
 export default function ResumeWizardPage() {
   const ws = usePlacementWorkspace("readiness");
+  const token = getStoredAuth()?.token ?? "";
   const [step, setStep] = useState(1);
   const [prevScore] = useState(ws.overallScore ?? 0);
+  const [retrievedPatterns, setRetrievedPatterns] = useState<RetrievedPattern[]>([]);
+  const [patternsLoading, setPatternsLoading] = useState(false);
 
   const hasScoreData = ws.hasScore && ws.barScores && ws.overallScore !== null;
 
@@ -419,6 +495,16 @@ export default function ResumeWizardPage() {
     ws.parseResult ? "" : "",
     ws.matchedSkills,
   );
+
+  // Fetch real patterns from CARE-RAG knowledge base when wizard loads
+  useEffect(() => {
+    if (!token || !hasScoreData) return;
+    setPatternsLoading(true);
+    void api.similarResumes(token, pattern.role.split(" ")[0].toLowerCase(), 5)
+      .then((res) => setRetrievedPatterns(res.patterns ?? []))
+      .catch(() => setRetrievedPatterns([]))
+      .finally(() => setPatternsLoading(false));
+  }, [token, hasScoreData, pattern.role]);
 
   const recs = hasScoreData && ws.qualityClass
     ? buildRecommendations(ws.barScores!, ws.qualityClass, ws.missingSkills)
@@ -515,7 +601,14 @@ export default function ResumeWizardPage() {
               recs={recs}
             />
           )}
-          {step === 2 && <StepCompare pattern={pattern} barScores={ws.barScores!} />}
+          {step === 2 && (
+            <StepCompare
+              pattern={pattern}
+              barScores={ws.barScores!}
+              retrievedPatterns={retrievedPatterns}
+              patternsLoading={patternsLoading}
+            />
+          )}
           {step === 3 && <StepRecommend recs={recs} onSelectAction={handleSelectAction} />}
           {step === 4 && <StepRewrite ws={ws} />}
           {step === 5 && <StepVerify ws={ws} prevScore={prevScore} />}

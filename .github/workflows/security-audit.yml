@@ -2,8 +2,15 @@ name: Security audit
 
 # Runs weekly and on push to catch newly disclosed CVEs.
 # Dependency auditing is also part of the main ci.yml workflow.
-# TEMPORARILY DISABLED — re-enable by restoring push/schedule triggers
 on:
+  push:
+    branches: [main]
+    paths:
+      - "services/**/requirements.txt"
+      - "apps/web/package.json"
+      - "pnpm-lock.yaml"
+  schedule:
+    - cron: "0 3 * * 1"
   workflow_dispatch:
 
 jobs:
