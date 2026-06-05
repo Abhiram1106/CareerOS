@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Bot,
   BriefcaseBusiness,
@@ -23,88 +23,82 @@ type NavItem = { href: string; label: string; icon: React.ReactNode; startsWith?
 
 const PRIMARY_NAV: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={16} /> },
-  { href: "/resume", label: "Resume", icon: <FileText size={16} /> },
-  { href: "/match", label: "JD Match", icon: <Sparkles size={16} /> },
-  { href: "/rewrite", label: "Rewrite", icon: <PenLine size={16} /> },
-  { href: "/jobs", label: "Jobs", icon: <BriefcaseBusiness size={16} /> },
+  { href: "/resume",    label: "Resume",    icon: <FileText size={16} /> },
+  { href: "/match",     label: "JD Match",  icon: <Sparkles size={16} /> },
+  { href: "/rewrite",   label: "Rewrite",   icon: <PenLine size={16} /> },
+  { href: "/jobs",      label: "Jobs",      icon: <BriefcaseBusiness size={16} /> },
   { href: "/applications", label: "Applications", icon: <ClipboardList size={16} /> },
   { href: "/assistant", label: "Assistant", icon: <Bot size={16} /> },
 ];
 
 const SECONDARY_NAV: NavItem[] = [
   { href: "/lab/intel", label: "Intel Lab", icon: <FlaskConical size={16} />, startsWith: "/lab" },
-  { href: "/settings", label: "Settings", icon: <Settings size={16} /> },
+  { href: "/settings",  label: "Settings",  icon: <Settings size={16} /> },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
+  const router   = useRouter();
   const pathname = usePathname();
   const { push } = useToast();
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [checked, setChecked] = useState(false);
+
+  // Read auth synchronously on first render — localStorage is sync.
+  // This eliminates the useEffect round-trip and the blank "Loading..." flash.
+  const initialAuth = useRef(getStoredAuth());
+  const [user, setUser]           = useState<AuthUser | null>(initialAuth.current);
   const [completeness, setCompleteness] = useState(0);
 
+  // Redirect if not authenticated — fires after paint so the shell is visible first
   useEffect(() => {
-    const stored = getStoredAuth();
-    if (!stored) {
+    if (!initialAuth.current) {
       router.replace("/login");
-      return;
     }
-    setUser(stored);
-    setChecked(true);
   }, [router]);
 
+  // Fetch completeness in the background — does not block shell render
   useEffect(() => {
-    if (!user?.token) return;
+    const token = user?.token;
+    if (!token) return;
     void api
-      .dashboard(user.token)
+      .dashboard(token)
       .then((res) => {
         const info = res as { profile_completeness: number };
         setCompleteness(info.profile_completeness ?? 0);
       })
-      .catch(() => setCompleteness(0));
+      .catch(() => { /* non-blocking — topbar still renders at 0% */ });
   }, [user?.token]);
 
-  const initials = useMemo(() => {
-    return (
+  const initials = useMemo(
+    () =>
       user?.full_name
         ?.split(" ")
         .map((w) => w[0])
         .join("")
         .slice(0, 2)
-        .toUpperCase() ?? "??"
-    );
-  }, [user?.full_name]);
+        .toUpperCase() ?? "??",
+    [user?.full_name],
+  );
 
   const isActive = (item: NavItem) => {
     const prefix = item.startsWith ?? item.href;
-    if (item.href === "/dashboard") {
-      return pathname === "/dashboard" || pathname === "/";
-    }
+    if (item.href === "/dashboard") return pathname === "/dashboard" || pathname === "/";
     return pathname === item.href || pathname?.startsWith(prefix) === true;
   };
 
   async function handleSignOut() {
     try {
-      if (user?.token) {
-        await api.logout(user.token);
-      }
+      if (user?.token) await api.logout(user.token);
     } catch {
       // noop
     } finally {
       clearAuth();
+      setUser(null);
       push({ title: "Signed out", variant: "info" });
       router.replace("/login");
     }
   }
 
-  if (!checked) {
-    return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f7f9fc" }}>
-        <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.8rem", color: "#717783" }}>Loading...</div>
-      </div>
-    );
-  }
+  // If definitely unauthenticated, show nothing (redirect in flight)
+  if (!user) return null;
 
   return (
     <div className="app-shell-v2">
@@ -119,7 +113,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         <nav className="app-rail-nav">
           {PRIMARY_NAV.map((item) => (
-            <Link key={item.href} href={item.href} className={`app-rail-link${isActive(item) ? " active" : ""}`}>
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`app-rail-link${isActive(item) ? " active" : ""}`}
+            >
               {item.icon}
               <span>{item.label}</span>
             </Link>
@@ -130,7 +128,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         <nav className="app-rail-nav app-rail-nav-secondary">
           {SECONDARY_NAV.map((item) => (
-            <Link key={item.href} href={item.href} className={`app-rail-link${isActive(item) ? " active" : ""}`}>
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`app-rail-link${isActive(item) ? " active" : ""}`}
+            >
               {item.icon}
               <span>{item.label}</span>
             </Link>
@@ -147,11 +149,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <p>Profile completeness</p>
           </div>
           <div className="app-topbar-actions">
-            <div className="app-topbar-user-pill" title={user?.email}>
+            <div className="app-topbar-user-pill" title={user.email}>
               <div className="app-topbar-avatar">{initials}</div>
-              <span>{user?.full_name}</span>
+              <span>{user.full_name}</span>
             </div>
-            <button type="button" className="app-topbar-signout" onClick={handleSignOut} aria-label="Sign out">
+            <button
+              type="button"
+              className="app-topbar-signout"
+              onClick={handleSignOut}
+              aria-label="Sign out"
+            >
               <LogOut size={15} />
               <span>Sign out</span>
             </button>
@@ -165,7 +172,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       <nav className="app-bottom-nav" aria-label="Mobile navigation">
         {PRIMARY_NAV.map((item) => (
-          <Link key={item.href} href={item.href} className={`app-bottom-link${isActive(item) ? " active" : ""}`}>
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`app-bottom-link${isActive(item) ? " active" : ""}`}
+          >
             {item.icon}
             <span>{item.label}</span>
           </Link>

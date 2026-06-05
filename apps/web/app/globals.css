@@ -48,10 +48,10 @@
   --radius-sm: 7px;
   --radius-xs: 5px;
 
-  /* Typography */
-  --font-display: "DM Sans", "Segoe UI Variable", system-ui, sans-serif;
-  --font-body:    "Manrope", "Public Sans", "Segoe UI Variable", system-ui, sans-serif;
-  --font-mono:    "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+  /* Typography — next/font injects CSS vars; fallback to system if not loaded */
+  --font-display: var(--loaded-dm-sans, "DM Sans"), system-ui, sans-serif;
+  --font-body:    var(--loaded-manrope, "Manrope"), system-ui, sans-serif;
+  --font-mono:    var(--loaded-jetbrains-mono, "JetBrains Mono"), "Cascadia Code", monospace;
 
   /* Transitions */
   --t-fast:   0.12s cubic-bezier(0.22, 1, 0.36, 1);
