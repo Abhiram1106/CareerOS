@@ -52,7 +52,7 @@ export function JobCard({ job, onRunAgent, busy = false, savedApplication, onSav
       <div className="content-card-header">
         <div style={{ flex: 1 }}>
           <h3 className="content-card-title">{job.title}</h3>
-          <p style={{ fontSize: "0.82rem", color: "#5c6570", marginTop: 2 }}>
+          <p style={{ fontSize: "0.82rem", color: "var(--muted)", marginTop: 2 }}>
             <strong>{job.company}</strong> · {job.location}
           </p>
         </div>
@@ -90,7 +90,7 @@ export function JobCard({ job, onRunAgent, busy = false, savedApplication, onSav
             ))}
           </div>
         )}
-        <p className="scan-intro" style={{ marginBottom: 12, fontSize: "0.83rem", color: "#414752" }}>
+        <p className="scan-intro" style={{ marginBottom: 12, fontSize: "0.83rem", color: "var(--muted)" }}>
           {job.raw_jd_text.length > 200 ? `${job.raw_jd_text.slice(0, 200)}…` : job.raw_jd_text}
         </p>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>

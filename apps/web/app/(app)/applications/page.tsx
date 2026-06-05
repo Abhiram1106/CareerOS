@@ -49,10 +49,10 @@ function AppCard({
     <div className="content-card" style={{ marginBottom: 12 }}>
       <div className="content-card-header">
         <div style={{ flex: 1 }}>
-          <p style={{ fontWeight: 700, fontSize: "0.92rem", color: "#1a1c20", marginBottom: 2 }}>
+          <p style={{ fontWeight: 700, fontSize: "0.92rem", color: "var(--ink)", marginBottom: 2 }}>
             {app.job_title || "Untitled role"}
           </p>
-          <p style={{ fontSize: "0.8rem", color: "#5c6570" }}>
+          <p style={{ fontSize: "0.8rem", color: "var(--muted)" }}>
             {app.company || "Unknown company"}
             {app.applied_at ? ` · Applied ${new Date(app.applied_at).toLocaleDateString("en-IN")}` : ""}
           </p>
@@ -133,7 +133,7 @@ function Column({
         </span>
       </div>
       {apps.length === 0 ? (
-        <p style={{ fontSize: "0.78rem", color: "#a0a8b0", textAlign: "center", padding: "12px 0" }}>
+        <p style={{ fontSize: "0.78rem", color: "var(--muted-2)", textAlign: "center", padding: "12px 0" }}>
           None yet
         </p>
       ) : (

@@ -39,7 +39,7 @@ export function AssistantPanel() {
         <span className="chip chip-primary">Grounded · no fabrication</span>
       </div>
       <div className="content-card-body">
-        <p style={{ fontSize: "0.84rem", color: "#414752", marginBottom: 12, lineHeight: 1.55 }}>
+        <p style={{ fontSize: "0.84rem", color: "var(--muted)", marginBottom: 12, lineHeight: 1.55 }}>
           Ask about uploads, JD matching, rewrites, and readiness scores. Answers use product FAQ plus your latest
           scorecard summary only.
         </p>
@@ -67,7 +67,7 @@ export function AssistantPanel() {
           .
         </p>
 
-        {!canChat && <p style={{ color: "#93000a", fontSize: "0.82rem" }}>Sign in to use the assistant.</p>}
+        {!canChat && <p style={{ color: "var(--danger)", fontSize: "0.82rem" }}>Sign in to use the assistant.</p>}
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
           {STARTERS.map((prompt) => (
@@ -86,13 +86,13 @@ export function AssistantPanel() {
 
         <div
           style={{
-            border: "1px solid rgba(192,199,211,0.35)",
-            borderRadius: 10,
+            border: "1px solid var(--line)",
+            borderRadius: "var(--radius-md)",
             padding: 12,
             minHeight: 180,
             maxHeight: 320,
             overflowY: "auto",
-            background: "#fafbfc",
+            background: "var(--surface-soft)",
             marginBottom: 12,
           }}
         >
@@ -109,9 +109,9 @@ export function AssistantPanel() {
                     borderRadius: 10,
                     fontSize: "0.84rem",
                     lineHeight: 1.55,
-                    background: msg.role === "user" ? "#d3e4ff" : "#fff",
-                    border: "1px solid rgba(192,199,211,0.35)",
-                    color: "#1a1c20",
+                    background: msg.role === "user" ? "var(--accent-soft)" : "var(--surface)",
+                    border: "1px solid var(--line)",
+                    color: "var(--ink)",
                   }}
                 >
                   {msg.text}
@@ -135,7 +135,7 @@ export function AssistantPanel() {
               <span />
             </div>
           ) : null}
-          {error ? <p style={{ fontSize: "0.78rem", color: "#93000a" }}>{error}</p> : null}
+          {error ? <p style={{ fontSize: "0.78rem", color: "var(--danger)" }}>{error}</p> : null}
         </div>
 
         <div style={{ display: "flex", gap: 8 }}>

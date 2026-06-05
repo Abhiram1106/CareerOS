@@ -159,7 +159,7 @@ export default function MatchPage() {
               </span>
             </div>
             <div className="content-card-body">
-              <p style={{ fontSize: "0.82rem", color: "#5c6570", marginBottom: 14 }}>
+              <p style={{ fontSize: "0.82rem", color: "var(--muted)", marginBottom: 14 }}>
                 How your resume scores across 7 ATS systems weighted by Indian market prevalence.
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -168,8 +168,8 @@ export default function MatchPage() {
                   const color = pct >= 70 ? "#16a34a" : pct >= 50 ? "#d97706" : "#dc2626";
                   return (
                     <div key={v.id} style={{ display: "grid", gridTemplateColumns: "160px 1fr 48px", gap: 10, alignItems: "center" }}>
-                      <span style={{ fontSize: "0.82rem", fontWeight: 500, color: "#1a1c20" }}>{v.name}</span>
-                      <div style={{ height: 8, background: "#e8ecf2", borderRadius: 9999, overflow: "hidden" }}>
+                      <span style={{ fontSize: "0.82rem", fontWeight: 500, color: "var(--ink)" }}>{v.name}</span>
+                      <div style={{ height: 8, background: "var(--line)", borderRadius: 9999, overflow: "hidden" }}>
                         <div style={{ height: "100%", width: `${pct}%`, background: color, borderRadius: 9999, transition: "width 0.4s" }} />
                       </div>
                       <span style={{ fontSize: "0.8rem", fontWeight: 700, color, textAlign: "right" }}>{pct}</span>
@@ -177,7 +177,7 @@ export default function MatchPage() {
                   );
                 })}
               </div>
-              <p style={{ fontSize: "0.75rem", color: "#8a95a2", marginTop: 12 }}>
+              <p style={{ fontSize: "0.75rem", color: "var(--muted-2)", marginTop: 12 }}>
                 Weights: Taleo 18% · Workday 16% · Naukri RMS 15% · Greenhouse 12% · PeopleStrong 10% · Darwinbox 9% · Lever 8%
               </p>
             </div>
@@ -199,7 +199,7 @@ export default function MatchPage() {
             <div className="content-card-body">
               {/* Match rate bar */}
               <div style={{ marginBottom: 18 }}>
-                <div style={{ height: 6, background: "#e8ecf2", borderRadius: 9999, overflow: "hidden" }}>
+                <div style={{ height: 6, background: "var(--line)", borderRadius: 9999, overflow: "hidden" }}>
                   <div style={{
                     height: "100%",
                     width: `${ws.keywordGap.match_rate}%`,
@@ -249,7 +249,7 @@ export default function MatchPage() {
                       );
                     })}
                   </div>
-                  <p style={{ fontSize: "0.72rem", color: "#8a95a2", marginTop: 8 }}>
+                  <p style={{ fontSize: "0.72rem", color: "var(--muted-2)", marginTop: 8 }}>
                     Chip size = JD frequency. Colour = priority. <strong style={{ color: "#0071c5" }}>d1/d2</strong> = reachable from skills you already have.
                   </p>
                 </div>

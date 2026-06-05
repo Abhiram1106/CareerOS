@@ -35,7 +35,7 @@ export function AtsBreakdown({ score, bucket, checks, issues }: Props) {
         </span>
       </div>
       <div className="content-card-body">
-        <p style={{ fontSize: "0.82rem", color: "#717783", marginBottom: 14, lineHeight: 1.55 }}>
+        <p style={{ fontSize: "0.82rem", color: "var(--muted)", marginBottom: 14, lineHeight: 1.55 }}>
           Seven weighted checks read the actual extracted text — contact reachability, section
           structure, formatting safety, date consistency, content density, bullet impact, and parse
           cleanliness.
@@ -75,10 +75,10 @@ export function AtsBreakdown({ score, bucket, checks, issues }: Props) {
                   key={`${issue.dimension}-${issue.id}`}
                   style={{
                     border: "1px solid rgba(192,199,211,0.4)",
-                    borderLeft: `3px solid ${SEVERITY_COLOR[issue.severity] ?? "#717783"}`,
+                    borderLeft: `3px solid ${SEVERITY_COLOR[issue.severity] ?? "var(--muted)"}`,
                     borderRadius: 8,
                     padding: "10px 12px",
-                    background: "#fafbfc",
+                    background: "var(--surface-soft)",
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
@@ -88,16 +88,16 @@ export function AtsBreakdown({ score, bucket, checks, issues }: Props) {
                         fontSize: "0.66rem",
                         textTransform: "uppercase",
                         letterSpacing: "0.06em",
-                        color: SEVERITY_COLOR[issue.severity] ?? "#717783",
+                        color: SEVERITY_COLOR[issue.severity] ?? "var(--muted)",
                       }}
                     >
                       {issue.severity}
                     </span>
-                    <span style={{ fontSize: "0.85rem", color: "#191c1e", fontWeight: 600 }}>
+                    <span style={{ fontSize: "0.85rem", color: "var(--ink)", fontWeight: 600 }}>
                       {issue.message}
                     </span>
                   </div>
-                  <p style={{ fontSize: "0.82rem", color: "#414752", margin: 0, lineHeight: 1.5 }}>
+                  <p style={{ fontSize: "0.82rem", color: "var(--muted)", margin: 0, lineHeight: 1.5 }}>
                     → {issue.fix}
                   </p>
                 </li>

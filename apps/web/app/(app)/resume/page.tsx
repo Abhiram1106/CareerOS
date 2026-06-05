@@ -132,25 +132,25 @@ export default function ResumePage() {
                     alignItems: "flex-start",
                     gap: 12,
                     padding: "12px 14px",
-                    borderRadius: 10,
+                    borderRadius: "var(--radius-md)",
                     border: selectedTemplate === t.value
-                      ? "2px solid #0071c5"
-                      : "1px solid rgba(192,199,211,0.5)",
-                    background: selectedTemplate === t.value ? "#f0f8ff" : "#fafbfc",
+                      ? "2px solid var(--accent)"
+                      : "1px solid var(--line-strong)",
+                    background: selectedTemplate === t.value ? "var(--accent-soft)" : "var(--surface-soft)",
                     cursor: "pointer",
                     textAlign: "left",
-                    transition: "border-color 0.15s",
+                    transition: "border-color var(--t-fast)",
                   }}
                 >
                   <div style={{ flex: 1 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                      <span style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a1c20" }}>{t.label}</span>
+                      <span style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--ink)" }}>{t.label}</span>
                       <span className={`chip ${t.badgeClass}`} style={{ fontSize: "0.7rem", padding: "2px 8px" }}>{t.badge}</span>
                     </div>
-                    <p style={{ fontSize: "0.8rem", color: "#5c6570", margin: 0, lineHeight: 1.5 }}>{t.description}</p>
+                    <p style={{ fontSize: "0.8rem", color: "var(--muted)", margin: 0, lineHeight: 1.5 }}>{t.description}</p>
                   </div>
                   {selectedTemplate === t.value && (
-                    <span style={{ color: "#0071c5", fontSize: "1.1rem", marginTop: 2 }}>✓</span>
+                    <span style={{ color: "var(--accent)", fontSize: "1.1rem", marginTop: 2 }}>✓</span>
                   )}
                 </button>
               ))}
@@ -172,8 +172,8 @@ export default function ResumePage() {
                 <pre
                   style={{
                     fontSize: "0.72rem",
-                    background: "#f4f6f9",
-                    border: "1px solid rgba(192,199,211,0.4)",
+                    background: "var(--surface-soft)",
+                    border: "1px solid var(--line)",
                     borderRadius: 8,
                     padding: "12px 14px",
                     overflowX: "auto",

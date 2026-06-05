@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, CheckCircle2, Circle, Target } from "lucide-react";
+import { ArrowRight, CheckCircle2, Circle, FileText, Target, Rocket, Sparkles, ShieldCheck } from "lucide-react";
 import { api } from "../../../lib/api";
 import { getStoredAuth } from "../../../lib/auth";
 import { toErrorMessage } from "../../../lib/errors";
+import { AnimatedCounter } from "../../../components/ui/AnimatedCounter";
+import { TiltCard } from "../../../components/ui/TiltCard";
 
 type DashboardData = {
   best_ats_score: number;
@@ -39,27 +41,26 @@ function ScoreSparkline({ history }: { history: { overall_score: number; date: s
   const polyline = pts.join(" ");
   const lastPt = pts[pts.length - 1].split(",");
   const lastScore = scores[scores.length - 1];
-  const color = lastScore >= 70 ? "#16a34a" : lastScore >= 50 ? "#d97706" : "#0071c5";
+  const color = lastScore >= 70 ? "var(--success)" : lastScore >= 50 ? "var(--warn)" : "var(--accent)";
 
   return (
     <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} aria-label="Score trend sparkline" style={{ overflow: "visible" }}>
-      <polyline points={polyline} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points={polyline} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
       {scores.map((s, i) => {
         const [x, y] = pts[i].split(",");
-        return <circle key={i} cx={x} cy={y} r="3" fill={color} />;
+        return <circle key={i} cx={x} cy={y} r="3.5" fill="#fff" stroke={color} strokeWidth="2" />;
       })}
-      <text x={Number(lastPt[0]) + 6} y={Number(lastPt[1]) + 4} fontSize="11" fontWeight="700" fill={color}>
+      <text x={Number(lastPt[0]) + 8} y={Number(lastPt[1]) + 4} fontSize="12" fontWeight="800" fill={color} style={{ fontFamily: "var(--font-mono)" }}>
         {Math.round(lastScore)}
       </text>
     </svg>
   );
 }
 
-// CARE-RAG M12: Resume Evolution Timeline
 const QC_COLOR: Record<string, string> = {
-  ats_broken: "#dc2626", structurally_weak: "#d97706", keyword_weak: "#b45309",
-  impact_weak: "#0284c7", role_misaligned: "#7c3aed", high_potential_underwritten: "#9333ea",
-  interview_ready: "#16a34a",
+  ats_broken: "var(--danger)", structurally_weak: "var(--warn)", keyword_weak: "#b45309",
+  impact_weak: "var(--accent)", role_misaligned: "#7c3aed", high_potential_underwritten: "#9333ea",
+  interview_ready: "var(--success)",
 };
 const QC_ICON: Record<string, string> = {
   ats_broken: "⛔", structurally_weak: "⚠️", keyword_weak: "🔍",
@@ -78,70 +79,67 @@ function EvolutionTimeline({ history }: {
 }) {
   if (history.length < 2) return null;
   return (
-    <div style={{ marginTop: 20 }}>
-      <p style={{ fontSize: "0.82rem", fontWeight: 700, color: "#414752", marginBottom: 12 }}>
-        Resume evolution ({history.length} versions)
+    <div style={{ marginTop: 24 }}>
+      <p style={{ fontSize: "0.74rem", fontWeight: 800, color: "var(--muted-2)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 16 }}>
+        Resume Evolution
       </p>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 0, overflowX: "auto", paddingBottom: 4 }}>
+      <div className="evo-track">
         {history.map((h, i) => {
-          const color = QC_COLOR[h.quality_class] ?? "#5c6570";
+          const color = QC_COLOR[h.quality_class] ?? "var(--muted)";
           const icon = QC_ICON[h.quality_class] ?? "•";
           const label = QC_LABEL[h.quality_class] ?? h.quality_class;
           const isLast = i === history.length - 1;
           return (
-            <div key={h.version} style={{ display: "flex", alignItems: "flex-start", minWidth: 0 }}>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <div title={`v${h.version}: ${label} (${h.overall_score})`}
-                  style={{ width: 32, height: 32, borderRadius: "50%", background: `${color}18`, border: `2px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", flexShrink: 0 }}>
+            <div key={h.version} style={{ display: "flex", alignItems: "flex-start" }}>
+              <div className="evo-node">
+                <div 
+                  className="evo-circle"
+                  title={`v${h.version}: ${label} (${h.overall_score})`}
+                  style={{ background: `${color}12`, border: `1.5px solid ${color}`, color }}
+                >
                   {icon}
                 </div>
-                <p style={{ fontSize: "0.68rem", color, fontWeight: 700, margin: "4px 0 0", textAlign: "center", whiteSpace: "nowrap" }}>
+                <p className="evo-score" style={{ color }}>
                   {Math.round(h.overall_score)}
                 </p>
-                <p style={{ fontSize: "0.62rem", color: "#8a95a2", margin: 0, textAlign: "center", whiteSpace: "nowrap" }}>
-                  v{h.version}
-                </p>
+                <p className="evo-version">v{h.version}</p>
               </div>
-              {!isLast && (
-                <div style={{ height: 2, background: "#e8ecf2", flex: 1, marginTop: 15, minWidth: 20, maxWidth: 40 }} />
-              )}
+              {!isLast && <div className="evo-connector" />}
             </div>
           );
         })}
       </div>
-      {history[history.length - 1].quality_class === "interview_ready" && (
-        <p style={{ fontSize: "0.75rem", color: "#16a34a", fontWeight: 700, marginTop: 8 }}>
-          🏆 You reached Interview Ready status!
-        </p>
-      )}
     </div>
   );
 }
 
 function ProgressRing({ value }: { value: number }) {
   const clamped = Math.max(0, Math.min(100, value));
-  const r = 28;
+  const r = 24;
   const c = 2 * Math.PI * r;
   const d = c - (clamped / 100) * c;
   return (
-    <svg width="70" height="70" viewBox="0 0 70 70" aria-label={`Profile completeness ${clamped}%`}>
-      <circle cx="35" cy="35" r={r} fill="none" stroke="#e8ecf2" strokeWidth="7" />
-      <circle
-        cx="35"
-        cy="35"
-        r={r}
-        fill="none"
-        stroke="#0071c5"
-        strokeWidth="7"
-        strokeLinecap="round"
-        strokeDasharray={c}
-        strokeDashoffset={d}
-        transform="rotate(-90 35 35)"
-      />
-      <text x="35" y="39" textAnchor="middle" fontSize="13" fontWeight="700" fill="#00589c">
-        {clamped}%
-      </text>
-    </svg>
+    <div className="glass-intel" style={{ padding: 12, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", width: 72, height: 72 }}>
+      <svg width="60" height="60" viewBox="0 0 60 60" aria-label={`Profile completeness ${clamped}%`}>
+        <circle cx="30" cy="30" r={r} fill="none" stroke="var(--line)" strokeWidth="5" />
+        <circle
+          cx="30"
+          cy="30"
+          r={r}
+          fill="none"
+          stroke="var(--accent)"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeDasharray={c}
+          strokeDashoffset={d}
+          style={{ transition: "stroke-dashoffset 0.8s cubic-bezier(0.22, 1, 0.36, 1)" }}
+          transform="rotate(-90 30 30)"
+        />
+        <text x="30" y="34" textAnchor="middle" fontSize="11" fontWeight="800" fill="var(--accent-ink)" style={{ fontFamily: "var(--font-mono)" }}>
+          {clamped}%
+        </text>
+      </svg>
+    </div>
   );
 }
 
@@ -155,6 +153,7 @@ export default function DashboardPage() {
   const [snapshot, setSnapshot] = useState<StoredSnapshot["score_snapshot"]>(null);
   const [history, setHistory] = useState<{ scorecard_id: number; version: number; overall_score: number; bucket: string; quality_class: string; date: string }[]>([]);
   const [historyDelta, setHistoryDelta] = useState<number | null>(null);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     if (!token) return;
@@ -163,7 +162,10 @@ export default function DashboardPage() {
       .dashboard(token)
       .then((res) => setData(res as DashboardData))
       .catch((err) => setError(toErrorMessage(err, "Could not load dashboard")))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setTimeout(() => setIsReady(true), 50);
+      });
     void api
       .scoreHistory(token)
       .then((res) => {
@@ -188,7 +190,6 @@ export default function DashboardPage() {
     const hasResume = (data?.total_resumes ?? 0) > 0;
     const hasScan = (data?.scans_performed ?? 0) > 0;
     const hasRewrite = Boolean(snapshot?.overall_score && snapshot.overall_score > 0);
-    // Export done = a completed export job exists in localStorage state
     let hasExport = false;
     try {
       const raw = localStorage.getItem("cos_workspace_state_v1");
@@ -198,130 +199,137 @@ export default function DashboardPage() {
       }
     } catch { /* ignore */ }
     return [
-      { label: "Upload Resume", done: hasResume, href: "/resume" },
-      { label: "Run JD Match", done: hasScan, href: "/match" },
-      { label: "Generate Rewrite", done: hasRewrite, href: "/rewrite" },
-      { label: "Export ATS-safe PDF", done: hasExport, href: "/resume" },
+      { label: "Upload Resume", done: hasResume, href: "/resume", icon: <FileText size={14} /> },
+      { label: "Run JD Match", done: hasScan, href: "/match", icon: <Sparkles size={14} /> },
+      { label: "Generate Rewrite", done: hasRewrite, href: "/rewrite", icon: <Rocket size={14} /> },
+      { label: "Export ATS-safe PDF", done: hasExport, href: "/resume", icon: <ShieldCheck size={14} /> },
     ];
   }, [data?.total_resumes, data?.scans_performed, snapshot?.overall_score]);
 
   const topGap = snapshot?.missing_skills?.[0];
 
-  return (
-    <div className="page-canvas">
-      <div className="page-title-row">
-        <div>
-          <h1 className="page-title">Dashboard</h1>
-          <p className="page-subtitle">Welcome back, {name}. Here is your placement readiness command center.</p>
-        </div>
-      </div>
-
-      {loading ? (
+  if (loading) {
+    return (
+      <div className="page-canvas">
         <div className="content-card">
           <div className="content-card-body">Loading your dashboard...</div>
         </div>
-      ) : error ? (
-        <div className="content-card">
-          <div className="content-card-body" style={{ color: "#93000a" }}>
-            {error}
+      </div>
+    );
+  }
+
+  return (
+    <div className={`page-canvas stagger-entry ${isReady ? "stagger-entry-active" : ""}`}>
+      <div className="page-title-row delay-1">
+        <div>
+          <h1 className="page-title">Command Center</h1>
+          <p className="page-subtitle">Welcome back, {name}. Your placement readiness at a glance.</p>
+        </div>
+      </div>
+
+      <div className="bento-grid">
+        {/* ── Main Snapshot ── */}
+        <TiltCard className="span-3 delay-2" maxTilt={5}>
+          <div className="dashboard-hero-row">
+            <div>
+              <p className="dashboard-score-label">Placement Readiness Score</p>
+              <div className="dashboard-score-value" style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                <AnimatedCounter end={snapshot?.overall_score ?? Math.round(data?.best_ats_score ?? 0)} className="gradient-text score-overall-value" />
+                <span style={{ fontSize: "1.2rem", color: "var(--muted-2)", fontWeight: 500 }}>/ 100</span>
+              </div>
+              <p className={`dashboard-score-sub bucket-badge bucket-${snapshot?.score_bucket === "strong" ? "ready" : snapshot?.score_bucket === "ready" ? "ready" : "risk"}`}>
+                {snapshot?.score_bucket?.toUpperCase() ?? "NO DATA"}
+              </p>
+            </div>
+            <ProgressRing value={data?.profile_completeness ?? 0} />
+          </div>
+
+          <div className="dashboard-metrics-grid">
+            <div className="metric">
+              <p>Resumes</p>
+              <strong>{data?.total_resumes ?? 0}</strong>
+            </div>
+            <div className="metric">
+              <p>Total Scans</p>
+              <strong>{data?.scans_performed ?? 0}</strong>
+            </div>
+            <div className="metric">
+              <p>Data Depth</p>
+              <strong>{data?.profile_completeness ?? 0}%</strong>
+            </div>
+          </div>
+
+          {topGap && (
+            <div className="dashboard-gap-callout glass-intel" style={{ marginTop: 24, padding: "16px 20px" }}>
+              <Target size={18} color="var(--accent)" />
+              <p style={{ fontWeight: 600 }}>
+                Top skill gap: <span className="gradient-text">{topGap}</span>
+              </p>
+              <Link href="/rewrite" className="dashboard-inline-link" style={{ background: "var(--surface)", padding: "6px 12px", borderRadius: 8, boxShadow: "var(--shadow-sm)" }}>
+                Fix now <ArrowRight size={14} />
+              </Link>
+            </div>
+          )}
+        </TiltCard>
+
+        {/* ── Onboarding ── */}
+        <div className="bento-card delay-3">
+          <h3 className="section-heading" style={{ fontSize: "1rem", marginBottom: 16 }}>Onboarding</h3>
+          <div className="dashboard-checklist">
+            {checklist.map((item) => (
+              <Link key={item.label} href={item.href} className="dashboard-check-item" style={{ transition: "all 0.2s ease" }}>
+                {item.done ? (
+                  <CheckCircle2 size={16} color="var(--success)" />
+                ) : (
+                  <Circle size={16} color="var(--line-strong)" />
+                )}
+                <span style={{ flex: 1 }}>{item.label}</span>
+                <span style={{ opacity: 0.4 }}>{item.icon}</span>
+              </Link>
+            ))}
+          </div>
+          <div className="dashboard-actions" style={{ marginTop: 20 }}>
+            <Link href="/resume" className="btn-primary btn-block dashboard-action-link" style={{ background: "var(--accent)" }}>
+              Continue Journey
+            </Link>
           </div>
         </div>
-      ) : (
-        <div className="dashboard-layout">
-          <section className="content-card">
-            <div className="content-card-header">
-              <h2 className="content-card-title">Readiness Snapshot</h2>
-            </div>
-            <div className="content-card-body">
-              <div className="dashboard-hero-row">
-                <div>
-                  <p className="dashboard-score-label">Latest Readiness Score</p>
-                  <p className="dashboard-score-value">{snapshot?.overall_score ?? Math.round(data?.best_ats_score ?? 0)}</p>
-                  <p className="dashboard-score-sub">{snapshot?.score_bucket ?? "Run a JD scan to generate your first score"}</p>
-                </div>
-                <ProgressRing value={data?.profile_completeness ?? 0} />
-              </div>
 
-              <div className="dashboard-metrics-grid">
-                <div className="dashboard-metric">
-                  <p>Resumes</p>
-                  <strong>{data?.total_resumes ?? 0}</strong>
-                </div>
-                <div className="dashboard-metric">
-                  <p>Scans</p>
-                  <strong>{data?.scans_performed ?? 0}</strong>
-                </div>
-                <div className="dashboard-metric">
-                  <p>Completeness</p>
-                  <strong>{data?.profile_completeness ?? 0}%</strong>
-                </div>
-              </div>
-
-              {topGap ? (
-                <div className="dashboard-gap-callout">
-                  <Target size={16} />
-                  <p>
-                    Top skill gap: <strong>{topGap}</strong>. Improve it with a proof-linked rewrite.
-                  </p>
-                  <Link href="/rewrite" className="dashboard-inline-link">
-                    Fix now <ArrowRight size={14} />
-                  </Link>
-                </div>
-              ) : null}
-
-              {/* ── Score trend sparkline ── */}
-              {history.length >= 2 ? (
-                <div style={{ marginTop: 16 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                    <p style={{ fontSize: "0.8rem", fontWeight: 600, color: "#414752" }}>Score trend ({history.length} scans)</p>
-                    {historyDelta !== null && (
-                      <span style={{
-                        fontSize: "0.78rem", fontWeight: 700, padding: "2px 8px", borderRadius: 9999,
-                        color: historyDelta >= 0 ? "#16a34a" : "#dc2626",
-                        background: historyDelta >= 0 ? "#f0fdf4" : "#fef2f2",
-                      }}>
-                        {historyDelta >= 0 ? "↑" : "↓"}{Math.abs(historyDelta)} pts overall
-                      </span>
-                    )}
-                  </div>
-                  <ScoreSparkline history={history} />
-                </div>
-              ) : null}
-
-              {/* CARE-RAG M12: Resume Evolution Timeline */}
+        {/* ── Evolution ── */}
+        <div className="bento-card span-2 delay-4">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+            <h3 className="section-heading" style={{ fontSize: "1rem", margin: 0 }}>Progress Analytics</h3>
+            {historyDelta !== null && (
+              <span className={`badge badge-${historyDelta >= 0 ? "success" : "danger"}`}>
+                {historyDelta >= 0 ? "↑" : "↓"}{Math.abs(historyDelta)} pts
+              </span>
+            )}
+          </div>
+          
+          {history.length >= 2 ? (
+            <>
+              <ScoreSparkline history={history} />
               <EvolutionTimeline history={history} />
+            </>
+          ) : (
+            <div className="scan-empty-state" style={{ padding: "40px 0", background: "var(--surface-soft)", borderRadius: 12 }}>
+              <p style={{ fontSize: "0.88rem", color: "var(--muted)" }}>Compare resume versions to see your progress.</p>
+              <Link href="/match" className="btn-secondary btn-sm" style={{ marginTop: 12 }}>Run another scan</Link>
             </div>
-          </section>
-
-          <section className="content-card">
-            <div className="content-card-header">
-              <h2 className="content-card-title">Onboarding Checklist</h2>
-            </div>
-            <div className="content-card-body">
-              <div className="dashboard-checklist">
-                {checklist.map((item) => (
-                  <Link key={item.label} href={item.href} className="dashboard-check-item">
-                    {item.done ? (
-                      <CheckCircle2 size={16} color="#16a34a" />
-                    ) : (
-                      <Circle size={16} color="#717783" />
-                    )}
-                    <span>{item.label}</span>
-                  </Link>
-                ))}
-              </div>
-              <div className="dashboard-actions">
-                <Link href="/resume" className="btn-primary dashboard-action-link">
-                  Continue journey
-                </Link>
-                <Link href="/assistant" className="btn-secondary dashboard-action-link">
-                  Ask assistant
-                </Link>
-              </div>
-            </div>
-          </section>
+          )}
         </div>
-      )}
+
+        {/* ── Quick Links ── */}
+        <div className="bento-card delay-5" style={{ background: "var(--accent-ink)", color: "#fff" }}>
+          <h3 style={{ color: "#fff", fontSize: "1rem", marginBottom: 12 }}>AI Assistant</h3>
+          <p style={{ fontSize: "0.86rem", opacity: 0.8, marginBottom: 20, lineHeight: 1.5 }}>
+            Need help with your resume or a specific job? Talk to our AI placement advisor.
+          </p>
+          <Link href="/assistant" className="btn-glass btn-block" style={{ textAlign: "center", color: "#fff" }}>
+            Chat Now
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
