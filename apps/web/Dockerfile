@@ -6,4 +6,4 @@ RUN pnpm install
 COPY . .
 RUN pnpm build
 EXPOSE 3000
-CMD ["pnpm", "start"]
+CMD ["sh", "-c", "pnpm start -p ${PORT:-3000}"]
