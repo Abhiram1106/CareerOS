@@ -154,7 +154,7 @@ def test_golden_path_register_seed_score(client, db_session, patch_clients):
     assert body["scorecard_id"] > 0
     assert body["jd_id"] > 0
     assert 0 <= body["overall_score"] <= 100
-    assert body["bucket"] in {"strong", "ready", "borderline", "high_risk"}
+    assert body["bucket"] in {"strong", "ready", "borderline", "high-risk"}
     assert body["semantic_method"] == "char_ngram_proxy"
     assert set(body["components"]) == {
         "jd_match",

@@ -2,19 +2,19 @@ import argparse
 from datetime import datetime, timedelta
 
 from app.database import SessionLocal
+from app.db_bootstrap import bootstrap_database
 from app.models.entities import (
     ATSScan,
-    ApplicationTrack,
+    JobApplication,
     CareerProfile,
-    JobAlert,
     Resume,
-    Subscription,
     User,
 )
 from app.services.auth import hash_password
 
 
 def seed(email: str, password: str, full_name: str) -> None:
+    bootstrap_database()
     db = SessionLocal()
     try:
         user = db.query(User).filter(User.email == email).first()
@@ -59,28 +59,15 @@ def seed(email: str, password: str, full_name: str) -> None:
                 )
             )
 
-        if db.query(JobAlert).filter(JobAlert.user_id == user.id).count() == 0:
-            db.add(JobAlert(user_id=user.id, query="Backend Engineer", location="Bengaluru", min_score=70, is_active=True))
-
-        if db.query(ApplicationTrack).filter(ApplicationTrack.user_id == user.id).count() == 0:
+        if db.query(JobApplication).filter(JobApplication.user_id == user.id).count() == 0:
             db.add(
-                ApplicationTrack(
+                JobApplication(
                     user_id=user.id,
                     company="Example Labs",
-                    role="Backend Engineer",
+                    job_title="Backend Engineer",
                     status="applied",
                     notes="Referred by alumni network",
-                )
-            )
-
-        sub = db.query(Subscription).filter(Subscription.user_id == user.id).first()
-        if not sub:
-            db.add(
-                Subscription(
-                    user_id=user.id,
-                    plan_code="pro",
-                    status="active",
-                    renews_on=datetime.utcnow() + timedelta(days=30),
+                    job_external_id="seed-12345"
                 )
             )
 

@@ -22,7 +22,16 @@ except Exception:  # pragma: no cover
     pwd_context = None
 
 
+try:
+    import bcrypt
+except ImportError:
+    bcrypt = None
+
 def hash_password(password: str) -> str:
+    if bcrypt:
+        salt = bcrypt.gensalt()
+        return bcrypt.hashpw(password.encode("utf-8"), salt).decode("utf-8")
+    
     if pwd_context:
         return pwd_context.hash(password)
     import hashlib
@@ -30,6 +39,12 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(password: str, hashed: str) -> bool:
+    if bcrypt:
+        try:
+            return bcrypt.checkpw(password.encode("utf-8"), hashed.encode("utf-8"))
+        except Exception:
+            return False
+
     if pwd_context:
         return pwd_context.verify(password, hashed)
     return hash_password(password) == hashed
